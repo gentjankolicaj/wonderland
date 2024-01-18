@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <artifactId>wonderland</artifactId>
+    <groupId>io.wonderland</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>rabbit-hole</artifactId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>rabbit-hole</name>
+  <packaging>jar</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <properties>
+    <java.version>11</java.version>
+    <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+    <javafx.version>17.0.6</javafx.version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <artifactId>javafx-controls</artifactId>
+      <groupId>org.openjfx</groupId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.controlsfx</groupId>
+      <artifactId>controlsfx</artifactId>
+      <version>11.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.kordamp.bootstrapfx</groupId>
+      <artifactId>bootstrapfx-core</artifactId>
+      <version>0.4.0</version>
+    </dependency>
+
+    <!-- jfree dependencies -->
+    <dependency>
+      <artifactId>org.jfree.chart3d</artifactId>
+      <groupId>org.jfree</groupId>
+      <version>2.1.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>org.jfree.chart3d.fx</artifactId>
+      <groupId>org.jfree</groupId>
+      <version>2.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>org.jfree.fxgraphics2d</artifactId>
+      <version>2.1.4</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>jfreechart</artifactId>
+      <groupId>org.jfree</groupId>
+      <version>1.5.3</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>org.jfree.chart.fx</artifactId>
+      <groupId>org.jfree</groupId>
+      <version>2.0.1</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>org.jfree.svg</artifactId>
+      <groupId>org.jfree</groupId>
+      <version>5.0.2</version>
+    </dependency>
+    <dependency>
+      <artifactId>org.jfree.pdf</artifactId>
+      <groupId>org.jfree</groupId>
+      <version>2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.wonderland</groupId>
+      <artifactId>alice</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.wonderland</groupId>
+      <artifactId>bouncy-castle</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.wonderland</groupId>
+      <artifactId>red-queen</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>0.10.2</version>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.1.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <groupId>org.openjfx</groupId>
+        <version>0.0.8</version>
+        <configuration>
+          <mainClass>io.wonderland.rh.RabbitHoleApplication</mainClass>
+        </configuration>
+    </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok-mapstruct-binding</artifactId>
+              <version>${lombok-mapstruct-binding.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.1.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <additionalOptions>-Xdoclint:none</additionalOptions>
+          <docfilessubdirs>true</docfilessubdirs>
+          <linksource>true</linksource>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <id>attach-javadoc</id>
+          </execution>
+        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <inherited>true</inherited>
+        <version>3.3.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.2.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>io.wonderland.rh.RabbitHoleApplication</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>single</goal>
+            </goals> <!-- this is used for inheritance merges -->
+            <id>make-assembly</id> <!-- bind to the packaging phase -->
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <version>3.1.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.0.0-M1</version>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
