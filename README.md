@@ -81,27 +81,30 @@ Personal project around cryptography.
 
    * "Humans" shall mean elements/creatures part of Genus Homo and Species Homo sapiens.
      
-   * "Thing" shall mean an abstract or physical notion."Things" is a plural form of Thing.
+   * "Thing" shall mean an abstract or physical notion.Thing can be an object, object's state, 
+      object's action. Also, Thing can be an action or a set of actions independent or dependent.
+   
+   * "Things" is a plural form of Thing.
 
    * "Set" shall mean a mathematical model for a collection of Things.
      Set contains elements or members.Example: Set of humans, set of devices, set of europeans...etc.
 
    * "Your Set" shall mean a Set where exists at least a member with which You have something in common with.
 
-   * "Personal Struggle" shall mean any and any type of action, attempt, endeavor, fight,
-   conflict, strife, encounter, skirmish, strive, effort, feud, clash, war, battle,
-   struggle, engagement, undertaking, problem, pain, toil, cope, try, compete, contend, grapple
+   * "Personal Bad Things" shall mean any and any type of action, attempt, endeavor, fight, coercion, force,
+   conflict, strife, encounter, skirmish, strive, effort, feud, clash, war, battle, struggle,
+   engagement, undertaking, problem, pain, toil, cope, try, compete, contend, grapple, lie, deceit, manipulate
    directed from You towards or against one or many humans.
 
-   * "Set Struggle" shall mean any and any type of action, attempt, endeavor, fight,
-   conflict, strife, encounter, skirmish, strive, effort, feud, clash, war, battle,
-   struggle, engagement, undertaking, problem, pain, toil, cope, try, compete, contend, grapple
+   * "Set Bad Things" shall mean any and any type of action, attempt, endeavor, fight, coercion, force,
+   conflict, strife, encounter, skirmish, strive, effort, feud, clash, war, battle, struggle,
+   engagement, undertaking, problem, pain, toil, cope, try, compete, contend, grapple, lie, deceit, manipulate
    directed from Your Set towards or against one or many humans.
 
 2. You are solely responsible for lawful or unlawful use of this Source, Work or Derivative Works
    to Local or International authorities.
 
-3. You legally agree not to use this Source, Work or Derivative Works for Personal Struggle.
+3. You legally agree not to use this Source, Work or Derivative Works for Personal Bad Things.
 
-4. You legally agree not to use this Source, Work or Derivative Works for Set Struggle.
+4. You legally agree not to use this Source, Work or Derivative Works for Set Bad Things.
 
