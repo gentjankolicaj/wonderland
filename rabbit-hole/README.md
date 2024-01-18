@@ -1,7 +1,4 @@
 ### What is rabbit-hole for? ###
-
-* Gui app with some implementations around wonderland project.
-* Hashing, encoding, encrypt/decrypt
-
+* Javafx application gui app using modules like: alice, bouncy-castle, garden, red-queen.
 
 

@@ -1,7 +1,5 @@
 ### What is alice for? ###
-
-* Cryptographic module
-* Implementations about : ciphers,cryptanalysis,encoders,hash
-
+* Cryptographic Service Provider module
+* Contains implementations about: ciphers, encoders, hash
 
 

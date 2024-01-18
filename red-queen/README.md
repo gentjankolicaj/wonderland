@@ -1,6 +1,6 @@
-### What is red-queen for? ###
-
-* Cryptanalysis implementation using externalized resources.
+### What is red-queen for? ### 
+* Cryptanalysis module
+* Contains implementations around cryptanalysis.
 
 
 

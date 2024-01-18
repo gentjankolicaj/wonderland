@@ -1,7 +1,6 @@
-### What is red-queen for? ###
-
-* Cryptanalysis implementation using externalized resources.
-
+### What is common for? ### 
+* Common module
+* Contains implementations of utils & helper methods & classes.
 
 
 
