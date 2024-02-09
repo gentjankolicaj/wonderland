@@ -26,4 +26,28 @@ public class Arrays {
     return null == data ? null : data.clone();
   }
 
+  public static String getStringValueOf(byte[] data){
+    if(data==null){
+      return null;
+    }else{
+      StringBuilder sb=new StringBuilder();
+      for(byte b:data){
+        sb.append(b);
+      }
+      return sb.toString();
+    }
+  }
+
+  public static String getStringValueOf(byte[] data,char separator){
+    if(data==null){
+      return null;
+    }else{
+      StringBuilder sb=new StringBuilder();
+      for(byte b:data){
+        sb.append(b).append(separator);
+      }
+      return sb.toString();
+    }
+  }
+
 }

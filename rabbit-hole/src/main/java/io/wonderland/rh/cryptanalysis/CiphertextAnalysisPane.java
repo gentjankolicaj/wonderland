@@ -1,9 +1,10 @@
 package io.wonderland.rh.cryptanalysis;
 
-import io.wonderland.rh.common.HToggleGroupPane;
+import io.wonderland.rh.common.HTogglePane;
 import io.wonderland.rh.common.TextPane;
 import io.wonderland.rq.type.Language;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
@@ -11,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -46,10 +48,12 @@ public class CiphertextAnalysisPane extends BorderPane {
     private final Button freqAnalysisBtn = new Button("Freq analysis");
     private final Button mppAnalysisBtn = new Button("MPP analysis");
     private final Button icAnalysisBtn = new Button("IC analysis");
-    private final HToggleGroupPane ciphertextEncodingPane = new HToggleGroupPane("Ciphertext encoding : ", "byte",
-        "char", "int");
-    private final HToggleGroupPane langGraphPane = new HToggleGroupPane("Character graph : ", "monograph", "digraph",
-        "trigraph", "quadgraph");
+    private final HTogglePane<RadioButton> ciphertextEncodingPane = new HTogglePane<>("Ciphertext encoding : ",
+        s->new RadioButton(s),Map.of("byte",()->{},
+        "char", ()->{},"int",()->{}));
+    private final HTogglePane<RadioButton> langGraphPane = new HTogglePane<>("Character graph : ", s->new RadioButton(s),
+        Map.of("monograph",()->{}, "digraph",()->{},
+        "trigraph", ()->{},"quadgraph",()->{}));
     private final TextPane ciphertextPane = new TextPane("Ciphertext", ciphertextArea);
 
     public HeaderPane(BodyPane bodyPane) {
@@ -105,8 +109,8 @@ public class CiphertextAnalysisPane extends BorderPane {
 
       @Override
       public void handle(Event event) {
-        createIndexCoincidenceStage(languageComboBox.getValue(), langGraphPane.getSelectedRadioButton().getText(),
-            ciphertextEncodingPane.getSelectedRadioButton().getText(), ciphertextArea.getText());
+        createIndexCoincidenceStage(languageComboBox.getValue(), langGraphPane.getSelectedToggle().getText(),
+            ciphertextEncodingPane.getSelectedToggle().getText(), ciphertextArea.getText());
       }
     }
 
@@ -114,8 +118,8 @@ public class CiphertextAnalysisPane extends BorderPane {
 
       @Override
       public void handle(Event event) {
-        createMPPStage(languageComboBox.getValue(), langGraphPane.getSelectedRadioButton().getText(),
-            ciphertextEncodingPane.getSelectedRadioButton().getText(), ciphertextArea.getText());
+        createMPPStage(languageComboBox.getValue(), langGraphPane.getSelectedToggle().getText(),
+            ciphertextEncodingPane.getSelectedToggle().getText(), ciphertextArea.getText());
       }
     }
 
@@ -124,8 +128,8 @@ public class CiphertextAnalysisPane extends BorderPane {
 
       @Override
       public void handle(Event event) {
-        createFreqAnalysisStage(languageComboBox.getValue(), langGraphPane.getSelectedRadioButton().getText(),
-            ciphertextEncodingPane.getSelectedRadioButton().getText(), ciphertextArea.getText());
+        createFreqAnalysisStage(languageComboBox.getValue(), langGraphPane.getSelectedToggle().getText(),
+            ciphertextEncodingPane.getSelectedToggle().getText(), ciphertextArea.getText());
       }
     }
 

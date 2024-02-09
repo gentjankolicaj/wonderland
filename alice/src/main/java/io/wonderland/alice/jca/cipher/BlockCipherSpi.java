@@ -15,7 +15,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
-import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class BlockCipherSpi extends CipherSpi {
 
@@ -26,7 +25,7 @@ public abstract class BlockCipherSpi extends CipherSpi {
 
   public BlockCipherSpi(BlockCipher blockCipher) {
     this.blockCipher = blockCipher;
-    this.iv = ArrayUtils.EMPTY_BYTE_ARRAY;
+    this.iv = org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
     this.ivSize = 0;
   }
 

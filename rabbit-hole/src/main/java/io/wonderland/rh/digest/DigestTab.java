@@ -38,6 +38,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
@@ -48,8 +49,8 @@ public class DigestTab extends ServiceTab<MessageDigest> {
   private final TextArea digestTextArea = new TextArea();
   private MessageDigest messageDigest = getDefaultService();
 
-  public DigestTab(String title, String serviceType, Stage stage) {
-    super(title, serviceType, stage);
+  public DigestTab(Stage stage,String title, String serviceType) {
+    super(stage, title, serviceType);
 
     SplitPane splitPane = new SplitPane();
 
@@ -84,7 +85,7 @@ public class DigestTab extends ServiceTab<MessageDigest> {
         String algName = null;
         for (String cspName : cspNames) {
           Optional<String> optional = Security.getProvider(cspName).getServices().stream()
-              .filter(s -> serviceType.equals(s.getType()))
+              .filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
               .map(Service::getAlgorithm).filter(this::isValidServiceName).findFirst();
           if (optional.isPresent()) {
             algName = optional.get();
@@ -126,7 +127,7 @@ public class DigestTab extends ServiceTab<MessageDigest> {
   }
 
   private StackPane createDigestsPane() {
-    TreeItem<String> rootItem = new TreeItem<>("Digests", null);
+    TreeItem<String> rootItem = new TreeItem<>("~/", null);
     rootItem.setExpanded(true);
 
     //Cryptographic Service Provider nodes
@@ -134,11 +135,13 @@ public class DigestTab extends ServiceTab<MessageDigest> {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      cspNode.getChildren().addAll(getDigestNames(cspNode.getValue()));
+      List<TreeItem<String>> digestNameNodes=getDigestNameNodes(cspNode.getValue());
+      if(CollectionUtils.isNotEmpty(digestNameNodes)) {
+        cspNode.getChildren().addAll(digestNameNodes);
+        //Add CSP nodes to parent
+        rootItem.getChildren().addAll(cspNode);
+      }
     }
-
-    //Add all CSP nodes to parent
-    rootItem.getChildren().addAll(cspNodes);
 
     TreeView<String> treeView = new TreeView<>(rootItem);
     treeView.getSelectionModel().selectedItemProperty()
@@ -157,12 +160,12 @@ public class DigestTab extends ServiceTab<MessageDigest> {
         .collect(Collectors.toList());
   }
 
-  private List<TreeItem<String>> getDigestNames(String cspName) {
+  private List<TreeItem<String>> getDigestNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
     }
-    return provider.getServices().stream().filter(s -> serviceType.equals(s.getType()))
+    return provider.getServices().stream().filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
         .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0))).map(
             TreeItem::new).collect(
             Collectors.toList());

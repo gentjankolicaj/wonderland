@@ -7,12 +7,12 @@ import javafx.stage.Stage;
 public abstract class ServiceTab<T> extends Tab {
 
   protected String title;
-  protected String serviceType;
+  protected String[] serviceTypes;
   protected Stage stage;
 
-  public ServiceTab(String title, String serviceType, Stage stage) {
+  public ServiceTab(Stage stage, String title, String... serviceTypes) {
     this.title = title;
-    this.serviceType = serviceType;
+    this.serviceTypes = serviceTypes;
     this.stage = stage;
     this.setText(title);
     this.setClosable(false);
@@ -23,5 +23,6 @@ public abstract class ServiceTab<T> extends Tab {
   protected abstract T getService(String serviceName) throws ServiceException;
 
   protected abstract boolean isValidServiceName(String name);
+
 
 }

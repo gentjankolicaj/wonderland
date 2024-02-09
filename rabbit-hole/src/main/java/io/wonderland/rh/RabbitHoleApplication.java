@@ -5,6 +5,7 @@ import io.wonderland.rh.cipher.CipherTab;
 import io.wonderland.rh.cryptanalysis.CryptanalysisTab;
 import io.wonderland.rh.digest.DigestTab;
 import io.wonderland.rh.encoding.EncodingTab;
+import io.wonderland.rh.keygen.KeygenTab;
 import java.security.Security;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -25,12 +26,13 @@ public class RabbitHoleApplication extends Application {
   public void start(Stage primaryStage) {
     TabPane tabPane = new TabPane();
 
-    CipherTab cipherTab = new CipherTab("Crypto", "Cipher", primaryStage);
+    CipherTab cipherTab = new CipherTab(primaryStage,"Crypto","Cipher");
     CryptanalysisTab cryptanalysisTab = new CryptanalysisTab(primaryStage);
-    DigestTab digestTab = new DigestTab("Digest", "MessageDigest", primaryStage);
+    DigestTab digestTab = new DigestTab(primaryStage,"Digest", "MessageDigest");
+    KeygenTab keygenTab=new KeygenTab(primaryStage,"Keygen","KeyGenerator","KeyPairGenerator");
     EncodingTab encodingTab = new EncodingTab(primaryStage);
 
-    tabPane.getTabs().addAll(cipherTab, cryptanalysisTab, digestTab, encodingTab);
+    tabPane.getTabs().addAll(cipherTab,  digestTab,keygenTab,cryptanalysisTab, encodingTab);
 
     Scene scene = new Scene(tabPane, 1124, 800);
     primaryStage.setScene(scene);

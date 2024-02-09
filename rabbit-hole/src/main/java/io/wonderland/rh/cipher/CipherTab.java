@@ -2,7 +2,7 @@ package io.wonderland.rh.cipher;
 
 
 import io.wonderland.rh.cipher.key.DefaultKeyPane;
-import io.wonderland.rh.common.HToggleGroupPane;
+import io.wonderland.rh.common.HTogglePane;
 import io.wonderland.rh.common.ServiceTab;
 import io.wonderland.rh.common.TextPane;
 import io.wonderland.rh.exception.ServiceException;
@@ -19,6 +19,7 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +31,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
@@ -48,6 +50,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javax.crypto.Cipher;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,8 +67,8 @@ public class CipherTab extends ServiceTab<Cipher> {
   private KeyPane<?> keyPane;
   private BorderPane wrapperKeyPane;
 
-  public CipherTab(String title, String serviceType, Stage stage) {
-    super(title, serviceType, stage);
+  public CipherTab(Stage stage, String title, String serviceType) {
+    super(stage, title, serviceType);
 
     SplitPane splitPane = new SplitPane();
 
@@ -89,7 +92,6 @@ public class CipherTab extends ServiceTab<Cipher> {
     try {
       tmp = Cipher.getInstance("Vigenere", "Alice");
       log.info("Default cipher '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
-      return tmp;
     } catch (Exception e1) {
       log.warn("Error finding default  cipher 'Vigenere' - Alice.", e1);
       log.warn("Attempting to find random one.");
@@ -100,7 +102,7 @@ public class CipherTab extends ServiceTab<Cipher> {
         String transformationName = null;
         for (String cspName : cspNames) {
           Optional<String> optional = Security.getProvider(cspName).getServices().stream()
-              .filter(s -> serviceType.equals(s.getType()))
+              .filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
               .map(Service::getAlgorithm).filter(this::isValidServiceName).findFirst();
           if (optional.isPresent()) {
             transformationName = optional.get();
@@ -159,10 +161,12 @@ public class CipherTab extends ServiceTab<Cipher> {
 
   protected void updateServiceInfo(Cipher cipher) {
     if (cipher != null) {
-      this.infoBox.getChildren().remove(0);
-      this.infoBox.getChildren().add(new Label(
-          "Name : " + cipher.getAlgorithm() + " , block-size : " + cipher.getBlockSize() + "  **+ Provider : "
-              + cipher.getProvider().getName()));
+      if(!infoBox.getChildren().isEmpty()) {
+        this.infoBox.getChildren().remove(0);
+        this.infoBox.getChildren().add(new Label(
+            "Name : " + cipher.getAlgorithm() + " , block-size : " + cipher.getBlockSize() + "  *** Provider : "
+                + cipher.getProvider().getName()));
+      }
     } else {
       if (!infoBox.getChildren().isEmpty()) {
         this.infoBox.getChildren().remove(0);
@@ -181,7 +185,7 @@ public class CipherTab extends ServiceTab<Cipher> {
   }
 
   private StackPane createCiphersPane() {
-    TreeItem<String> rootItem = new TreeItem<>("Ciphers", null);
+    TreeItem<String> rootItem = new TreeItem<>("~/", null);
     rootItem.setExpanded(true);
 
     //Cryptographic Service Provider nodes
@@ -189,11 +193,14 @@ public class CipherTab extends ServiceTab<Cipher> {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      cspNode.getChildren().addAll(getCipherNames(cspNode.getValue()));
-    }
+      List<TreeItem<String>> cipherNameNodes= getCipherNameNodes(cspNode.getValue());
+      if(CollectionUtils.isNotEmpty(cipherNameNodes)) {
+        cspNode.getChildren().addAll(cipherNameNodes);
 
-    //Add all CSP nodes to parent
-    rootItem.getChildren().addAll(cspNodes);
+        //Add CSP nodes to parent
+        rootItem.getChildren().add(cspNode);
+      }
+    }
 
     TreeView<String> treeView = new TreeView<>(rootItem);
     treeView.getSelectionModel().selectedItemProperty()
@@ -212,12 +219,12 @@ public class CipherTab extends ServiceTab<Cipher> {
         .collect(Collectors.toList());
   }
 
-  private List<TreeItem<String>> getCipherNames(String cspName) {
+  private List<TreeItem<String>> getCipherNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
     }
-    return provider.getServices().stream().filter(s -> serviceType.equals(s.getType()))
+    return provider.getServices().stream().filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
         .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0))).map(
             TreeItem::new).collect(
             Collectors.toList());
@@ -249,7 +256,7 @@ public class CipherTab extends ServiceTab<Cipher> {
       this.keyPane = newKeyPane;
       this.wrapperKeyPane.setCenter(newKeyPane);
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-      throw new ServiceException("Failed to changed KeyPane", e);
+      throw new ServiceException("Failed to changed KeyGeneratorPane", e);
     }
   }
 
@@ -345,7 +352,8 @@ public class CipherTab extends ServiceTab<Cipher> {
   }
 
   private HBox getEncodingBox() {
-    return new HToggleGroupPane("Key encoding ", "byte", "char", "int");
+    return new HTogglePane<>("Key encoding ", s->new RadioButton(s), Map.of("byte",()->{},
+        "char", ()->{},"int",()->{}));
   }
 
 

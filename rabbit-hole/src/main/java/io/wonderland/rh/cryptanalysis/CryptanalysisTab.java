@@ -54,7 +54,7 @@ public class CryptanalysisTab extends Tab {
 
 
   private StackPane createAnalysisOptionsPane() {
-    TreeItem<String> rootItem = new TreeItem<>("Analysis", null);
+    TreeItem<String> rootItem = new TreeItem<>("~/", null);
     rootItem.setExpanded(true);
 
     //add language freq item
