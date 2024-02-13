@@ -39,8 +39,6 @@ public class TextPane extends BorderPane {
 
     setTop(createTitle(label));
     setCenter(scrollPane);
-    setBorder(new Border(new BorderStroke(Color.BLACK,
-        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
   }
 
   public TextPane(String label, TextArea textArea, Pane leftPane, Pane rightPane) {

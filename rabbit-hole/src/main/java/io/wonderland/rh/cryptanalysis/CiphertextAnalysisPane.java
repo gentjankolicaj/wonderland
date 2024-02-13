@@ -48,10 +48,10 @@ public class CiphertextAnalysisPane extends BorderPane {
     private final Button freqAnalysisBtn = new Button("Freq analysis");
     private final Button mppAnalysisBtn = new Button("MPP analysis");
     private final Button icAnalysisBtn = new Button("IC analysis");
-    private final HTogglePane<RadioButton> ciphertextEncodingPane = new HTogglePane<>("Ciphertext encoding : ",
+    private final HTogglePane<RadioButton> ciphertextEncodingPane = new HTogglePane<>("Ciphertext encoding : ",10,
         s->new RadioButton(s),Map.of("byte",()->{},
         "char", ()->{},"int",()->{}));
-    private final HTogglePane<RadioButton> langGraphPane = new HTogglePane<>("Character graph : ", s->new RadioButton(s),
+    private final HTogglePane<RadioButton> langGraphPane = new HTogglePane<>("Character graph : ", 10,s->new RadioButton(s),
         Map.of("monograph",()->{}, "digraph",()->{},
         "trigraph", ()->{},"quadgraph",()->{}));
     private final TextPane ciphertextPane = new TextPane("Ciphertext", ciphertextArea);

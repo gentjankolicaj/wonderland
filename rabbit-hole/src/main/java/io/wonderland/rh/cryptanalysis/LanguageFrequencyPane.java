@@ -61,7 +61,7 @@ class LanguageFrequencyPane extends BorderPane {
 
 
   private HBox createLangGraphBox() {
-    HTogglePane<RadioButton> toggleGroupPane = new HTogglePane<>("Character graph :", s->new RadioButton(s),
+    HTogglePane<RadioButton> toggleGroupPane = new HTogglePane<>("Character graph :",10, s->new RadioButton(s),
         Map.of("monograph",()->{}, "digraph",()->{}, "trigraph",()->{},
         "quadgraph",()->{}));
     ToggleGroup toggleGroup = toggleGroupPane.getToggleGroup();

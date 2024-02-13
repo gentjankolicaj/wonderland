@@ -27,7 +27,7 @@ public class Arrays {
   }
 
   public static String getStringValueOf(byte[] data){
-    if(data==null){
+    if(data==null || data.length==0){
       return null;
     }else{
       StringBuilder sb=new StringBuilder();
@@ -39,7 +39,7 @@ public class Arrays {
   }
 
   public static String getStringValueOf(byte[] data,char separator){
-    if(data==null){
+    if(data==null || data.length==0){
       return null;
     }else{
       StringBuilder sb=new StringBuilder();

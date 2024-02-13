@@ -11,17 +11,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
-import lombok.Getter;
+import javafx.scene.layout.VBox;
 import org.apache.commons.collections4.MapUtils;
 
-@Getter
-public class HTogglePane<T extends ToggleButton> extends HBox {
+public class VTogglePane<T extends ToggleButton> extends VBox {
 
   private final ToggleGroup toggleGroup = new ToggleGroup();
   private final Map<String, Runnable> onToggleSelected;
 
-  public HTogglePane(String title,int spacing, Function<String, T> onInit, Map<String, Runnable> onToggleSelected) {
+  public VTogglePane(String title,int spacing, Function<String, T> onInit, Map<String, Runnable> onToggleSelected) {
     this.onToggleSelected = onToggleSelected;
     if (MapUtils.isNotEmpty(onToggleSelected)) {
       List<ToggleButton> buttonList = new ArrayList<>();
@@ -60,8 +58,5 @@ public class HTogglePane<T extends ToggleButton> extends HBox {
       }
     }
   }
-
-
-
 
 }

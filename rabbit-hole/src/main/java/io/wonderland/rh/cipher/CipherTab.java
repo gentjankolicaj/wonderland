@@ -2,7 +2,6 @@ package io.wonderland.rh.cipher;
 
 
 import io.wonderland.rh.cipher.key.DefaultKeyPane;
-import io.wonderland.rh.common.HTogglePane;
 import io.wonderland.rh.common.ServiceTab;
 import io.wonderland.rh.common.TextPane;
 import io.wonderland.rh.exception.ServiceException;
@@ -19,8 +18,6 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -31,21 +28,14 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javax.crypto.Cipher;
@@ -164,14 +154,14 @@ public class CipherTab extends ServiceTab<Cipher> {
       if(!infoBox.getChildren().isEmpty()) {
         this.infoBox.getChildren().remove(0);
         this.infoBox.getChildren().add(new Label(
-            "Name : " + cipher.getAlgorithm() + " , block-size : " + cipher.getBlockSize() + "  *** Provider : "
+            "Cipher: " + cipher.getAlgorithm() + " , block-size : " + cipher.getBlockSize() + " , CSP: "
                 + cipher.getProvider().getName()));
       }
     } else {
       if (!infoBox.getChildren().isEmpty()) {
         this.infoBox.getChildren().remove(0);
       }
-      this.infoBox.getChildren().add(new Label("Name :"));
+      this.infoBox.getChildren().add(new Label("Cipher: ?"));
     }
   }
 
@@ -288,24 +278,13 @@ public class CipherTab extends ServiceTab<Cipher> {
     miscBox.setSpacing(10);
 
     //info labels
-    this.infoBox.getChildren().add(new Label("Cipher name : " + getCipherName(encryptCipher) + "   ** "));
-
-    //ciphertext encoding
-    HBox encodingBox = getEncodingBox();
+    this.infoBox.getChildren().add(new Label("Cipher: ?"));
 
     //wrapper pane (cipher key + buttons)
     this.wrapperKeyPane = getWrapperKeyPane();
 
-    miscBox.getChildren().addAll(this.infoBox, encodingBox, this.wrapperKeyPane);
+    miscBox.getChildren().addAll(this.infoBox, this.wrapperKeyPane);
     return miscBox;
-  }
-
-  private String getCipherName(Cipher cipher) {
-    if (Objects.nonNull(cipher)) {
-      int lastDot = cipher.getClass().getName().lastIndexOf(".");
-      return cipher.getClass().getName().substring(lastDot + 1);
-    }
-    return StringUtils.EMPTY;
   }
 
   private BorderPane getWrapperKeyPane() {
@@ -321,8 +300,6 @@ public class CipherTab extends ServiceTab<Cipher> {
     //Assign children to wrapper pane
     borderPane.setCenter(keyPane);
     borderPane.setLeft(buttonBox);
-    borderPane.setBorder(new Border(new BorderStroke(Color.BLACK,
-        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
     return borderPane;
   }
 
@@ -351,10 +328,6 @@ public class CipherTab extends ServiceTab<Cipher> {
     return btnBox;
   }
 
-  private HBox getEncodingBox() {
-    return new HTogglePane<>("Key encoding ", s->new RadioButton(s), Map.of("byte",()->{},
-        "char", ()->{},"int",()->{}));
-  }
 
 
   class EncryptBtnReleased implements EventHandler<Event> {

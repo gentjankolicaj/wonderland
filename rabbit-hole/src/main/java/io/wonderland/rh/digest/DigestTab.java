@@ -11,31 +11,23 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -176,6 +168,7 @@ public class DigestTab extends ServiceTab<MessageDigest> {
     rootSplitter.setOrientation(Orientation.VERTICAL);
 
     BorderPane mainPane = new BorderPane();
+    mainPane.setPadding(new Insets(10,10,10,10));
 
     mainPane.setTop(getMiscBox());
     mainPane.setCenter(getMessageBox());
@@ -187,10 +180,11 @@ public class DigestTab extends ServiceTab<MessageDigest> {
 
   private VBox getMiscBox() {
     final VBox miscBox = new VBox();
+    miscBox.setPadding(new Insets(5,5,5,5));
     miscBox.setSpacing(10);
 
     //info labels
-    this.infoBox.getChildren().add(new Label("Digest name : " + getDigestName(this.messageDigest) + "   *** "));
+    this.infoBox.getChildren().add(new Label("Hash algorithm: ?"));
 
     //button
     BorderPane buttonPane = getButtonPane();
@@ -209,19 +203,10 @@ public class DigestTab extends ServiceTab<MessageDigest> {
   private BorderPane getButtonPane() {
     BorderPane pane = new BorderPane();
 
-    //key scroll pane
-    ScrollPane scrollPane = new ScrollPane();
-    scrollPane.setFitToWidth(true);
-    scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
-    scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
-
     //buttons
     VBox buttonBox = getButtonsBox();
-    scrollPane.setContent(buttonBox);
 
-    pane.setCenter(scrollPane);
-    pane.setBorder(new Border(new BorderStroke(Color.BLACK,
-        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+    pane.setCenter(buttonBox);
     return pane;
   }
 
@@ -237,13 +222,6 @@ public class DigestTab extends ServiceTab<MessageDigest> {
     return box;
   }
 
-  private String getDigestName(MessageDigest messageDigest) {
-    if (Objects.nonNull(messageDigest)) {
-      int lastDot = messageDigest.getClass().getName().lastIndexOf(".");
-      return messageDigest.getClass().getName().substring(lastDot + 1);
-    }
-    return StringUtils.EMPTY;
-  }
 
 
   private void selectMessageDigest(String messageDigestName) {
@@ -258,8 +236,8 @@ public class DigestTab extends ServiceTab<MessageDigest> {
     if (messageDigest != null) {
       this.infoBox.getChildren().remove(0);
       this.infoBox.getChildren().add(new Label(
-          "Name : " + messageDigest.getAlgorithm() + " , length : " + messageDigest.getDigestLength()
-              + "  *** Provider : " + messageDigest.getProvider().getName()));
+          "Hash algorithm : " + messageDigest.getAlgorithm() + " , length : " + messageDigest.getDigestLength()
+              + " , CSP: " + messageDigest.getProvider().getName()));
     } else {
       if (!infoBox.getChildren().isEmpty()) {
         this.infoBox.getChildren().remove(0);

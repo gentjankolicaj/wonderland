@@ -5,6 +5,7 @@ import io.wonderland.rh.common.HTogglePane;
 import io.wonderland.rh.utils.ZxingUtils;
 import java.util.Map;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -23,19 +24,20 @@ import org.apache.commons.lang3.ArrayUtils;
 @Slf4j
 public class KeyGeneratorPane extends BorderPane {
   private final double QR_CODE_TO_VIEW_RATIO = 0.6;
-  private HTogglePane<RadioButton> keyFormatPane = new HTogglePane<>("Secret-key format : ", s -> new RadioButton(s),
-      Map.of("QR", () -> setQRCode(getSecretKey().getEncoded()), "Dec", () -> setString(getSecretKey().getEncoded())));
+  private HTogglePane<RadioButton> keyFormatPane = new HTogglePane<>("Format : ", 10,s -> new RadioButton(s),
+      Map.of("qr-code", () -> setQRCode(getSecretKey().getEncoded()), "decimal", () -> setString(getSecretKey().getEncoded())));
   private SecretKey secretKey;
 
   public KeyGeneratorPane() {
     this.setTop(keyFormatPane);
+    this.setPadding(new Insets(5,5,5,5));
   }
 
 
   public void update(SecretKey secretKey) {
     this.secretKey = secretKey;
     this.setQRCode(secretKey.getEncoded());
-    this.keyFormatPane.selectToggle("QR");
+    this.keyFormatPane.selectToggle("qr-code");
   }
 
   private void setQRCode(byte[] encoded) {
