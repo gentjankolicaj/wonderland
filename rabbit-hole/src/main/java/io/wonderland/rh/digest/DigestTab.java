@@ -39,7 +39,7 @@ public class DigestTab extends ServiceTab<MessageDigest> {
   private final HBox infoBox = new HBox();
   private final TextArea messageTextArea = new TextArea();
   private final TextArea digestTextArea = new TextArea();
-  private MessageDigest messageDigest = getDefaultService();
+  private Optional<MessageDigest> optionalMessageDigest =Optional.empty();
 
   public DigestTab(Stage stage,String title, String serviceType) {
     super(stage, title, serviceType);
@@ -59,54 +59,16 @@ public class DigestTab extends ServiceTab<MessageDigest> {
     this.setContent(splitPane);
   }
 
-  @Override
-  protected MessageDigest getDefaultService() {
-    MessageDigest tmp = null;
+  protected Optional<MessageDigest> getSelectedMessageDigest(String serviceName) throws ServiceException {
+    MessageDigest tmp=null;
     try {
-      tmp = MessageDigest.getInstance("SHA-1", "SUN");
-      log.info("Default message-digest '{}' - provider '{}' ", tmp.getAlgorithm(),
-          tmp.getProvider().getName());
-      return tmp;
-    } catch (Exception e1) {
-      log.warn("Error finding default message-digest SHA-1 - SUN.", e1);
-      log.warn("Attempting to find random one.");
-
-      try {
-        List<String> cspNames = Arrays.stream(Security.getProviders()).map(Provider::getName)
-            .collect(Collectors.toList());
-        String algName = null;
-        for (String cspName : cspNames) {
-          Optional<String> optional = Security.getProvider(cspName).getServices().stream()
-              .filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
-              .map(Service::getAlgorithm).filter(this::isValidServiceName).findFirst();
-          if (optional.isPresent()) {
-            algName = optional.get();
-            break;
-          }
-        }
-        assert algName != null;
-        tmp = MessageDigest.getInstance(algName);
-        log.info("Default message-digest '{}' - provider '{}' ", tmp.getAlgorithm(),
-            tmp.getProvider().getName());
-      } catch (Exception e2) {
-        log.error("Failed to find random message-digest to all CSP.", e2);
-      }
-    }
-    updateServiceInfo(tmp);
-    return tmp;
-  }
-
-  @Override
-  protected MessageDigest getService(String serviceName) throws ServiceException {
-    try {
-      MessageDigest tmp = MessageDigest.getInstance(serviceName);
+       tmp = MessageDigest.getInstance(serviceName);
       log.info("Selected message-digest '{}' - provider '{}' ", tmp.getAlgorithm(),
           tmp.getProvider().getName());
-      return tmp;
     } catch (Exception e) {
       log.error("Failed to instantiate message-digest service '{}'", serviceName);
     }
-    return null;
+    return Optional.ofNullable(tmp);
   }
 
   @Override
@@ -228,12 +190,13 @@ public class DigestTab extends ServiceTab<MessageDigest> {
     if (StringUtils.isEmpty(messageDigestName)) {
       return;
     }
-    this.messageDigest = getService(messageDigestName);
-    this.updateServiceInfo(messageDigest);
+    this.optionalMessageDigest = getSelectedMessageDigest(messageDigestName);
+    this.updateServiceView();
   }
 
-  private void updateServiceInfo(MessageDigest messageDigest) {
-    if (messageDigest != null) {
+  private void updateServiceView() {
+    if (optionalMessageDigest.isPresent()) {
+      MessageDigest messageDigest=optionalMessageDigest.get();
       this.infoBox.getChildren().remove(0);
       this.infoBox.getChildren().add(new Label(
           "Hash algorithm : " + messageDigest.getAlgorithm() + " , length : " + messageDigest.getDigestLength()
@@ -250,11 +213,12 @@ public class DigestTab extends ServiceTab<MessageDigest> {
 
     @Override
     public void handle(Event event) {
-      if (StringUtils.isEmpty(messageTextArea.getText())) {
+      if (optionalMessageDigest.isEmpty()) {
         return;
       }
       try {
-        String input = messageTextArea.getText();
+        MessageDigest messageDigest=optionalMessageDigest.get();
+        String input =  StringUtils.isEmpty(messageTextArea.getText())? StringUtils.EMPTY:messageTextArea.getText();
         byte[] inputDigested = messageDigest.digest(input.getBytes());
         log.info("Digested message '{}', digest '{}'", input, new String(inputDigested));
 

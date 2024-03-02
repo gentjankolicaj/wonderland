@@ -51,8 +51,8 @@ public class CipherTab extends ServiceTab<Cipher> {
   private final HBox infoBox = new HBox();
   private final TextArea plainTextArea = new TextArea();
   private final TextArea cipherTextArea = new TextArea();
-  private Cipher encryptCipher = getDefaultService();
-  private Cipher decryptCipher = getDefaultService();
+  private Optional<Cipher> optionalEncryptCipher =Optional.empty();
+  private Optional<Cipher> optionalDecryptCipher =Optional.empty();
   private boolean cipherStateStale = true;
   private KeyPane<?> keyPane;
   private BorderPane wrapperKeyPane;
@@ -76,51 +76,16 @@ public class CipherTab extends ServiceTab<Cipher> {
   }
 
 
-  @Override
-  protected Cipher getDefaultService() {
-    Cipher tmp = null;
+  protected Optional<Cipher> getSelectedCipher(String serviceName) throws ServiceException {
+    Cipher tmp=null;
     try {
-      tmp = Cipher.getInstance("Vigenere", "Alice");
-      log.info("Default cipher '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
-    } catch (Exception e1) {
-      log.warn("Error finding default  cipher 'Vigenere' - Alice.", e1);
-      log.warn("Attempting to find random one.");
-
-      try {
-        List<String> cspNames = Arrays.stream(Security.getProviders()).map(Provider::getName)
-            .collect(Collectors.toList());
-        String transformationName = null;
-        for (String cspName : cspNames) {
-          Optional<String> optional = Security.getProvider(cspName).getServices().stream()
-              .filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
-              .map(Service::getAlgorithm).filter(this::isValidServiceName).findFirst();
-          if (optional.isPresent()) {
-            transformationName = optional.get();
-            break;
-          }
-        }
-        assert transformationName != null;
-        tmp = Cipher.getInstance(transformationName);
-        log.info("Default cipher '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
-      } catch (Exception e2) {
-        log.error("Failed to find random cipher to all CSP.", e2);
-      }
-    }
-    updateServiceInfo(tmp);
-    return tmp;
-  }
-
-  @Override
-  protected Cipher getService(String serviceName) throws ServiceException {
-    try {
-      Cipher tmp = Cipher.getInstance(serviceName);
+      tmp= Cipher.getInstance(serviceName);
       log.info("Selected cipher '{}' - provider '{}' ", tmp.getAlgorithm(),
           tmp.getProvider().getName());
-      return tmp;
     } catch (Exception e) {
       log.error("Failed to instantiate cipher service '{}'", serviceName);
     }
-    return null;
+    return Optional.ofNullable(tmp);
   }
 
   private void staleCipherState() {
@@ -129,16 +94,18 @@ public class CipherTab extends ServiceTab<Cipher> {
 
   private void cipherInit() throws InvalidKeyException {
     if (this.cipherStateStale) {
+      Cipher encryptCipher=optionalEncryptCipher.get();
+      Cipher decryptCipher=optionalDecryptCipher.get();
       //init encrypt cipher
       try {
-        this.encryptCipher.init(Cipher.ENCRYPT_MODE, keyPane.getCipherKey());
+        encryptCipher.init(Cipher.ENCRYPT_MODE, keyPane.getCipherKey());
       } catch (Exception e) {
         log.error("Failed to init encrypt-cipher.", e);
         throw e;
       }
       //init decrypt cipher
       try {
-        this.decryptCipher.init(Cipher.DECRYPT_MODE, keyPane.getCipherKey());
+        decryptCipher.init(Cipher.DECRYPT_MODE, keyPane.getCipherKey());
       } catch (Exception e) {
         log.error("Failed to init decrypt-cipher.", e);
         throw e;
@@ -149,8 +116,9 @@ public class CipherTab extends ServiceTab<Cipher> {
     }
   }
 
-  protected void updateServiceInfo(Cipher cipher) {
-    if (cipher != null) {
+  protected void updateServiceView() {
+    if (optionalEncryptCipher.isPresent()) {
+      Cipher cipher=optionalEncryptCipher.get();
       if(!infoBox.getChildren().isEmpty()) {
         this.infoBox.getChildren().remove(0);
         this.infoBox.getChildren().add(new Label(
@@ -225,10 +193,10 @@ public class CipherTab extends ServiceTab<Cipher> {
     if (StringUtils.isEmpty(cipherName)) {
       return;
     }
-    this.encryptCipher = getService(cipherName);
-    this.decryptCipher = getService(cipherName);
+    this.optionalEncryptCipher = getSelectedCipher(cipherName);
+    this.optionalDecryptCipher = getSelectedCipher(cipherName);
     this.staleCipherState();
-    this.updateServiceInfo(encryptCipher);
+    this.updateServiceView();
     this.updateKeyPane(cipherName);
   }
 
@@ -341,6 +309,7 @@ public class CipherTab extends ServiceTab<Cipher> {
       try {
         //init cipher
         cipherInit();
+        Cipher encryptCipher=optionalEncryptCipher.get();
 
         String plaintext = plainTextArea.getText();
         byte[] ciphertext = encryptCipher.doFinal(plaintext.getBytes());
@@ -367,7 +336,7 @@ public class CipherTab extends ServiceTab<Cipher> {
       try {
         //init cipher
         cipherInit();
-
+        Cipher decryptCipher=optionalDecryptCipher.get();
         String ciphertext = cipherTextArea.getText();
         byte[] plaintext = decryptCipher.doFinal(ciphertext.getBytes());
         plainTextArea.clear();

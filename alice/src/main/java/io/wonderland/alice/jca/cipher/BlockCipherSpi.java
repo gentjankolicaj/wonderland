@@ -21,19 +21,16 @@ public abstract class BlockCipherSpi extends CipherSpi {
   private final BlockCipher blockCipher;
   private AlgorithmParameters algParams;
   private byte[] iv;
-  private int ivSize;
 
   public BlockCipherSpi(BlockCipher blockCipher) {
     this.blockCipher = blockCipher;
     this.iv = org.apache.commons.lang3.ArrayUtils.EMPTY_BYTE_ARRAY;
-    this.ivSize = 0;
   }
 
 
   public BlockCipherSpi(BlockCipher blockCipher, byte[] iv) {
     this.blockCipher = blockCipher;
     this.iv = iv;
-    this.ivSize = iv.length;
   }
 
   @Override

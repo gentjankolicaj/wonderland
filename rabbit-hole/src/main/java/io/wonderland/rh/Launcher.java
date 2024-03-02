@@ -1,6 +1,6 @@
 package io.wonderland.rh;
 
-public class Runner {
+public class Launcher {
 
 
   public static void main(String[] args){

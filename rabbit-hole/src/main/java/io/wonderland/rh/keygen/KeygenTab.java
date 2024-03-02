@@ -2,6 +2,9 @@ package io.wonderland.rh.keygen;
 
 import io.wonderland.rh.common.ServiceTab;
 import io.wonderland.rh.exception.ServiceException;
+import java.io.File;
+import java.io.OutputStream;
+import java.security.Key;
 import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
@@ -10,6 +13,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -21,26 +26,30 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javax.crypto.KeyGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class KeygenTab extends ServiceTab<KeyGenerator> {
 
+  private static final String DEFAULT_SECRET_KEY_FILE_NAME = "secret_key";
+  private static final String DEFAULT_PRIVATE_KEY_FILENAME = "private_key";
+  public static final String DEFAULT_PUBLIC_KEY_FILENAME = "public_key";
+  public static final String KEYGEN_ALGORITHM = "Keygen algorithm: ";
   private final HBox infoBox = new HBox();
-
   private BorderPane keyPane;
-  private Object generator;
+  private Optional<Object> optionalGen=Optional.empty();
 
-  public KeygenTab(Stage stage,String title, String... serviceTypes) {
+  public KeygenTab(Stage stage, String title, String... serviceTypes) {
     super(stage, title, serviceTypes);
 
     SplitPane splitPane = new SplitPane();
@@ -58,15 +67,9 @@ public class KeygenTab extends ServiceTab<KeyGenerator> {
     this.setContent(splitPane);
   }
 
-  @Override
-  protected KeyGenerator getDefaultService() {
-    return null;
-  }
-
-  @Override
-  protected KeyGenerator getService(String serviceName) throws ServiceException {
+  protected KeyGenerator getKeyGenerator(String cspName, String serviceName) throws ServiceException {
     try {
-      KeyGenerator tmp = KeyGenerator.getInstance(serviceName);
+      KeyGenerator tmp = KeyGenerator.getInstance(serviceName, cspName);
       log.info("Selected KeyGenerator '{}' - provider '{}' ", tmp.getAlgorithm(),
           tmp.getProvider().getName());
       return tmp;
@@ -77,22 +80,9 @@ public class KeygenTab extends ServiceTab<KeyGenerator> {
   }
 
 
-  protected KeyGenerator getKeyGenerator(String cspName,String serviceName) throws ServiceException {
+  protected KeyPairGenerator getKeyPairGenerator(String cspName, String serviceName) throws ServiceException {
     try {
-      KeyGenerator tmp = KeyGenerator.getInstance(serviceName,cspName);
-      log.info("Selected KeyGenerator '{}' - provider '{}' ", tmp.getAlgorithm(),
-          tmp.getProvider().getName());
-      return tmp;
-    } catch (Exception e) {
-      log.error("Failed to instantiate KeyGenerator service '{}'", serviceName);
-    }
-    return null;
-  }
-
-
-protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName) throws ServiceException{
-    try {
-      KeyPairGenerator tmp = KeyPairGenerator.getInstance(serviceName,cspName);
+      KeyPairGenerator tmp = KeyPairGenerator.getInstance(serviceName, cspName);
       log.info("Selected KeyPairGenerator '{}' - provider '{}' ", tmp.getAlgorithm(),
           tmp.getProvider().getName());
       return tmp;
@@ -102,13 +92,16 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
     return null;
   }
 
-  private Object getService(String cspName,String serviceType,String serviceName){
-    if(serviceType.equalsIgnoreCase("KeyPairGenerator"))
-      return getKeyPairGenerator(cspName,serviceName);
-    else if(serviceType.equalsIgnoreCase("KeyGenerator"))
-      return getKeyGenerator(cspName,serviceName);
+  private Optional<Object> getSelectedKeygen(String cspName, String serviceType, String serviceName) {
+    if (StringUtils.isEmpty(serviceType)) {
+      return Optional.empty();
+    }
+    if (serviceType.equalsIgnoreCase("KeyPairGenerator"))
+      return Optional.ofNullable(getKeyPairGenerator(cspName, serviceName));
+    else if (serviceType.equalsIgnoreCase("KeyGenerator"))
+      return Optional.ofNullable(getKeyGenerator(cspName, serviceName));
     else
-      return null;
+      return Optional.empty();
   }
 
   @Override
@@ -125,19 +118,19 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
     rootItem.setExpanded(true);
 
     //Service nodes (KeyGenerator & KeyPairGenerator)
-    List<TreeItem<String>> serviceNodes=getServiceNodes();
+    List<TreeItem<String>> serviceNodes = getServiceNodes();
 
-    for(TreeItem<String> serviceNode: serviceNodes) {
+    for (TreeItem<String> serviceNode : serviceNodes) {
 
       //Cryptographic Service Provider (CSP) nodes
       List<TreeItem<String>> cspNodes = getCSPNodes();
 
       //Populate CSP node with correct cipher algorithm name
       for (TreeItem<String> cspNode : cspNodes) {
-        List<TreeItem<String>> keygenNodes=getKeygenNodes(cspNode.getValue(),serviceNode.getValue());
-        if(CollectionUtils.isNotEmpty(keygenNodes)) {
+        List<TreeItem<String>> keygenNodes = getKeygenNodes(cspNode.getValue(), serviceNode.getValue());
+        if (CollectionUtils.isNotEmpty(keygenNodes)) {
           cspNode.getChildren().addAll(keygenNodes);
-           serviceNode.getChildren().add(cspNode);
+          serviceNode.getChildren().add(cspNode);
         }
       }
     }
@@ -156,7 +149,7 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
   }
 
 
-  private List<TreeItem<String>> getServiceNodes(){
+  private List<TreeItem<String>> getServiceNodes() {
     return Arrays.stream(serviceTypes).map(TreeItem::new).collect(Collectors.toList());
   }
 
@@ -167,7 +160,7 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
         .collect(Collectors.toList());
   }
 
-  private List<TreeItem<String>> getKeygenNodes(String cspName,String serviceName) {
+  private List<TreeItem<String>> getKeygenNodes(String cspName, String serviceName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
@@ -187,13 +180,13 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
 
     rootSplitter.getItems().add(this.keyPane);
     rootSplitter.setDividerPositions(0.70f, 0.30f);
-    rootSplitter.setPadding( new Insets(10,10,10,10));
+    rootSplitter.setPadding(new Insets(10, 10, 10, 10));
     return rootSplitter;
   }
 
   private VBox getMiscBox() {
     final VBox miscBox = new VBox();
-    miscBox.setPadding(new Insets(5,5,5,5));
+    miscBox.setPadding(new Insets(5, 5, 5, 5));
     miscBox.setSpacing(10);
 
     //info labels
@@ -207,45 +200,46 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
   }
 
 
-
   private HBox getButtonBox() {
     HBox hBox = new HBox();
 
-    Button keygenBtn=new Button("keygen");
+    Button keygenBtn = new Button("keygen");
     keygenBtn.setPrefWidth(120);
     keygenBtn.setOnMousePressed(new KeygenBtnReleased());
 
-    Button exportBtn=new Button("export");
+    Button exportBtn = new Button("export");
     exportBtn.setPrefWidth(120);
     exportBtn.setOnMousePressed(new ExportBtnReleased());
 
     hBox.setSpacing(10);
-    hBox.getChildren().addAll(keygenBtn,exportBtn);
+    hBox.getChildren().addAll(keygenBtn, exportBtn);
     return hBox;
   }
 
 
   private void selectService(TreeItem<String> node) {
-    if(node.isLeaf()) {
-      this.generator = getService(node.getParent().getValue(), node.getParent().getParent().getValue(),node.getValue());
-      this.updateServiceView(generator);
+    if (node.isLeaf()) {
+      this.optionalGen = getSelectedKeygen(node.getParent().getValue(), node.getParent().getParent().getValue(), node.getValue());
+      this.updateServiceView();
     }
   }
 
-  private void updateServiceView(Object service) {
-    if (!infoBox.getChildren().isEmpty()) {
-      this.infoBox.getChildren().remove(0);
-    }
-    if (service != null) {
-      if(service instanceof KeyGenerator){
+  private void updateServiceView() {
+    if (optionalGen.isPresent()) {
+      Object service = optionalGen.get();
+      if (!infoBox.getChildren().isEmpty()) {
+        this.infoBox.getChildren().remove(0);
+      }
+      if (service instanceof KeyGenerator) {
         this.keyPane.setCenter(new KeyGeneratorPane());
-        this.infoBox.getChildren().add(new Label("Keygen algorithm: "+getKeyGeneratorDetails((KeyGenerator) service)));
-      }else if(service instanceof KeyPairGenerator){
+        this.infoBox.getChildren().add(new Label(KEYGEN_ALGORITHM + getKeyGeneratorDetails((KeyGenerator) service)));
+      } else if (service instanceof KeyPairGenerator) {
         this.keyPane.setCenter(new KeyPairGeneratorPane());
-        this.infoBox.getChildren().add(new Label("Keygen algorithm: "+getKeyPairGeneratorDetails((KeyPairGenerator) service)));
+        this.infoBox.getChildren()
+            .add(new Label(KEYGEN_ALGORITHM + getKeyPairGeneratorDetails((KeyPairGenerator) service)));
       }
     } else {
-      this.infoBox.getChildren().add(new Label("Keygen algorithm: "));
+      this.infoBox.getChildren().add(new Label(KEYGEN_ALGORITHM));
     }
   }
 
@@ -280,22 +274,24 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
     * Generate key or key pair
     */
    private void performKeygen(){
-     if(generator instanceof KeyGenerator){
-       KeyGenerator keyGenerator=(KeyGenerator) generator;
-       KeyGeneratorPane keyGeneratorPane=(KeyGeneratorPane) keyPane.getCenter();
-       keyGeneratorPane.update(keyGenerator.generateKey());
-     }else if( generator instanceof KeyPairGenerator){
-       KeyPairGenerator keyPairGenerator=(KeyPairGenerator) generator;
-       KeyPairGeneratorPane keyPairGeneratorPane=(KeyPairGeneratorPane) keyPane.getCenter();
-       keyPairGeneratorPane.update(keyPairGenerator.generateKeyPair());
-     }else{
-       log.warn("No 'SecretKey' or 'KeyPair' generated.");
+     if(optionalGen.isPresent()) {
+       Object generator= optionalGen.get();
+       if (generator instanceof KeyGenerator) {
+         KeyGenerator keyGenerator = (KeyGenerator) generator;
+         KeyGeneratorPane keyGeneratorPane = (KeyGeneratorPane) keyPane.getCenter();
+         keyGeneratorPane.update(keyGenerator.generateKey());
+       } else if (generator instanceof KeyPairGenerator) {
+         KeyPairGenerator keyPairGenerator = (KeyPairGenerator) generator;
+         KeyPairGeneratorPane keyPairGeneratorPane = (KeyPairGeneratorPane) keyPane.getCenter();
+         keyPairGeneratorPane.update(keyPairGenerator.generateKeyPair());
+       } else {
+         log.warn("No 'SecretKey' or 'KeyPair' generated.");
+       }
      }
    }
   }
 
   private class ExportBtnReleased implements EventHandler<Event>{
-
     @Override
     public void handle(Event event){
       try{
@@ -305,16 +301,35 @@ protected KeyPairGenerator getKeyPairGenerator(String cspName,String serviceName
       }
     }
 
-    private void performExport(){
-      if(generator instanceof KeyGenerator){
-        KeyGeneratorPane keyGeneratorPane=(KeyGeneratorPane) keyPane.getCenter();
-      }else if( generator instanceof KeyPairGenerator){
-        KeyPairGeneratorPane keyPairGeneratorPane=(KeyPairGeneratorPane) keyPane.getCenter();
+    private void performExport() {
+      if(optionalGen.isPresent()) {
+        DirectoryChooser dirChooser = new DirectoryChooser();
+        dirChooser.setTitle("Export data");
+        final File file = dirChooser.showDialog(stage);
+          Object generator= optionalGen.get();
+          if (generator instanceof KeyGenerator) {
+          KeyGeneratorPane keyGeneratorPane = (KeyGeneratorPane) keyPane.getCenter();
+          CompletableFuture.runAsync(() -> exportKey(keyGeneratorPane.getSecretKey(), file.getPath(),DEFAULT_SECRET_KEY_FILE_NAME));
+        } else if (generator instanceof KeyPairGenerator) {
+          KeyPairGeneratorPane keyPairGeneratorPane = (KeyPairGeneratorPane) keyPane.getCenter();
+          CompletableFuture.runAsync(() -> {
+            exportKey(keyPairGeneratorPane.getKeyPair().getPrivate(), file.getPath(),DEFAULT_PRIVATE_KEY_FILENAME);
+            exportKey(keyPairGeneratorPane.getKeyPair().getPublic(), file.getPath(), DEFAULT_PUBLIC_KEY_FILENAME);
+          });
+        }
+      }
+    }
+
+    private void exportKey(Key key, String filePath,String filename) {
+      try (OutputStream os = FileUtils.openOutputStream(new File(filePath, filename))) {
+        os.write(key.getEncoded());
+        os.flush();
+      } catch (Exception e) {
+        //do nothing yet
       }
     }
 
   }
-
 
 
 }
