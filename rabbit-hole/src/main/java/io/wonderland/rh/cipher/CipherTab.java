@@ -1,61 +1,33 @@
 package io.wonderland.rh.cipher;
 
 
-import io.wonderland.rh.cipher.key.DefaultKeyPane;
 import io.wonderland.rh.common.ServiceTab;
-import io.wonderland.rh.common.TextPane;
-import io.wonderland.rh.exception.ServiceException;
-import java.io.File;
-import java.io.OutputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javax.crypto.Cipher;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 
 @Slf4j
 public class CipherTab extends ServiceTab<Cipher> {
 
-  private final HBox infoBox = new HBox();
-  private final TextArea plainTextArea = new TextArea();
-  private final TextArea cipherTextArea = new TextArea();
-  private Optional<Cipher> optionalEncryptCipher =Optional.empty();
-  private Optional<Cipher> optionalDecryptCipher =Optional.empty();
-  private boolean cipherStateStale = true;
-  private KeyPane<?> keyPane;
-  private BorderPane wrapperKeyPane;
+  private ScrollPane scrollContent=new ScrollPane();
 
   public CipherTab(Stage stage, String title, String serviceType) {
     super(stage, title, serviceType);
@@ -66,72 +38,15 @@ public class CipherTab extends ServiceTab<Cipher> {
     final StackPane stackPane = new StackPane();
     stackPane.getChildren().add(createCiphersPane());
 
-    final BorderPane borderPane = new BorderPane();
-    borderPane.setCenter(createCipherIOPane());
+    this.scrollContent.setContent(getWelcomePane());
 
-    splitPane.getItems().addAll(stackPane, borderPane);
-    splitPane.setDividerPositions(0.3f, 0.6f);
+    splitPane.getItems().addAll(stackPane, scrollContent);
+    splitPane.setDividerPositions(0.3f, 0.7f);
 
     this.setContent(splitPane);
   }
 
 
-  protected Optional<Cipher> getSelectedCipher(String serviceName) throws ServiceException {
-    Cipher tmp=null;
-    try {
-      tmp= Cipher.getInstance(serviceName);
-      log.info("Selected cipher '{}' - provider '{}' ", tmp.getAlgorithm(),
-          tmp.getProvider().getName());
-    } catch (Exception e) {
-      log.error("Failed to instantiate cipher service '{}'", serviceName);
-    }
-    return Optional.ofNullable(tmp);
-  }
-
-  private void staleCipherState() {
-    this.cipherStateStale = true;
-  }
-
-  private void cipherInit() throws InvalidKeyException {
-    if (this.cipherStateStale) {
-      Cipher encryptCipher=optionalEncryptCipher.get();
-      Cipher decryptCipher=optionalDecryptCipher.get();
-      //init encrypt cipher
-      try {
-        encryptCipher.init(Cipher.ENCRYPT_MODE, keyPane.getCipherKey());
-      } catch (Exception e) {
-        log.error("Failed to init encrypt-cipher.", e);
-        throw e;
-      }
-      //init decrypt cipher
-      try {
-        decryptCipher.init(Cipher.DECRYPT_MODE, keyPane.getCipherKey());
-      } catch (Exception e) {
-        log.error("Failed to init decrypt-cipher.", e);
-        throw e;
-      }
-
-      //set a stale state to false, because ciphers are initialized with last keys
-      this.cipherStateStale = false;
-    }
-  }
-
-  protected void updateServiceView() {
-    if (optionalEncryptCipher.isPresent()) {
-      Cipher cipher=optionalEncryptCipher.get();
-      if(!infoBox.getChildren().isEmpty()) {
-        this.infoBox.getChildren().remove(0);
-        this.infoBox.getChildren().add(new Label(
-            "Cipher: " + cipher.getAlgorithm() + " , block-size : " + cipher.getBlockSize() + " , CSP: "
-                + cipher.getProvider().getName()));
-      }
-    } else {
-      if (!infoBox.getChildren().isEmpty()) {
-        this.infoBox.getChildren().remove(0);
-      }
-      this.infoBox.getChildren().add(new Label("Cipher: ?"));
-    }
-  }
 
   @Override
   protected boolean isValidServiceName(String name) {
@@ -193,216 +108,34 @@ public class CipherTab extends ServiceTab<Cipher> {
     if (StringUtils.isEmpty(cipherName)) {
       return;
     }
-    this.optionalEncryptCipher = getSelectedCipher(cipherName);
-    this.optionalDecryptCipher = getSelectedCipher(cipherName);
-    this.staleCipherState();
-    this.updateServiceView();
-    this.updateKeyPane(cipherName);
+    this.updateCipherPane(cipherName);
   }
 
-  private void updateKeyPane(String cipher) {
-    Class<?> keyPaneClass = CipherConstants.getKeyPaneMappings().computeIfAbsent(cipher, k -> DefaultKeyPane.class);
+
+
+  private void updateCipherPane(String cipherName){
+    //Update cipher pane
     try {
-      Consumer<?> consumer = s -> staleCipherState();
-      Constructor<?> constructor = keyPaneClass.getDeclaredConstructor(Consumer.class);
-      KeyPane<?> newKeyPane = (KeyPane<?>) constructor.newInstance(consumer);
-
-      //remove old key pane
-      this.wrapperKeyPane.getChildren().remove(this.wrapperKeyPane.getCenter());
-
-      //set new key pane
-      this.keyPane = newKeyPane;
-      this.wrapperKeyPane.setCenter(newKeyPane);
-    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-      throw new ServiceException("Failed to changed KeyGeneratorPane", e);
+      FlowPane flowPane = new FlowPane();
+      flowPane.getChildren().addAll(new CipherPane(this.stage, cipherName));
+      this.scrollContent.setContent(flowPane);
+    }catch (Exception e){
+      log.error(e.getMessage());
+      this.scrollContent.setContent(new Label(e.getMessage()));
     }
   }
 
-
-  private SplitPane createCipherIOPane() {
-    SplitPane rootSplitter = new SplitPane();
-    rootSplitter.setOrientation(Orientation.VERTICAL);
-
-    BorderPane mainPane = new BorderPane();
-    mainPane.setTop(getMiscBox());
-    mainPane.setCenter(getTextBox());
-
-    rootSplitter.getItems().add(mainPane);
-    rootSplitter.setDividerPositions(0.70f, 0.30f);
-    return rootSplitter;
-  }
-
-
-  private HBox getTextBox() {
-    //Message box for plain & cipher text
-    HBox messageBox = new HBox();
-    messageBox.getChildren()
-        .addAll(new TextPane("Plaintext", plainTextArea), new TextPane("Ciphertext", cipherTextArea));
-    return messageBox;
-  }
-
-  private VBox getMiscBox() {
-    VBox miscBox = new VBox();
-    miscBox.setSpacing(10);
-
-    //info labels
-    this.infoBox.getChildren().add(new Label("Cipher: ?"));
-
-    //wrapper pane (cipher key + buttons)
-    this.wrapperKeyPane = getWrapperKeyPane();
-
-    miscBox.getChildren().addAll(this.infoBox, this.wrapperKeyPane);
-    return miscBox;
-  }
-
-  private BorderPane getWrapperKeyPane() {
-    //Instantiate wrapper key pane
-    BorderPane borderPane = new BorderPane();
-
-    //create button box
-    VBox buttonBox = getButtonsBox();
-
-    //create default key pane
-    this.keyPane = new DefaultKeyPane<>("default", s -> staleCipherState());
-
-    //Assign children to wrapper pane
-    borderPane.setCenter(keyPane);
-    borderPane.setLeft(buttonBox);
-    return borderPane;
-  }
-
-  private VBox getButtonsBox() {
-    VBox btnBox = new VBox();
-
-    Button encryptBtn = new Button("encrypt");
-    Button decryptBtn = new Button("decrypt");
-    Button clearBtn = new Button("clear");
-    Button exportBtn = new Button("export");
-
-    //set button width
-    encryptBtn.setPrefWidth(120);
-    decryptBtn.setPrefWidth(120);
-    clearBtn.setPrefWidth(120);
-    exportBtn.setPrefWidth(120);
-
-    //set listeners
-    encryptBtn.setOnMousePressed(new EncryptBtnReleased());
-    decryptBtn.setOnMousePressed(new DecryptBtnReleased());
-    clearBtn.setOnMousePressed(new ClearBtnReleased());
-    exportBtn.setOnMousePressed(new ExportBtnPressed());
-
-    btnBox.setSpacing(10);
-    btnBox.getChildren().addAll(encryptBtn, decryptBtn, clearBtn, exportBtn);
-    return btnBox;
+  private FlowPane getWelcomePane(){
+    FlowPane flowPane=new FlowPane();
+    flowPane.getChildren().add(new Label("Welcome to cipher menu.Please select a cipher from left..."));
+    return flowPane;
   }
 
 
 
-  class EncryptBtnReleased implements EventHandler<Event> {
 
 
-    @Override
-    public void handle(Event event) {
-      if (StringUtils.isEmpty(plainTextArea.getText())) {
-        return;
-      }
-      try {
-        //init cipher
-        cipherInit();
-        Cipher encryptCipher=optionalEncryptCipher.get();
 
-        String plaintext = plainTextArea.getText();
-        byte[] ciphertext = encryptCipher.doFinal(plaintext.getBytes());
 
-        //update gui
-        cipherTextArea.clear();
-        cipherTextArea.setText(new String(ciphertext, StandardCharsets.UTF_8));
-
-        log.info("" + keyPane.getCipherKey());
-        log.info("Ciphertext " + new String(ciphertext));
-      } catch (Exception e) {
-        log.error(e.getMessage());
-      }
-    }
-  }
-
-  class DecryptBtnReleased implements EventHandler<Event> {
-
-    @Override
-    public void handle(Event event) {
-      if (StringUtils.isEmpty(cipherTextArea.getText())) {
-        return;
-      }
-      try {
-        //init cipher
-        cipherInit();
-        Cipher decryptCipher=optionalDecryptCipher.get();
-        String ciphertext = cipherTextArea.getText();
-        byte[] plaintext = decryptCipher.doFinal(ciphertext.getBytes());
-        plainTextArea.clear();
-        plainTextArea.setText(new String(plaintext, StandardCharsets.UTF_8));
-
-        log.info("" + keyPane.getCipherKey());
-        log.info("Plaintext " + new String(plaintext));
-      } catch (Exception e) {
-        log.error(e.getMessage());
-      }
-    }
-  }
-
-  class ClearBtnReleased implements EventHandler<Event> {
-
-    @Override
-    public void handle(Event event) {
-      CompletableFuture.runAsync(() -> {
-        keyPane.removeKey();
-        plainTextArea.clear();
-        cipherTextArea.clear();
-      });
-
-    }
-  }
-
-  class ExportBtnPressed implements EventHandler<Event> {
-
-    @Override
-    public void handle(Event event) {
-      DirectoryChooser dirChooser = new DirectoryChooser();
-      dirChooser.setTitle("Export data");
-      final File file = dirChooser.showDialog(stage);
-      CompletableFuture.runAsync(() -> {
-        storeCipherKey(keyPane.getKey(), file.getPath());
-        storeInputText(plainTextArea.getText().getBytes(), file.getPath());
-        storeOutputText(cipherTextArea.getText().getBytes(), file.getPath());
-      });
-    }
-
-    private void storeCipherKey(Key key, String filePath) {
-      try (OutputStream os = FileUtils.openOutputStream(new File(filePath, "rh_cipher.key"))) {
-        os.write(key.getEncoded());
-        os.flush();
-      } catch (Exception e) {
-        //do nothing yet
-      }
-    }
-
-    private void storeInputText(byte[] inputContent, String filePath) {
-      try (OutputStream os = FileUtils.openOutputStream(new File(filePath, "rh_plaintext"))) {
-        os.write(inputContent);
-        os.flush();
-      } catch (Exception e) {
-        //do nothing
-      }
-    }
-
-    private void storeOutputText(byte[] outputContent, String filePath) {
-      try (OutputStream os = FileUtils.openOutputStream(new File(filePath, "rh_ciphertext"))) {
-        os.write(outputContent);
-        os.flush();
-      } catch (Exception e) {
-        //do nothing
-      }
-    }
-  }
 
 }

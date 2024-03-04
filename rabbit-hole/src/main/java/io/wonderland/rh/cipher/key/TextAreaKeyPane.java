@@ -1,7 +1,6 @@
 package io.wonderland.rh.cipher.key;
 
 import io.wonderland.alice.crypto.cipher.key.ByteArrayKey;
-import io.wonderland.rh.cipher.KeyPane;
 import java.security.Key;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -14,7 +13,7 @@ import javafx.scene.text.FontWeight;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class TextAreaKeyPane<T extends Key> extends KeyPane<T> {
+public  class TextAreaKeyPane<T extends Key> extends AbstractKeyPane<T> {
 
   protected String keyLabel;
   protected TextArea textArea = new TextArea();
@@ -54,23 +53,23 @@ public abstract class TextAreaKeyPane<T extends Key> extends KeyPane<T> {
     return label;
   }
 
-  @Override
-  protected String getKeyLabel() {
+
+ public String getKeyLabel() {
     return this.keyLabel;
   }
 
-  @Override
-  protected T getCipherKey() {
+
+ public T getCipherKey() {
     throw new UnsupportedOperationException("Unimplemented.");
   }
 
-  @Override
-  protected Key getKey() {
+
+ public Key getKey() {
     return new ByteArrayKey(textArea.getText().getBytes());
   }
 
-  @Override
-  protected boolean removeKey() {
+
+ public boolean removeKey() {
     this.textArea.clear();
     return true;
   }

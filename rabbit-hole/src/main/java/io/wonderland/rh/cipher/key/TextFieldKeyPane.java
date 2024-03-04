@@ -1,6 +1,5 @@
 package io.wonderland.rh.cipher.key;
 
-import io.wonderland.rh.cipher.KeyPane;
 import java.security.Key;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 
 @Slf4j
-public abstract class TextFieldKeyPane<T extends Key> extends KeyPane<T> {
+public  class TextFieldKeyPane<T extends Key> extends AbstractKeyPane<T> {
 
   protected String keyLabel;
   protected VBox textFieldBox = new VBox();
@@ -75,29 +74,23 @@ public abstract class TextFieldKeyPane<T extends Key> extends KeyPane<T> {
   }
 
 
-  @Override
-  protected String getKeyLabel() {
+
+ public String getKeyLabel() {
     return this.keyLabel;
   }
 
-  @Override
-  protected T getCipherKey() {
-    throw new UnsupportedOperationException("Unimplemented.");
-  }
 
-  @Override
-  protected Key getKey() {
+ public T getCipherKey() {
     throw new UnsupportedOperationException("Unimplemented.");
   }
 
 
-  @Override
-  protected boolean removeKey() {
-    if (Objects.nonNull(this.textFieldMap)) {
-      this.textFieldMap.forEach((key, value) -> value.clear());
-    }
-    return true;
+ public Key getKey() {
+    throw new UnsupportedOperationException("Unimplemented.");
   }
 
-
+  @Override
+  public boolean removeKey() {
+    return false;
+  }
 }

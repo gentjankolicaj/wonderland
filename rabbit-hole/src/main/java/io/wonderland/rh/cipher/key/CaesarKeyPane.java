@@ -12,8 +12,7 @@ public final class CaesarKeyPane extends DefaultKeyPane<CaesarKey> {
     super(KEY_LABEL, cipherStateConsumer);
   }
 
-  @Override
-  protected CaesarKey getCipherKey() {
+   public CaesarKey getCipherKey() {
     return new CaesarKey(Integer.parseInt(textArea.getText()));
   }
 }

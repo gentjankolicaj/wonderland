@@ -12,8 +12,8 @@ public final class RailfenceKeyPane extends DefaultKeyPane<RailfenceKey> {
     super(KEY_LABEL, cipherStateConsumer);
   }
 
-  @Override
-  protected RailfenceKey getCipherKey() {
+
+ public RailfenceKey getKey() {
     return new RailfenceKey(Integer.parseInt(textArea.getText()));
   }
 }

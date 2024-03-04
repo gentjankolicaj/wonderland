@@ -15,13 +15,13 @@ public final class AffineKeyPane extends TextFieldKeyPane<AffineKey> {
     super(KEY_LABEL, cipherStateConsumer, Map.of(A, new TextField(), B, new TextField()));
   }
 
-  @Override
-  protected String getKeyLabel() {
+
+ public String getKeyLabel() {
     return KEY_LABEL;
   }
 
-  @Override
-  protected AffineKey getCipherKey() {
+
+ public AffineKey getKey() {
     TextField aTF = super.textFieldMap.get(A);
     TextField bTF = super.textFieldMap.get(B);
     return new AffineKey(Integer.parseInt(aTF.getText()), Integer.parseInt(bTF.getText()));
