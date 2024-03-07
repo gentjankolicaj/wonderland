@@ -48,9 +48,7 @@ public class CiphertextAnalysisPane extends BorderPane {
     private final Button freqAnalysisBtn = new Button("Freq analysis");
     private final Button mppAnalysisBtn = new Button("MPP analysis");
     private final Button icAnalysisBtn = new Button("IC analysis");
-    private final HTogglePane<RadioButton> ciphertextEncodingPane = new HTogglePane<>("Ciphertext encoding : ",10,
-        s->new RadioButton(s),Map.of("byte",()->{},
-        "char", ()->{},"int",()->{}));
+
     private final HTogglePane<RadioButton> langGraphPane = new HTogglePane<>("Character graph : ", 10,s->new RadioButton(s),
         Map.of("monograph",()->{}, "digraph",()->{},
         "trigraph", ()->{},"quadgraph",()->{}));
@@ -74,7 +72,7 @@ public class CiphertextAnalysisPane extends BorderPane {
           .addAll(getTitle("Language"), languageComboBox, freqAnalysisBtn, mppAnalysisBtn, icAnalysisBtn);
 
       this.setSpacing(10);
-      this.getChildren().addAll(langGraphPane, ciphertextEncodingPane, containerBox, ciphertextPane);
+      this.getChildren().addAll(langGraphPane, containerBox, ciphertextPane);
     }
 
     private Label getTitle(String title) {
@@ -110,7 +108,7 @@ public class CiphertextAnalysisPane extends BorderPane {
       @Override
       public void handle(Event event) {
         createIndexCoincidenceStage(languageComboBox.getValue(), langGraphPane.getSelectedToggle().getText(),
-            ciphertextEncodingPane.getSelectedToggle().getText(), ciphertextArea.getText());
+            null, ciphertextArea.getText());
       }
     }
 
@@ -119,7 +117,7 @@ public class CiphertextAnalysisPane extends BorderPane {
       @Override
       public void handle(Event event) {
         createMPPStage(languageComboBox.getValue(), langGraphPane.getSelectedToggle().getText(),
-            ciphertextEncodingPane.getSelectedToggle().getText(), ciphertextArea.getText());
+            null, ciphertextArea.getText());
       }
     }
 
@@ -129,7 +127,7 @@ public class CiphertextAnalysisPane extends BorderPane {
       @Override
       public void handle(Event event) {
         createFreqAnalysisStage(languageComboBox.getValue(), langGraphPane.getSelectedToggle().getText(),
-            ciphertextEncodingPane.getSelectedToggle().getText(), ciphertextArea.getText());
+           null, ciphertextArea.getText());
       }
     }
 

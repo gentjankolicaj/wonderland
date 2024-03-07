@@ -3,7 +3,7 @@ package io.wonderland.rh;
 import io.wonderland.alice.jca.AliceProvider;
 import io.wonderland.rh.cipher.CipherTab;
 import io.wonderland.rh.cryptanalysis.CryptanalysisTab;
-import io.wonderland.rh.digest.DigestTab;
+import io.wonderland.rh.hash.HashTab;
 import io.wonderland.rh.misc.MiscTab;
 import io.wonderland.rh.keygen.KeygenTab;
 import java.security.Security;
@@ -28,7 +28,7 @@ public class RabbitHoleApplication extends Application {
 
     CipherTab cipherTab = new CipherTab(primaryStage,"Crypto","Cipher");
     CryptanalysisTab cryptanalysisTab = new CryptanalysisTab(primaryStage);
-    DigestTab digestTab = new DigestTab(primaryStage,"Digest", "MessageDigest");
+    HashTab digestTab = new HashTab(primaryStage,"Hash", "MessageDigest");
     KeygenTab keygenTab=new KeygenTab(primaryStage,"Keygen","KeyGenerator","KeyPairGenerator");
     MiscTab miscTab = new MiscTab(primaryStage,"Misc");
 

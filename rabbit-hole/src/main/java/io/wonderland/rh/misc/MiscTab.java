@@ -3,23 +3,22 @@ package io.wonderland.rh.misc;
 import io.wonderland.rh.common.AbstractTab;
 import java.util.Optional;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+@Slf4j
 public class MiscTab extends AbstractTab {
 
-  private final HBox infoBox = new HBox();
-  private BorderPane miscPane=new BorderPane();
+  private final ScrollPane miscPaneWrapper =new ScrollPane();
   private Optional<Misc> optionalMisc=Optional.empty();
 
   public MiscTab(Stage stage,String title) {
@@ -31,10 +30,9 @@ public class MiscTab extends AbstractTab {
     final StackPane stackPane = new StackPane();
     stackPane.getChildren().add(createMiscPane());
 
-    final BorderPane borderPane = new BorderPane();
-    borderPane.setCenter(createMiscIOPane());
+    this.miscPaneWrapper.setContent(getWelcomePane());
 
-    splitPane.getItems().addAll(stackPane, borderPane);
+    splitPane.getItems().addAll(stackPane, miscPaneWrapper);
     splitPane.setDividerPositions(0.3f, 0.7f);
 
     this.setContent(splitPane);
@@ -51,7 +49,7 @@ public class MiscTab extends AbstractTab {
     TreeView<String> treeView = new TreeView<>(rootItem);
     treeView.getSelectionModel().selectedItemProperty()
         .addListener((ObservableValue<? extends TreeItem<String>> observableValue,
-            TreeItem<String> oldItem, TreeItem<String> newItem) -> selectService(newItem));
+            TreeItem<String> oldItem, TreeItem<String> newItem) -> selectMisc(newItem));
 
     StackPane cipherStackPane = new StackPane();
     cipherStackPane.getChildren().add(treeView);
@@ -59,10 +57,10 @@ public class MiscTab extends AbstractTab {
   }
 
 
-  private void selectService(TreeItem<String> node) {
+  private void selectMisc(TreeItem<String> node) {
     if(node.isLeaf()) {
       this.optionalMisc = getSelectedMisc(node.getValue());
-      this.updateServiceView();
+      this.updateContentPane();
     }
   }
 
@@ -79,55 +77,21 @@ public class MiscTab extends AbstractTab {
     return Optional.empty();
   }
 
-  private void updateServiceView() {
-    if(optionalMisc.isPresent()){
-    if (!infoBox.getChildren().isEmpty()) {
-      this.infoBox.getChildren().remove(0);
-    }
-     Misc misc=optionalMisc.get();
-      if(misc.equals(Misc.ENCODING)){
-        this.miscPane.setCenter(new EncodingPane());
-        this.infoBox.getChildren().add(new Label(" "));
-      }
-    } else {
-      this.infoBox.getChildren().add(new Label("Please choose on misc option on the left."));
+  private void updateContentPane() {
+    try {
+      this.miscPaneWrapper.setContent( new MiscPane(optionalMisc));
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      this.miscPaneWrapper.setContent(new Label(e.getMessage()));
     }
   }
 
-
-  private SplitPane createMiscIOPane() {
-    SplitPane rootSplitter = new SplitPane();
-    rootSplitter.setOrientation(Orientation.VERTICAL);
-
-    BorderPane mainPane = new BorderPane();
-    mainPane.setPadding(new Insets(10,10,10,10));
-
-    mainPane.setTop(getMiscBox());
-
-    rootSplitter.getItems().add(mainPane);
-    rootSplitter.setDividerPositions(0.70f, 0.30f);
-    return rootSplitter;
+  private Pane getWelcomePane(){
+    BorderPane pane=new BorderPane();
+    Label welcomeLbl=new Label("Welcome to misc.Please a misc from left...");
+    pane.setCenter(welcomeLbl);
+    return pane;
   }
-
-  private VBox getMiscBox() {
-    final VBox miscBox = new VBox();
-    miscBox.setPadding(new Insets(5,5,5,5));
-    miscBox.setSpacing(10);
-
-    //info labels
-    this.infoBox.getChildren().add(new Label("Please choose on misc option on the left."));
-
-    miscBox.getChildren().addAll(this.infoBox);
-    return miscBox;
-  }
-
-
-
-
-
-
-
-
 
 
 }

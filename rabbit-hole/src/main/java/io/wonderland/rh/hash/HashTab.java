@@ -1,51 +1,50 @@
-package io.wonderland.rh.cipher;
-
+package io.wonderland.rh.hash;
 
 import io.wonderland.rh.common.ServiceTab;
+import io.wonderland.rh.exception.ServiceException;
+import java.security.MessageDigest;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javax.crypto.Cipher;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-
 @Slf4j
-public class CipherTab extends ServiceTab<Cipher> {
+public class HashTab extends ServiceTab<MessageDigest> {
+  private final BorderPane hashPaneWrapper=new BorderPane();
+  private Optional<MessageDigest> messageDigest=Optional.empty();
 
-  private final ScrollPane cipherPaneWrapper =new ScrollPane();
-
-  public CipherTab(Stage stage, String title, String serviceType) {
+  public HashTab(Stage stage,String title, String serviceType) {
     super(stage, title, serviceType);
 
     SplitPane splitPane = new SplitPane();
 
     //stack pane
     final StackPane stackPane = new StackPane();
-    stackPane.getChildren().add(createCiphersPane());
+    stackPane.getChildren().add(createDigestsPane());
 
-    this.cipherPaneWrapper.setContent(getWelcomePane());
+    this.hashPaneWrapper.setCenter(getWelcomePane());
 
-    splitPane.getItems().addAll(stackPane, cipherPaneWrapper);
-    splitPane.setDividerPositions(0.3f, 0.7f);
+    splitPane.getItems().addAll(stackPane, hashPaneWrapper);
+    splitPane.setDividerPositions(0.3f, 0.6f);
 
     this.setContent(splitPane);
   }
-
 
 
   @Override
@@ -57,7 +56,7 @@ public class CipherTab extends ServiceTab<Cipher> {
     }
   }
 
-  private StackPane createCiphersPane() {
+  private StackPane createDigestsPane() {
     TreeItem<String> rootItem = new TreeItem<>("~/", null);
     rootItem.setExpanded(true);
 
@@ -66,19 +65,18 @@ public class CipherTab extends ServiceTab<Cipher> {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      List<TreeItem<String>> cipherNameNodes= getCipherNameNodes(cspNode.getValue());
-      if(CollectionUtils.isNotEmpty(cipherNameNodes)) {
-        cspNode.getChildren().addAll(cipherNameNodes);
-
+      List<TreeItem<String>> digestNameNodes=getDigestNameNodes(cspNode.getValue());
+      if(CollectionUtils.isNotEmpty(digestNameNodes)) {
+        cspNode.getChildren().addAll(digestNameNodes);
         //Add CSP nodes to parent
-        rootItem.getChildren().add(cspNode);
+        rootItem.getChildren().addAll(cspNode);
       }
     }
 
     TreeView<String> treeView = new TreeView<>(rootItem);
     treeView.getSelectionModel().selectedItemProperty()
         .addListener((ObservableValue<? extends TreeItem<String>> observableValue,
-            TreeItem<String> oldItem, TreeItem<String> newItem) -> selectCipher(newItem));
+            TreeItem<String> oldItem, TreeItem<String> newItem) -> selectMessageDigest(newItem));
 
     StackPane cipherStackPane = new StackPane();
     cipherStackPane.getChildren().add(treeView);
@@ -92,7 +90,7 @@ public class CipherTab extends ServiceTab<Cipher> {
         .collect(Collectors.toList());
   }
 
-  private List<TreeItem<String>> getCipherNameNodes(String cspName) {
+  private List<TreeItem<String>> getDigestNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
@@ -104,34 +102,31 @@ public class CipherTab extends ServiceTab<Cipher> {
   }
 
 
-  private void selectCipher(TreeItem<String> node) {
-    this.updateCipherPane(node);
+
+
+
+  private void selectMessageDigest(TreeItem<String> node) {
+    this.updateContentPane(node);
   }
 
-
-
-  private void updateCipherPane(TreeItem<String> node){
-    //Update cipher pane
+  private void updateContentPane(TreeItem<String> node) {
     try {
       if(!node.isLeaf()){
-        throw new IllegalArgumentException("Cipher not valid,please select a cipher.");
+        throw new IllegalArgumentException("Hash function not valid,please select a hash.");
       }
-      this.cipherPaneWrapper.setContent(new CipherPane(this.stage, node.getValue()));
-    }catch (Exception e){
+      this.hashPaneWrapper.setCenter(new HashPane(stage,node.getValue()));
+    } catch (Exception e) {
       log.error(e.getMessage());
-      this.cipherPaneWrapper.setContent(new BorderPane(new Label(e.getMessage())));
+      this.hashPaneWrapper.setCenter(new Label(e.getMessage()));
     }
   }
 
-  private BorderPane getWelcomePane(){
-   return new BorderPane(new Label("Welcome to cipher menu.Please select a cipher from left..."));
+
+
+  private Pane getWelcomePane(){
+    BorderPane pane=new BorderPane();
+    Label welcomeLbl=new Label("Welcome to hash menu.Please a hash function from left...");
+    pane.setCenter(welcomeLbl);
+    return pane;
   }
-
-
-
-
-
-
-
-
 }

@@ -20,12 +20,12 @@ import org.apache.commons.collections4.CollectionUtils;
 public class CryptanalysisTab extends Tab {
 
   private static final Map<String, Pane> WORK_PANES = createWorkPanes();
-  private final Stage primaryStage;
+  private final Stage stage;
   private final StackPane contextWorkPane = new StackPane();
   private SplitPane rootSplitter;
 
-  public CryptanalysisTab(Stage primaryStage) {
-    this.primaryStage = primaryStage;
+  public CryptanalysisTab(Stage stage) {
+    this.stage = stage;
     this.setText("Cryptanalysis");
     this.setClosable(false);
 
