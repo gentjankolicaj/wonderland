@@ -116,7 +116,7 @@ public class KeygenTab extends ServiceTab<KeyGenerator> {
             Collectors.toList());
   }
 
-  protected KeyGenerator getKeyGenerator(String cspName, String serviceName)
+  protected static KeyGenerator getKeyGenerator(String cspName, String serviceName)
       throws NoSuchAlgorithmException, NoSuchProviderException {
       KeyGenerator tmp = KeyGenerator.getInstance(serviceName, cspName);
       log.info("Selected KeyGenerator '{}' - provider '{}' ", tmp.getAlgorithm(),
@@ -125,14 +125,14 @@ public class KeygenTab extends ServiceTab<KeyGenerator> {
   }
 
 
-  protected KeyPairGenerator getKeyPairGenerator(String cspName, String serviceName)
+  protected static KeyPairGenerator getKeyPairGenerator(String cspName, String serviceName)
       throws NoSuchAlgorithmException, NoSuchProviderException {
       KeyPairGenerator tmp = KeyPairGenerator.getInstance(serviceName, cspName);
       log.info("Selected KeyPairGenerator '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
       return tmp;
   }
 
-  private Optional<Object> getSelectedKeygen(String cspName, String serviceType, String serviceName)
+  private static Optional<Object> getSelectedKeygen(String cspName, String serviceType, String serviceName)
       throws NoSuchAlgorithmException, NoSuchProviderException {
     if (StringUtils.isEmpty(serviceType)) {
       return Optional.empty();

@@ -3,8 +3,13 @@ package io.wonderland.rh.cipher;
 import io.wonderland.rh.exception.ServiceException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -24,15 +29,15 @@ public class CipherPane extends VBox {
   public CipherPane(Stage stage, String cipherName) throws NoSuchPaddingException, NoSuchAlgorithmException{
     this.cipherName = cipherName;
     this.infoBox = new HBox();
-    this.keyPane = new KeyPane("Key", cipherName);
+    this.keyPane = new KeyPane(stage,"Cipher key", cipherName);
     this.messagePane = new MessagePane(stage,"Message", cipherName, keyPane);
     this.build();
   }
 
   private void build() throws NoSuchPaddingException, NoSuchAlgorithmException {
     this.updateInfoBox();
-    this.getChildren().addAll(infoBox, keyPane, messagePane);
-    this.setSpacing(10);
+    this.getChildren().addAll(infoBox,keyPane,messagePane);
+
   }
 
   protected Optional<Cipher> getCipherInstance(String serviceName)

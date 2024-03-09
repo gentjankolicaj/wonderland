@@ -16,6 +16,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javax.crypto.Cipher;
@@ -27,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class CipherTab extends ServiceTab<Cipher> {
 
-  private final ScrollPane cipherPaneWrapper =new ScrollPane();
+  private final BorderPane cipherPaneWrapper =new BorderPane();
 
   public CipherTab(Stage stage, String title, String serviceType) {
     super(stage, title, serviceType);
@@ -38,7 +39,7 @@ public class CipherTab extends ServiceTab<Cipher> {
     final StackPane stackPane = new StackPane();
     stackPane.getChildren().add(createCiphersPane());
 
-    this.cipherPaneWrapper.setContent(getWelcomePane());
+    this.cipherPaneWrapper.setCenter(getWelcomePane());
 
     splitPane.getItems().addAll(stackPane, cipherPaneWrapper);
     splitPane.setDividerPositions(0.3f, 0.7f);
@@ -116,10 +117,10 @@ public class CipherTab extends ServiceTab<Cipher> {
       if(!node.isLeaf()){
         throw new IllegalArgumentException("Cipher not valid,please select a cipher.");
       }
-      this.cipherPaneWrapper.setContent(new CipherPane(this.stage, node.getValue()));
+      this.cipherPaneWrapper.setCenter(new CipherPane(this.stage, node.getValue()));
     }catch (Exception e){
       log.error(e.getMessage());
-      this.cipherPaneWrapper.setContent(new BorderPane(new Label(e.getMessage())));
+      this.cipherPaneWrapper.setCenter(new BorderPane(new Label(e.getMessage())));
     }
   }
 
