@@ -5,22 +5,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 
 @Slf4j
 public  class TextFieldKeyPane<T extends Key> extends AbstractKeyPane<T> {
 
+  @Getter
   protected String keyLabel;
-  protected VBox textFieldBox = new VBox();
-  protected ScrollPane scrollPane = new ScrollPane();
+  protected VBox vBox = new VBox();
   protected Consumer<Object> cipherStateConsumer;
   protected Map<String, TextField> textFieldMap;
 
@@ -44,9 +44,9 @@ public  class TextFieldKeyPane<T extends Key> extends AbstractKeyPane<T> {
       this.textFieldMap.forEach((key, value) -> {
         //Add label & text field to vertical box
         HBox hBox = new HBox(getLabel(key + " : "), value);
+        HBox.setHgrow(value, Priority.ALWAYS);
         hBox.setFillHeight(true);
-        this.textFieldBox.getChildren().add(hBox);
-
+        this.vBox.getChildren().add(hBox);
         if (Objects.nonNull(cipherStateConsumer)) {
           //set stale state to cipher
           cipherStateConsumer.accept(value);
@@ -54,17 +54,11 @@ public  class TextFieldKeyPane<T extends Key> extends AbstractKeyPane<T> {
       });
     }
 
-    this.textFieldBox.setSpacing(13);
-    this.textFieldBox.setFillWidth(true);
-    this.textFieldBox.setPrefWidth(this.scrollPane.getWidth());
-
-    this.scrollPane.setContent(this.textFieldBox);
-    this.scrollPane.setFitToWidth(true);
-    this.scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
-    this.scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+    this.vBox.setSpacing(13);
+    this.vBox.setFillWidth(true);
 
     this.setTop(this.getLabel(this.keyLabel));
-    this.setCenter(this.scrollPane);
+    this.setCenter(this.vBox);
   }
 
   protected Label getLabel(String value) {
@@ -74,13 +68,7 @@ public  class TextFieldKeyPane<T extends Key> extends AbstractKeyPane<T> {
   }
 
 
-
- public String getKeyLabel() {
-    return this.keyLabel;
-  }
-
-
- public T getCipherKey() {
+  public T getCipherKey() {
     throw new UnsupportedOperationException("Unimplemented.");
   }
 

@@ -16,11 +16,13 @@ public final class AffineKeyPane extends TextFieldKeyPane<AffineKey> {
   }
 
 
+  @Override
  public String getKeyLabel() {
     return KEY_LABEL;
   }
 
 
+  @Override
  public AffineKey getKey() {
     TextField aTF = super.textFieldMap.get(A);
     TextField bTF = super.textFieldMap.get(B);

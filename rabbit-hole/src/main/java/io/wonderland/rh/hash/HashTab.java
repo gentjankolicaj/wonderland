@@ -25,7 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class HashTab extends ServiceTab<MessageDigest> {
+public class HashTab extends ServiceTab {
   private final BorderPane hashPaneWrapper=new BorderPane();
   private Optional<MessageDigest> messageDigest=Optional.empty();
 
@@ -101,10 +101,6 @@ public class HashTab extends ServiceTab<MessageDigest> {
             Collectors.toList());
   }
 
-
-
-
-
   private void selectMessageDigest(TreeItem<String> node) {
     this.updateContentPane(node);
   }
@@ -120,8 +116,6 @@ public class HashTab extends ServiceTab<MessageDigest> {
       this.hashPaneWrapper.setCenter(new Label(e.getMessage()));
     }
   }
-
-
 
   private Pane getWelcomePane(){
     BorderPane pane=new BorderPane();

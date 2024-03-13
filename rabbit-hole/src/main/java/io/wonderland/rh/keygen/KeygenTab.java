@@ -27,7 +27,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class KeygenTab extends ServiceTab<KeyGenerator> {
+public class KeygenTab extends ServiceTab {
 
  private final BorderPane keygenPaneWrapper =new BorderPane();
 
@@ -98,7 +98,6 @@ public class KeygenTab extends ServiceTab<KeyGenerator> {
     return Arrays.stream(serviceTypes).map(TreeItem::new).collect(Collectors.toList());
   }
 
-
   private List<TreeItem<String>> getCSPNodes() {
     List<String> cspNames = Arrays.stream(Security.getProviders()).map(Provider::getName).collect(Collectors.toList());
     return cspNames.stream().sorted(Comparator.comparing(s -> s.charAt(0))).map(TreeItem::new)
@@ -124,7 +123,6 @@ public class KeygenTab extends ServiceTab<KeyGenerator> {
       return tmp;
   }
 
-
   protected static KeyPairGenerator getKeyPairGenerator(String cspName, String serviceName)
       throws NoSuchAlgorithmException, NoSuchProviderException {
       KeyPairGenerator tmp = KeyPairGenerator.getInstance(serviceName, cspName);
@@ -147,7 +145,6 @@ public class KeygenTab extends ServiceTab<KeyGenerator> {
   private void selectKeygen(TreeItem<String> node) {
       this.updateContentPane(node);
   }
-
 
   private void updateContentPane(TreeItem<String> node) {
     try {

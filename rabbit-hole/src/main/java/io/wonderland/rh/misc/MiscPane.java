@@ -1,5 +1,6 @@
 package io.wonderland.rh.misc;
 
+import io.wonderland.rh.utils.LabelUtils;
 import java.util.Optional;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -36,7 +37,7 @@ public class MiscPane extends BorderPane {
         this.infoBox.getChildren().add(new Label(" "));
       }
     } else {
-      this.infoBox.getChildren().add(new Label("Please choose on misc option on the left."));
+      this.infoBox.getChildren().add(LabelUtils.getTitle("Please choose on misc option on the left."));
     }
   }
 
@@ -48,7 +49,7 @@ public class MiscPane extends BorderPane {
     miscBox.setSpacing(10);
 
     //info labels
-    this.infoBox.getChildren().add(new Label("Choose o misc option on the left..."));
+    this.infoBox.getChildren().add(LabelUtils.getTitle("Choose o misc option on the left..."));
 
     miscBox.getChildren().addAll(this.infoBox);
     return miscBox;

@@ -1,6 +1,7 @@
 package io.wonderland.rh.common;
 
 
+import io.wonderland.rh.utils.LabelUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,8 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import lombok.Getter;
 import org.apache.commons.collections4.MapUtils;
 
@@ -31,7 +34,7 @@ public class HTogglePane<T extends ToggleButton> extends HBox {
         buttonList.add(toggle);
       }
       buttonList.forEach(b -> b.setToggleGroup(toggleGroup));
-      this.getChildren().add(new Label(title));
+      this.getChildren().add(LabelUtils.getTitle(title));
       this.getChildren().addAll(buttonList);
 
       this.toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -60,8 +63,4 @@ public class HTogglePane<T extends ToggleButton> extends HBox {
       }
     }
   }
-
-
-
-
 }

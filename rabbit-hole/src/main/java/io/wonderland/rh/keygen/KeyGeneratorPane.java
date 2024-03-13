@@ -2,17 +2,25 @@ package io.wonderland.rh.keygen;
 
 import io.wonderland.common.Arrays;
 import io.wonderland.rh.common.HTogglePane;
+import io.wonderland.rh.utils.LabelUtils;
 import io.wonderland.rh.utils.ZxingUtils;
+import java.security.Key;
 import java.util.Map;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javax.crypto.SecretKey;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +31,9 @@ import org.apache.commons.lang3.ArrayUtils;
 @Setter
 @Slf4j
 public class KeyGeneratorPane extends BorderPane {
-  private final double QR_CODE_TO_VIEW_RATIO = 0.6;
-  private HTogglePane<RadioButton> keyFormatPane = new HTogglePane<>("Format : ", 10,s -> new RadioButton(s),
-      Map.of("qr-code", () -> setQRCode(getSecretKey().getEncoded()), "decimal", () -> setString(getSecretKey().getEncoded())));
+
+  private HTogglePane<RadioButton> keyFormatPane = new HTogglePane<>("Key format : ", 10,s -> new RadioButton(s),
+      Map.of("qr-code", () -> setKeyQRCode(), "decimal", () -> setKeyText("Secret key",getSecretKey())));
   private SecretKey secretKey;
 
   public KeyGeneratorPane() {
@@ -36,41 +44,32 @@ public class KeyGeneratorPane extends BorderPane {
 
   public void update(SecretKey secretKey) {
     this.secretKey = secretKey;
-    this.setQRCode(secretKey.getEncoded());
+    this.setKeyQRCode();
     this.keyFormatPane.selectToggle("qr-code");
   }
 
-  private void setQRCode(byte[] encoded) {
-    if(ArrayUtils.isNotEmpty(encoded)) {
-      try {
-        int a = (int) Math.sqrt(encoded.length);
-        int A = (int) ((a / (a / this.getHeight())) * QR_CODE_TO_VIEW_RATIO);
-        Image image = SwingFXUtils.toFXImage(
-            ZxingUtils.generateQRCodeImage(Arrays.getStringValueOf(secretKey.getEncoded()), A, A), null);
-        ImageView imageView = new ImageView();
-        imageView.setImage(image);
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(true);
-        imageView.setCache(true);
-        this.setCenter(imageView);
+  private void setKeyQRCode() {
+    try{
+        this.setCenter(ZxingUtils.getImageView(this,getSecretKey()));
       } catch (Exception e) {
         log.error("", e);
       }
-    }
   }
 
-  private void setString(byte[] encoded) {
-    if(ArrayUtils.isNotEmpty(encoded)) {
-      TextArea textArea = new TextArea();
-      textArea.setText(Arrays.getStringValueOf(encoded, ','));
-      ScrollPane scrollPane = new ScrollPane();
-      scrollPane.setContent(textArea);
-      scrollPane.setFitToWidth(true);
-      scrollPane.setFitToHeight(true);
-      scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
-      scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
-      this.setCenter(scrollPane);
-    }
+  private HBox getKeyBox(String text, Key key){
+    HBox hBox=new HBox();
+    TextField textField=new TextField();
+    textField.setText(Arrays.getStringValueOf(key.getEncoded(),','));
+    Label label= LabelUtils.getTitle(text);
+    HBox.setHgrow(textField, Priority.ALWAYS);
+    hBox.getChildren().addAll(label,textField);
+    hBox.setSpacing(10);
+    return hBox;
+  }
+
+
+  private void setKeyText(String text,Key key) {
+    this.setCenter(getKeyBox(text,key));
   }
 
 }

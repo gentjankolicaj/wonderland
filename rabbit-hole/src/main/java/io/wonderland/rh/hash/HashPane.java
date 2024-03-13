@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,9 @@ public class HashPane extends BorderPane {
   private final HBox infoBox = new HBox();
   private final TextArea messageTextArea = new TextArea();
   private final TextArea digestTextArea = new TextArea();
+  private final TextPane messagePane=new TextPane("Message", messageTextArea);
+  private final TextPane digestPane=new TextPane("Digest",digestTextArea);
+  private final HBox messageBox=new HBox();
   private Stage stage;
   private String messageDigestName;
   private Optional<MessageDigest> optionalMD;
@@ -57,8 +61,10 @@ public class HashPane extends BorderPane {
 
   private HBox getMessageBox() {
     //Message box for plain & cipher text
-    HBox messageBox = new HBox();
-    messageBox.getChildren().addAll(new TextPane("Message", messageTextArea), new TextPane("Digest", digestTextArea));
+    messageBox.getChildren().addAll(messagePane,digestPane);
+    messageBox.setSpacing(10);
+    HBox.setHgrow(messagePane, Priority.ALWAYS);
+    HBox.setHgrow(digestPane,Priority.ALWAYS);
     return messageBox;
   }
 

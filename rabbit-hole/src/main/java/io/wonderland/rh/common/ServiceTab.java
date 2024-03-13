@@ -1,11 +1,9 @@
 package io.wonderland.rh.common;
 
-import io.wonderland.rh.exception.ServiceException;
-import java.util.Optional;
 import javafx.scene.control.Tab;
 import javafx.stage.Stage;
 
-public abstract class ServiceTab<T> extends Tab {
+public abstract class ServiceTab extends Tab {
 
   protected String title;
   protected String[] serviceTypes;
@@ -19,17 +17,8 @@ public abstract class ServiceTab<T> extends Tab {
     this.setClosable(false);
   }
 
-  protected  Optional<T> getDefaultService(){
-    return Optional.empty();
-  }
-
-  protected  T getService(String serviceName) throws ServiceException{
-    throw new UnsupportedOperationException("Method not implemented.");
-  }
-
   protected boolean isValidServiceName(String name){
     return true;
   }
-
 
 }

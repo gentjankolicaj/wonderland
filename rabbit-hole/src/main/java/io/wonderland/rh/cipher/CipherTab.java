@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 
 @Slf4j
-public class CipherTab extends ServiceTab<Cipher> {
+public class CipherTab extends ServiceTab {
 
   private final BorderPane cipherPaneWrapper =new BorderPane();
 
@@ -46,8 +46,6 @@ public class CipherTab extends ServiceTab<Cipher> {
 
     this.setContent(splitPane);
   }
-
-
 
   @Override
   protected boolean isValidServiceName(String name) {
@@ -109,8 +107,6 @@ public class CipherTab extends ServiceTab<Cipher> {
     this.updateCipherPane(node);
   }
 
-
-
   private void updateCipherPane(TreeItem<String> node){
     //Update cipher pane
     try {
@@ -127,12 +123,4 @@ public class CipherTab extends ServiceTab<Cipher> {
   private BorderPane getWelcomePane(){
    return new BorderPane(new Label("Welcome to cipher menu.Please select a cipher from left..."));
   }
-
-
-
-
-
-
-
-
 }

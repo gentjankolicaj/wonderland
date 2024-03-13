@@ -1,5 +1,6 @@
 package io.wonderland.rh.common;
 
+import io.wonderland.rh.utils.LabelUtils;
 import java.util.Objects;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -29,32 +30,16 @@ public class TextPane extends BorderPane {
     this.textArea = textArea;
     this.label = label;
 
-    //key scroll pane
-    ScrollPane scrollPane = new ScrollPane();
-    scrollPane.setContent(textArea);
-    scrollPane.setFitToWidth(true);
-    scrollPane.setFitToHeight(true);
-    scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
-    scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
-
-    setTop(createTitle(label));
-    setCenter(scrollPane);
+    setTop(LabelUtils.getTitle(label));
+    setCenter(textArea);
   }
 
   public TextPane(String label, TextArea textArea, Pane leftPane, Pane rightPane) {
     this.textArea = textArea;
     this.label = label;
 
-    //key scroll pane
-    ScrollPane scrollPane = new ScrollPane();
-    scrollPane.setContent(textArea);
-    scrollPane.setFitToWidth(true);
-    scrollPane.setFitToHeight(true);
-    scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
-    scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
-
-    setTop(createTitle(label));
-    setCenter(scrollPane);
+    setTop(LabelUtils.getTitle(label));
+    setCenter(textArea);
 
     if (Objects.nonNull(leftPane)) {
       setLeft(leftPane);
@@ -64,12 +49,6 @@ public class TextPane extends BorderPane {
     }
     setBorder(new Border(new BorderStroke(Color.BLACK,
         BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-  }
-
-  private Label createTitle(String title) {
-    Label label = new Label(title);
-    label.setFont(Font.font("ARIAL", FontWeight.BOLD, 13));
-    return label;
   }
 
 }

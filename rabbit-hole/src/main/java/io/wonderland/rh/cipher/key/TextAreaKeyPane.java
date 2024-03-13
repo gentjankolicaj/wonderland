@@ -10,14 +10,15 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public  class TextAreaKeyPane<T extends Key> extends AbstractKeyPane<T> {
 
+  @Getter
   protected String keyLabel;
   protected TextArea textArea = new TextArea();
-  protected ScrollPane scrollPane = new ScrollPane();
   protected Consumer cipherStateConsumer;
 
   public TextAreaKeyPane(String keyLabel, Consumer cipherStateConsumer) {
@@ -28,11 +29,6 @@ public  class TextAreaKeyPane<T extends Key> extends AbstractKeyPane<T> {
 
   private void setup() {
     //key scroll pane
-    this.scrollPane = new ScrollPane();
-    this.scrollPane.setContent(this.textArea);
-    this.scrollPane.setFitToWidth(true);
-    this.scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER);
-    this.scrollPane.setVbarPolicy(ScrollBarPolicy.ALWAYS);
 
     //add text listener
     this.textArea.textProperty().addListener((obs, old, niu) -> {
@@ -44,7 +40,7 @@ public  class TextAreaKeyPane<T extends Key> extends AbstractKeyPane<T> {
       }
     });
     this.setTop(this.getKeyLbl(this.keyLabel));
-    this.setCenter(scrollPane);
+    this.setCenter(textArea);
   }
 
   protected Label getKeyLbl(String keyLabel) {
@@ -54,12 +50,7 @@ public  class TextAreaKeyPane<T extends Key> extends AbstractKeyPane<T> {
   }
 
 
- public String getKeyLabel() {
-    return this.keyLabel;
-  }
-
-
- public T getCipherKey() {
+  public T getCipherKey() {
     throw new UnsupportedOperationException("Unimplemented.");
   }
 

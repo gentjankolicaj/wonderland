@@ -32,7 +32,7 @@ public class KeygenPane extends BorderPane {
   public static final String KEYGEN_ALGORITHM = "Keygen algorithm: ";
   private final HBox infoBox = new HBox();
   private Stage stage;
-  private Optional<Object> optionalGen;
+  private final Optional<Object> optionalGen;
 
   public KeygenPane(Stage stage, Optional<Object> optionalGen) {
     this.stage=stage;
@@ -120,18 +120,6 @@ public class KeygenPane extends BorderPane {
       log.error("Failed to instantiate KeyPairGenerator service '{}'", serviceName);
     }
     return null;
-  }
-
-  private Optional<Object> getSelectedKeygen(String cspName, String serviceType, String serviceName) {
-    if (StringUtils.isEmpty(serviceType)) {
-      return Optional.empty();
-    }
-    if (serviceType.equalsIgnoreCase("KeyPairGenerator"))
-      return Optional.ofNullable(getKeyPairGenerator(cspName, serviceName));
-    else if (serviceType.equalsIgnoreCase("KeyGenerator"))
-      return Optional.ofNullable(getKeyGenerator(cspName, serviceName));
-    else
-      return Optional.empty();
   }
 
   private String getKeyGeneratorDetails(KeyGenerator keyGenerator) {

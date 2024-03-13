@@ -5,6 +5,7 @@ import io.wonderland.rh.cipher.key.AbstractKeyPane;
 import io.wonderland.rh.common.HTogglePane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenPane;
+import io.wonderland.rh.utils.LabelUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.Key;
@@ -28,7 +29,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javax.crypto.KeyGenerator;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.SearchableComboBox;
@@ -40,8 +40,8 @@ public class KeyPane extends TitledPane {
    private String cipherName;
    private BorderPane containerPane =new BorderPane();
 
-   private HTogglePane<RadioButton> keyOriginPane = new HTogglePane<>("Key : ", 10,s -> new RadioButton(s),
-      Map.of("new", () -> setGenerateKeyPane(), "existing", () -> setInsertKeyPane()));
+   private HTogglePane<RadioButton> keyOriginPane = new HTogglePane<>("Key source : ", 10, RadioButton::new,
+      Map.of("new", () -> setNewKeyPane(), "old", () -> setOldKeyPane()));
 
   public KeyPane(Stage stage,String title,String cipherName){
     this.stage=stage;
@@ -57,19 +57,17 @@ public class KeyPane extends TitledPane {
   }
 
 
-  private void setGenerateKeyPane(){
+  private void setNewKeyPane(){
     this.containerPane.setCenter(new GenerateKeyPane());
-
   }
 
-  private void setInsertKeyPane(){
+  private void setOldKeyPane(){
    updateInputKeyPane(cipherName);
   }
 
   class GenerateKeyPane extends BorderPane implements KeySource {
     private SearchableComboBox<String> keyComboBox=new SearchableComboBox<>();
-    private HBox hBox=new HBox();
-    private Label chooseLbl;
+    private final HBox hBox=new HBox();
 
     GenerateKeyPane(){
      this.build();
@@ -78,12 +76,9 @@ public class KeyPane extends TitledPane {
     private void build(){
       this.keyComboBox=new SearchableComboBox<>(FXCollections.observableArrayList(getKeyTypesString()));
       this.keyComboBox.setOnAction(new KeygenComboBoxEventHandler());
-      this.chooseLbl=new Label("["+keyComboBox.getItems().size()+"] , generator :");
-      this.hBox.getChildren().addAll(chooseLbl,keyComboBox);
+      this.hBox.getChildren().addAll(LabelUtils.getTitle("Key generator : "),keyComboBox);
       this.setTop(hBox);
     }
-
-
 
     @Override
     public Key getKey() {
@@ -115,22 +110,20 @@ public class KeyPane extends TitledPane {
       @Override
       public void handle(ActionEvent actionEvent) {
         updateKeyPane(keyComboBox.getValue());
-      }
-    }
-
-    private void updateKeyPane(String keygenName){
-      try {
-        Optional<Object> optionalKeygen = getKeyGeneratorInstance(keygenName);
-        this.setCenter(new KeygenPane(stage,optionalKeygen));
-      } catch (Exception e) {
-        log.error(e.getMessage());
-        this.setCenter(new Label(e.getMessage()));
+      }    private void updateKeyPane(String keygenName){
+        try {
+          Optional<Object> optionalKeygen = getKeyGeneratorInstance(keygenName);
+          setCenter(new KeygenPane(stage,optionalKeygen));
+        } catch (Exception e) {
+          log.error(e.getMessage());
+          setCenter(new Label(e.getMessage()));
+        }
       }
     }
 
     Optional<Object> getKeyGeneratorInstance(String keygenName){
       try{
-        return Optional.ofNullable(KeyGenerator.getInstance(keygenName));
+        return Optional.of(KeyGenerator.getInstance(keygenName));
       }catch (Exception e){
         log.error(e.getMessage());
       }
@@ -151,7 +144,6 @@ public class KeyPane extends TitledPane {
       Consumer<?> consumer = s -> setKeyStaleState(true);
       Constructor<?> constructor = keyPaneClass.getDeclaredConstructor(Consumer.class);
       AbstractKeyPane<?> newKeyPane = (AbstractKeyPane<?>) constructor.newInstance(consumer);
-
       this.containerPane.setCenter(newKeyPane);
     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
       throw new ServiceException("Failed to changed KeyGeneratorPane", e);

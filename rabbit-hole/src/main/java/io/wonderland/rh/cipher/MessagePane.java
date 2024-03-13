@@ -16,6 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javax.crypto.Cipher;
@@ -32,6 +33,8 @@ public class MessagePane extends TitledPane {
   private BorderPane rootPane = new BorderPane();
   private final TextArea plainTextArea = new TextArea();
   private final TextArea cipherTextArea = new TextArea();
+  private final TextPane plaintextPane=new TextPane("Plaintext", plainTextArea);
+  private final TextPane ciphertextPane=new TextPane("Ciphertext",cipherTextArea);
   private Button encryptBtn = new Button("encrypt");
   private Button decryptBtn = new Button("decrypt");
   private Button clearBtn = new Button("clear");
@@ -64,8 +67,9 @@ public class MessagePane extends TitledPane {
     this.buttonBox.getChildren().addAll(encryptBtn, decryptBtn, clearBtn, exportBtn);
 
     this.textBox.setSpacing(10);
-    this.textBox.getChildren()
-        .addAll(new TextPane("Plaintext", plainTextArea), new TextPane("Ciphertext", cipherTextArea));
+    this.textBox.getChildren().addAll(plaintextPane,ciphertextPane);
+    HBox.setHgrow(plaintextPane, Priority.ALWAYS);
+    HBox.setHgrow(ciphertextPane,Priority.ALWAYS);
 
     this.rootPane.setTop(buttonBox);
     this.rootPane.setCenter(textBox);
