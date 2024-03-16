@@ -35,13 +35,14 @@ public class HashPane extends BorderPane {
   public HashPane(Stage stage, String messageDigestName) throws NoSuchAlgorithmException {
     this.stage=stage;
     this.messageDigestName=messageDigestName;
+    this.optionalMD = getMessageDigestInstance(messageDigestName);
     this.build();
   }
 
   private void build() throws NoSuchAlgorithmException {
-    this.optionalMD = getMessageDigestInstance(messageDigestName);
     this.buildToolPanel();
     this.setTop(this.miscBox);
+    this.setCenter(getMessageBox());
   }
 
   private VBox buildToolPanel() {
