@@ -1,6 +1,6 @@
 package io.wonderland.rh.cryptanalysis;
 
-import io.wonderland.rh.common.LabelPane;
+import io.wonderland.rh.base.common.LabelPane;
 import io.wonderland.rq.type.Language;
 import java.util.Arrays;
 import java.util.HashMap;

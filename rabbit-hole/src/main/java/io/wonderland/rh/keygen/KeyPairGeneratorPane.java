@@ -1,7 +1,7 @@
 package io.wonderland.rh.keygen;
 
 import io.wonderland.common.Arrays;
-import io.wonderland.rh.common.HTogglePane;
+import io.wonderland.rh.base.common.HToggleBox;
 import io.wonderland.rh.utils.LabelUtils;
 import io.wonderland.rh.utils.ZxingUtils;
 import java.security.Key;
@@ -31,7 +31,7 @@ public class KeyPairGeneratorPane extends BorderPane {
   public static final String PUBLIC_KEY = "Public key";
   private Alert alert = new Alert(AlertType.NONE);
   private static final double QR_CODE_TO_VIEW_RATIO = 0.8;
-  private HTogglePane<RadioButton> keyFormatPane = new HTogglePane<>("Key format : ", 10, RadioButton::new,
+  private HToggleBox<RadioButton> keyFormatPane = new HToggleBox<>("Key format : ", 10, RadioButton::new,
       Map.of("qr-code", () -> setKeyPairQRCode(getKeyPair()), "decimal", () -> setKeyPairText(getKeyPair())));
   private KeyPair keyPair;
 
@@ -43,8 +43,8 @@ public class KeyPairGeneratorPane extends BorderPane {
 
   public void update(KeyPair keyPair) {
     this.keyPair = keyPair;
-    this.setKeyPairQRCode(keyPair);
-    this.keyFormatPane.selectToggle("qr-code");
+    this.setKeyPairText(keyPair);
+    this.keyFormatPane.selectToggle("decimal");
   }
 
   private void setKeyPairQRCode(KeyPair keyPair) {
@@ -62,7 +62,7 @@ public class KeyPairGeneratorPane extends BorderPane {
       log.error(e.getMessage());
       alert.setAlertType(AlertType.ERROR);
       alert.show();
-      alert.setContentText(e.getMessage());
+      alert.setHeaderText(e.getMessage());
     }
 
     try {
@@ -75,7 +75,7 @@ public class KeyPairGeneratorPane extends BorderPane {
       log.error(e.getMessage());
       alert.setAlertType(AlertType.ERROR);
       alert.show();
-      alert.setContentText(e.getMessage());
+      alert.setHeaderText(e.getMessage());
     }
     this.setCenter(hBox);
 
@@ -97,6 +97,5 @@ public class KeyPairGeneratorPane extends BorderPane {
     hBox.setSpacing(10);
     return hBox;
   }
-
 
 }

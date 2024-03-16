@@ -1,15 +1,12 @@
 package io.wonderland.rh.cipher;
 
 import io.wonderland.rh.exception.ServiceException;
+import io.wonderland.rh.keygen.KeygenObserver;
+import io.wonderland.rh.utils.LabelUtils;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -21,16 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CipherPane extends VBox {
 
-  private final HBox infoBox;
+  private final VBox infoBox;
   public KeyPane keyPane;
   public MessagePane messagePane;
   private String cipherName;
+  private final KeygenObserver keygenObserver=new KeygenObserver();
 
   public CipherPane(Stage stage, String cipherName) throws NoSuchPaddingException, NoSuchAlgorithmException{
     this.cipherName = cipherName;
-    this.infoBox = new HBox();
-    this.keyPane = new KeyPane(stage,"Cipher key", cipherName);
-    this.messagePane = new MessagePane(stage,"Message", cipherName, keyPane);
+    this.infoBox = new VBox();
+    this.keyPane = new KeyPane(stage,"Cipher key", cipherName, keygenObserver);
+    this.messagePane = new MessagePane(stage,"Message", cipherName,  keygenObserver);
     this.build();
   }
 
@@ -48,18 +46,16 @@ public class CipherPane extends VBox {
   }
 
   protected void updateInfoBox() throws NoSuchPaddingException, NoSuchAlgorithmException {
-    if (!infoBox.getChildren().isEmpty()) {
-      this.infoBox.getChildren().remove(0);
-    }
     Optional<Cipher> optionalCipher = getCipherInstance(cipherName);
-    optionalCipher.ifPresent(c -> {
-      Label label=new Label("Cipher: " + c.getAlgorithm() + " , block-size : " + c.getBlockSize() + " , CSP: "
-          + c.getProvider().getName());
-      label.setFont(Font.font("ARIAL", FontWeight.BOLD, 15));
-      this.infoBox.getChildren().add(label);
-    });
+    if(optionalCipher.isPresent()) {
+      Cipher c=optionalCipher.get();
+      HBox cipherNameBox=new HBox(LabelUtils.getTitle("Cipher : "),new Label(c.getAlgorithm()));
+      HBox blockSizeBox=new HBox(LabelUtils.getTitle("Block size : "),new Label(""+c.getBlockSize()));
+      HBox providerBox=new HBox(LabelUtils.getTitle("CSP : "),new Label(c.getProvider().getName()+"-"+c.getProvider().getVersionStr()));
+      HBox otherInfoBox=new HBox(LabelUtils.getTitle("Info : "),new Label(c.getProvider().getInfo()));
+      this.infoBox.getChildren().addAll(cipherNameBox,blockSizeBox,providerBox,otherInfoBox);
+    }
   }
-
 
 }
 

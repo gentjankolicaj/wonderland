@@ -1,6 +1,6 @@
 package io.wonderland.rh.keygen;
 
-import io.wonderland.rh.common.ServiceTab;
+import io.wonderland.rh.base.common.ServiceTab;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;

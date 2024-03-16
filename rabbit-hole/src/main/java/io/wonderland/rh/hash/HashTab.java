@@ -1,7 +1,6 @@
 package io.wonderland.rh.hash;
 
-import io.wonderland.rh.common.ServiceTab;
-import io.wonderland.rh.exception.ServiceException;
+import io.wonderland.rh.base.common.ServiceTab;
 import java.security.MessageDigest;
 import java.security.Provider;
 import java.security.Provider.Service;

@@ -1,6 +1,6 @@
 package io.wonderland.rh.misc;
 
-import io.wonderland.rh.common.AbstractTab;
+import io.wonderland.rh.base.common.AbstractTab;
 import java.util.Optional;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;

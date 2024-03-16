@@ -1,4 +1,4 @@
-package io.wonderland.rh.common;
+package io.wonderland.rh.base.common;
 
 import io.wonderland.rh.utils.LabelUtils;
 import java.util.Objects;

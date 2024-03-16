@@ -1,7 +1,7 @@
 package io.wonderland.rh.cryptanalysis;
 
-import io.wonderland.rh.common.HTogglePane;
-import io.wonderland.rh.common.TextPane;
+import io.wonderland.rh.base.common.HToggleBox;
+import io.wonderland.rh.base.common.TextPane;
 import io.wonderland.rq.type.Language;
 import java.util.Arrays;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class CiphertextAnalysisPane extends BorderPane {
     private final Button mppAnalysisBtn = new Button("MPP analysis");
     private final Button icAnalysisBtn = new Button("IC analysis");
 
-    private final HTogglePane<RadioButton> langGraphPane = new HTogglePane<>("Character graph : ", 10,s->new RadioButton(s),
+    private final HToggleBox<RadioButton> langGraphPane = new HToggleBox<>("Character graph : ", 10,s->new RadioButton(s),
         Map.of("monograph",()->{}, "digraph",()->{},
         "trigraph", ()->{},"quadgraph",()->{}));
     private final TextPane ciphertextPane = new TextPane("Ciphertext", ciphertextArea);

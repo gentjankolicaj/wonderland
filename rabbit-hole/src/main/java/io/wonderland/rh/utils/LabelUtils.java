@@ -7,6 +7,8 @@ import javafx.scene.text.FontWeight;
 
 public final class LabelUtils {
 
+  private LabelUtils(){}
+
   public static Label getTitle(String text){
     Label label = new javafx.scene.control.Label(text);
     label.setFont(Font.font("ARIAL", FontWeight.BOLD, 13));

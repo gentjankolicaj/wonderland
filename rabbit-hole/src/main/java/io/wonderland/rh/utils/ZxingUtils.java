@@ -30,7 +30,6 @@ public final class ZxingUtils {
     return MatrixToImageWriter.toBufferedImage(bitMatrix);
   }
 
-
   public static ImageView getImageView(Pane pane, Key key) throws Exception {
     if (Objects.nonNull(key) && ArrayUtils.isNotEmpty(key.getEncoded())) {
       byte[] encoded = key.getEncoded();

@@ -23,9 +23,12 @@
     <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <bouncycastle.version>1.77</bouncycastle.version>
+    <conscrypt.version>2.5.2</conscrypt.version>
   </properties>
 
   <dependencies>
+    <!-- javafx dependencies -->
     <dependency>
       <artifactId>javafx-controls</artifactId>
       <groupId>org.openjfx</groupId>
@@ -58,19 +61,16 @@
       <artifactId>org.jfree.fxgraphics2d</artifactId>
       <version>2.1.4</version>
     </dependency>
-
     <dependency>
       <artifactId>jfreechart</artifactId>
       <groupId>org.jfree</groupId>
       <version>1.5.3</version>
     </dependency>
-
     <dependency>
       <artifactId>org.jfree.chart.fx</artifactId>
       <groupId>org.jfree</groupId>
       <version>2.0.1</version>
     </dependency>
-
     <dependency>
       <artifactId>org.jfree.svg</artifactId>
       <groupId>org.jfree</groupId>
@@ -82,6 +82,7 @@
       <version>2.0</version>
     </dependency>
 
+    <!-- Java CSP & other helper -->
     <dependency>
       <groupId>io.wonderland</groupId>
       <artifactId>alice</artifactId>
@@ -89,14 +90,30 @@
     </dependency>
     <dependency>
       <groupId>io.wonderland</groupId>
-      <artifactId>bouncy-castle</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>io.wonderland</groupId>
       <artifactId>red-queen</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+
+    <dependency>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <groupId>org.bouncycastle</groupId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <groupId>org.bouncycastle</groupId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.conscrypt</groupId>
+      <artifactId>conscrypt-openjdk</artifactId>
+      <version>${conscrypt.version}</version>
+      <classifier>${os.detected.classifier}</classifier>
+    </dependency>
+
+
+    <!-- util dependencies -->
     <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
@@ -119,6 +136,13 @@
 
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.4.1.Final</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
@@ -160,7 +184,6 @@
           </annotationProcessorPaths>
         </configuration>
       </plugin>
-
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>

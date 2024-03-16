@@ -1,6 +1,6 @@
 package io.wonderland.rh.cryptanalysis;
 
-import io.wonderland.rh.common.HTogglePane;
+import io.wonderland.rh.base.common.HToggleBox;
 import io.wonderland.rq.cryptanalysis.LanguageFrequency;
 import io.wonderland.rq.resource.ResourceConfig;
 import io.wonderland.rq.type.Dichar;
@@ -61,7 +61,7 @@ class LanguageFrequencyPane extends BorderPane {
 
 
   private HBox createLangGraphBox() {
-    HTogglePane<RadioButton> toggleGroupPane = new HTogglePane<>("Character graph :",10, s->new RadioButton(s),
+    HToggleBox<RadioButton> toggleGroupPane = new HToggleBox<>("Character graph :",10, s->new RadioButton(s),
         Map.of("monograph",()->{}, "digraph",()->{}, "trigraph",()->{},
         "quadgraph",()->{}));
     ToggleGroup toggleGroup = toggleGroupPane.getToggleGroup();

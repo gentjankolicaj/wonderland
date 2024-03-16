@@ -1,10 +1,12 @@
 package io.wonderland.rh.keygen;
 
 
-import io.wonderland.rh.exception.ServiceException;
+import io.wonderland.rh.base.Observer;
+import io.wonderland.rh.utils.LabelUtils;
 import java.io.File;
 import java.io.OutputStream;
 import java.security.Key;
+import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,18 +22,20 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class KeygenPane extends BorderPane {
+public class KeygenPane extends BorderPane  {
   private static final String DEFAULT_SECRET_KEY_FILE_NAME = "secret_key";
   private static final String DEFAULT_PRIVATE_KEY_FILENAME = "private_key";
   public static final String DEFAULT_PUBLIC_KEY_FILENAME = "public_key";
   public static final String KEYGEN_ALGORITHM = "Keygen algorithm: ";
-  private final HBox infoBox = new HBox();
-  private Stage stage;
+  private final VBox miscBox = new VBox();
+  private final KeygenObservable keygenObservable =new KeygenObservable() ;
+  private final Stage stage;
   private final Optional<Object> optionalGen;
 
   public KeygenPane(Stage stage, Optional<Object> optionalGen) {
@@ -40,25 +44,66 @@ public class KeygenPane extends BorderPane {
     this.build();
   }
 
-  private void build(){
-   this.setTop(getToolPanel());
-   this.updateToolPanel();
+  public KeygenPane(Stage stage, Optional<Object> optionalGen,Observer<Integer,Object>...observers) {
+    Objects.requireNonNull(observers);
+    this.stage=stage;
+    this.optionalGen=optionalGen;
+    this.keygenObservable.addAllObservers(observers);
+    this.build();
   }
 
+  private void build(){
+   this.buildToolPanel();
+   this.setTop(miscBox);
+   this.setCenter(getCenterPane());
+  }
 
-  private VBox getToolPanel() {
-    final VBox miscBox = new VBox();
+  private VBox buildToolPanel() {
     miscBox.setPadding(new Insets(5, 5, 5, 5));
     miscBox.setSpacing(10);
 
     //info labels
-    this.infoBox.getChildren().add(new Label("Keygen algorithm: ?"));
+    VBox infoBox=getInfoBox();
 
     //button
     HBox buttonBox = getButtonBox();
 
-    miscBox.getChildren().addAll(this.infoBox, buttonBox);
+    miscBox.getChildren().addAll(infoBox, buttonBox);
     return miscBox;
+  }
+
+  private BorderPane getCenterPane(){
+    if(optionalGen.isPresent()){
+      Object service = optionalGen.get();
+      if (service instanceof KeyGenerator) {
+        return new KeyGeneratorPane();
+      } else if (service instanceof KeyPairGenerator) {
+        return new KeyPairGeneratorPane();
+      }
+    }
+    return new BorderPane();
+  }
+
+  private VBox getInfoBox(){
+    VBox infoBox=new VBox();
+    if(optionalGen.isPresent()){
+      Object service = optionalGen.get();
+      if (service instanceof KeyGenerator) {
+        KeyGenerator kg=(KeyGenerator) service;
+        HBox keygenNameBox=new HBox(LabelUtils.getTitle("Keygen alg : "),new Label(kg.getAlgorithm()));
+        HBox providerBox=new HBox(LabelUtils.getTitle("CSP : "),new Label(kg.getProvider().getName()+"-"+kg.getProvider().getVersionStr()));
+        HBox otherInfoBox=new HBox(LabelUtils.getTitle("Info : "),new Label(kg.getProvider().getInfo()));
+        infoBox.getChildren().addAll(keygenNameBox,providerBox,otherInfoBox);
+
+      } else if (service instanceof KeyPairGenerator) {
+        KeyPairGenerator kg=(KeyPairGenerator) service;
+        HBox keygenNameBox=new HBox(LabelUtils.getTitle("Keygen alg : "),new Label(kg.getAlgorithm()));
+        HBox providerBox=new HBox(LabelUtils.getTitle("CSP : "),new Label(kg.getProvider().getName()+"-"+kg.getProvider().getVersionStr()));
+        HBox otherInfoBox=new HBox(LabelUtils.getTitle("Info : "),new Label(kg.getProvider().getInfo()));
+        infoBox.getChildren().addAll(keygenNameBox,providerBox,otherInfoBox);
+      }
+    }
+    return infoBox;
   }
 
   private HBox getButtonBox() {
@@ -77,72 +122,12 @@ public class KeygenPane extends BorderPane {
     return hBox;
   }
 
-  private void updateToolPanel() {
-    if (optionalGen.isPresent()) {
-      Object service = optionalGen.get();
-      if (!infoBox.getChildren().isEmpty()) {
-        this.infoBox.getChildren().remove(0);
-      }
-      if (service instanceof KeyGenerator) {
-        this.setCenter(new KeyGeneratorPane());
-        this.infoBox.getChildren().add(new Label(KEYGEN_ALGORITHM + getKeyGeneratorDetails((KeyGenerator) service)));
-      } else if (service instanceof KeyPairGenerator) {
-        this.setCenter(new KeyPairGeneratorPane());
-        this.infoBox.getChildren()
-            .add(new Label(KEYGEN_ALGORITHM + getKeyPairGeneratorDetails((KeyPairGenerator) service)));
-      }
-    } else {
-      this.infoBox.getChildren().add(new Label(KEYGEN_ALGORITHM));
-    }
-  }
-
-
-  protected KeyGenerator getKeyGenerator(String cspName, String serviceName) throws ServiceException {
-    try {
-      KeyGenerator tmp = KeyGenerator.getInstance(serviceName, cspName);
-      log.info("Selected KeyGenerator '{}' - provider '{}' ", tmp.getAlgorithm(),
-          tmp.getProvider().getName());
-      return tmp;
-    } catch (Exception e) {
-      log.error("Failed to instantiate KeyGenerator service '{}'", serviceName);
-    }
-    return null;
-  }
-
-
-  protected KeyPairGenerator getKeyPairGenerator(String cspName, String serviceName) throws ServiceException {
-    try {
-      KeyPairGenerator tmp = KeyPairGenerator.getInstance(serviceName, cspName);
-      log.info("Selected KeyPairGenerator '{}' - provider '{}' ", tmp.getAlgorithm(),
-          tmp.getProvider().getName());
-      return tmp;
-    } catch (Exception e) {
-      log.error("Failed to instantiate KeyPairGenerator service '{}'", serviceName);
-    }
-    return null;
-  }
-
-  private String getKeyGeneratorDetails(KeyGenerator keyGenerator) {
-    if (Objects.nonNull(keyGenerator)) {
-      return keyGenerator.getAlgorithm()+"  , CSP: "+keyGenerator.getProvider().getName();
-    }
-    return StringUtils.EMPTY;
-  }
-
-  private String getKeyPairGeneratorDetails(KeyPairGenerator keyPairGenerator) {
-    if (Objects.nonNull(keyPairGenerator)) {
-      return keyPairGenerator.getAlgorithm()+"  , CSP: "+keyPairGenerator.getProvider().getName();
-    }
-    return StringUtils.EMPTY;
-  }
-
 
   private BorderPane getParentPane(){
     return this;
   }
 
-
-  private class KeygenBtnReleased implements EventHandler<Event> {
+   class KeygenBtnReleased implements EventHandler<Event> {
     @Override
     public void handle(Event event) {
       try {
@@ -161,11 +146,17 @@ public class KeygenPane extends BorderPane {
         if (generator instanceof KeyGenerator) {
           KeyGenerator keyGenerator = (KeyGenerator) generator;
           KeyGeneratorPane keyGeneratorPane = (KeyGeneratorPane) getParentPane().getCenter();
-          keyGeneratorPane.update(keyGenerator.generateKey());
+          //notify observers & update pane
+          SecretKey secretKey=keyGenerator.generateKey()  ;
+          keygenObservable.notifyObservers(secretKey);
+          keyGeneratorPane.update(secretKey);
         } else if (generator instanceof KeyPairGenerator) {
           KeyPairGenerator keyPairGenerator = (KeyPairGenerator) generator;
           KeyPairGeneratorPane keyPairGeneratorPane = (KeyPairGeneratorPane) getParentPane().getCenter();
-          keyPairGeneratorPane.update(keyPairGenerator.generateKeyPair());
+          KeyPair keyPair=keyPairGenerator.generateKeyPair();
+          //notify observers & update pane
+          keygenObservable.notifyObservers(keyPair);
+          keyPairGeneratorPane.update(keyPair);
         } else {
           log.warn("No 'SecretKey' or 'KeyPair' generated.");
         }
@@ -173,7 +164,7 @@ public class KeygenPane extends BorderPane {
     }
   }
 
-  private class ExportBtnReleased implements EventHandler<Event>{
+   class ExportBtnReleased implements EventHandler<Event>{
     @Override
     public void handle(Event event){
       try{

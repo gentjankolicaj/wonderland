@@ -1,4 +1,4 @@
-package io.wonderland.rh.cipher;
+package io.wonderland.rh.base;
 
 import java.security.Key;
 

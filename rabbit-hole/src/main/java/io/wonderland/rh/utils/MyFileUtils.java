@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
 
-public class LocalFileUtils {
+public final class MyFileUtils {
+
+  private MyFileUtils(){}
 
   public static InputStream getFile(String filePath) throws IOException {
     return FileUtils.openInputStream(

@@ -1,5 +1,6 @@
 package io.wonderland.rh;
 
+
 import io.wonderland.alice.jca.AliceProvider;
 import io.wonderland.rh.cipher.CipherTab;
 import io.wonderland.rh.cryptanalysis.CryptanalysisTab;
@@ -12,13 +13,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
+import org.conscrypt.OpenSSLProvider;
 
 
 public class RabbitHoleApplication extends Application {
 
   public static void main(String[] args) {
-    Security.addProvider(new BouncyCastleProvider());
-    Security.addProvider(new AliceProvider());
+    addSecurityProviders();
     launch(args);
   }
 
@@ -38,5 +40,12 @@ public class RabbitHoleApplication extends Application {
     primaryStage.setScene(scene);
     primaryStage.setTitle("Rabbit hole");
     primaryStage.show();
+  }
+
+  private static void addSecurityProviders(){
+    Security.addProvider(new BouncyCastleProvider());
+    Security.addProvider(new BouncyCastlePQCProvider());
+    Security.addProvider(new OpenSSLProvider());
+    Security.addProvider(new AliceProvider());
   }
 }

@@ -1,6 +1,7 @@
 package io.wonderland.rh.hash;
 
-import io.wonderland.rh.common.TextPane;
+import io.wonderland.rh.base.common.TextPane;
+import io.wonderland.rh.utils.LabelUtils;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,14 +22,14 @@ import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class HashPane extends BorderPane {
-  private final HBox infoBox = new HBox();
+  private final VBox miscBox = new VBox();
   private final TextArea messageTextArea = new TextArea();
   private final TextArea digestTextArea = new TextArea();
   private final TextPane messagePane=new TextPane("Message", messageTextArea);
   private final TextPane digestPane=new TextPane("Digest",digestTextArea);
   private final HBox messageBox=new HBox();
-  private Stage stage;
-  private String messageDigestName;
+  private final Stage stage;
+  private final String messageDigestName;
   private Optional<MessageDigest> optionalMD;
 
   public HashPane(Stage stage, String messageDigestName) throws NoSuchAlgorithmException {
@@ -39,24 +40,33 @@ public class HashPane extends BorderPane {
 
   private void build() throws NoSuchAlgorithmException {
     this.optionalMD = getMessageDigestInstance(messageDigestName);
-    this.setTop(getToolPanel());
-    this.updateToolPanel();
+    this.buildToolPanel();
+    this.setTop(this.miscBox);
   }
 
-
-  private VBox getToolPanel() {
-    final VBox miscBox = new VBox();
+  private VBox buildToolPanel() {
     miscBox.setPadding(new Insets(5,5,5,5));
     miscBox.setSpacing(10);
 
-    //info labels
-    this.infoBox.getChildren().add(new Label("Hash algorithm: ?"));
-
+    VBox infoBox=getInfoBox();
     //button
     BorderPane buttonPane = getButtonPane();
 
-    miscBox.getChildren().addAll(this.infoBox, buttonPane);
+    miscBox.getChildren().addAll(infoBox, buttonPane);
     return miscBox;
+  }
+
+  private VBox getInfoBox(){
+    VBox infoBox=new VBox();
+    if(optionalMD.isPresent()) {
+      MessageDigest md=optionalMD.get();
+      HBox hashBox = new HBox(LabelUtils.getTitle("Hash : "),new Label(md.getAlgorithm()) );
+      HBox digestLengthBox = new HBox(LabelUtils.getTitle("Digest length : "), new Label("" + md.getDigestLength()+" bits."));
+      HBox providerBox = new HBox(LabelUtils.getTitle("CSP : "), new Label(md.getProvider().getName() + "-" + md.getProvider().getVersionStr()));
+      HBox otherInfoBox = new HBox(LabelUtils.getTitle("Info : "), new Label(md.getProvider().getInfo()));
+      infoBox.getChildren().addAll(hashBox, digestLengthBox, providerBox, otherInfoBox);
+    }
+    return infoBox;
   }
 
   private HBox getMessageBox() {
@@ -90,30 +100,14 @@ public class HashPane extends BorderPane {
     return box;
   }
 
-  private void updateToolPanel() {
-    this.setCenter(getMessageBox());
-    if (optionalMD.isPresent()) {
-      MessageDigest messageDigest=optionalMD.get();
-      this.infoBox.getChildren().remove(0);
-      this.infoBox.getChildren().add(new Label(
-          "Hash algorithm : " + messageDigest.getAlgorithm() + " , length : " + messageDigest.getDigestLength()
-              + " , CSP: " + messageDigest.getProvider().getName()));
-    } else {
-      if (!infoBox.getChildren().isEmpty()) {
-        this.infoBox.getChildren().remove(0);
-      }
-      this.infoBox.getChildren().add(new Label("Name :"));
-    }
-  }
-
   protected Optional<MessageDigest> getMessageDigestInstance(String serviceName) throws  NoSuchAlgorithmException {
     MessageDigest tmp=MessageDigest.getInstance(serviceName);
       log.info("Selected message-digest '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
-    return Optional.ofNullable(tmp);
+    return Optional.of(tmp);
   }
 
 
-  private class MessageDigestBtnReleased implements EventHandler<Event> {
+  class MessageDigestBtnReleased implements EventHandler<Event> {
     @Override
     public void handle(Event event) {
       if (optionalMD.isEmpty()) {
