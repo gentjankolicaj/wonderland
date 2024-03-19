@@ -1,9 +1,9 @@
 package io.wonderland.rh.keygen;
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.AbstractTreeItem;
-import io.wonderland.rh.base.CustomTreeItem;
-import io.wonderland.rh.base.TreeCellImpl;
+import io.wonderland.rh.base.common.AbstractTreeItem;
+import io.wonderland.rh.base.common.CustomTreeItem;
+import io.wonderland.rh.base.common.TreeCellImpl;
 import io.wonderland.rh.base.common.ServiceTab;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;

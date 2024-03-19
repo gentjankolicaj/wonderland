@@ -68,10 +68,4 @@ public class KeygenObserver extends AbstractObserver<Object> {
     }
   }
 
-  public boolean isKeyUpdated(){
-    return isUpdated() && optionalKey.isPresent();
-  }
-  public Optional<Object> getKey(){
-    return optionalKey;
-  }
 }

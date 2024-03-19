@@ -32,11 +32,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class MessagePane extends TitledPane {
+public class CipherMessagePane extends TitledPane {
 
   private static final int SPACING = 10;
   private final Stage stage;
-  private Alert alert = new Alert(AlertType.NONE);
+  private final Alert alert = new Alert(AlertType.NONE);
   private final VBox controlBox = new VBox();
   private final HBox textBox = new HBox();
   private final BorderPane rootPane = new BorderPane();
@@ -52,7 +52,7 @@ public class MessagePane extends TitledPane {
   private final Optional<Cipher> optionalDC;
   private final KeygenObserver keygenObserver;
 
-  public MessagePane(Stage stage, String title, String cipherName, KeygenObserver keygenObserver) {
+  public CipherMessagePane(Stage stage, String title, String cipherName, KeygenObserver keygenObserver) {
     this.stage = stage;
     this.optionalEC = getCipherInstance(cipherName);
     this.optionalDC = getCipherInstance(cipherName);
@@ -106,7 +106,7 @@ public class MessagePane extends TitledPane {
   }
 
   private void cipherInit() throws InvalidKeyException {
-    if (keygenObserver.isKeyUpdated()) {
+    if (keygenObserver.isUpdated() && keygenObserver.getOptionalKey().isPresent()) {
       Object keyRef = keygenObserver.getOptionalKey().get();
       if (keyRef instanceof SecretKey) {
         cipherInitWithSecretKey((SecretKey) keyRef);
@@ -255,6 +255,7 @@ public class MessagePane extends TitledPane {
       });
     }
 
+    //todo:
     private void storeCipherKey(Key key, String filePath) {
       try (OutputStream os = FileUtils.openOutputStream(new File(filePath, "rh_cipher.key"))) {
         os.write(key.getEncoded());

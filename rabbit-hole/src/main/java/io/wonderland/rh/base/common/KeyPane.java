@@ -1,10 +1,10 @@
-package io.wonderland.rh.cipher;
+package io.wonderland.rh.base.common;
 
-import io.wonderland.rh.base.common.HToggleBox;
+import io.wonderland.rh.base.Observer;
+import io.wonderland.rh.cipher.CipherConstants;
 import io.wonderland.rh.cipher.key.AbstractKeyPane;
 import io.wonderland.rh.cipher.key.DefaultKeyPane;
 import io.wonderland.rh.exception.ServiceException;
-import io.wonderland.rh.keygen.KeygenObserver;
 import io.wonderland.rh.keygen.KeygenPane;
 import io.wonderland.rh.utils.LabelUtils;
 import java.lang.reflect.Constructor;
@@ -40,13 +40,13 @@ public class KeyPane extends TitledPane {
   private final String cipherName;
   private final BorderPane containerPane = new BorderPane();
   private final HToggleBox<RadioButton> keyOriginPane = new HToggleBox<>("Key source : ", 10, RadioButton::new,
-      Map.of("new", () -> setNewKeyPane(), "old", () -> setOldKeyPane()));
-  private final KeygenObserver keygenObserver;
+      Map.of("new", this::setNewKeyPane, "old", this:: setOldKeyPane));
+  private final Observer<Integer,Object> keyObserver;
 
-  public KeyPane(Stage stage, String title, String cipherName,KeygenObserver keygenObserver) {
+  public KeyPane(Stage stage, String title, String cipherName,Observer<Integer,Object> keyObserver) {
     this.stage = stage;
     this.cipherName = cipherName;
-    this.keygenObserver=keygenObserver;
+    this.keyObserver=keyObserver;
     this.setText(title);
     this.build();
   }
@@ -88,13 +88,12 @@ public class KeyPane extends TitledPane {
           .filter(e -> isValidServiceName(e.getAlgorithm(), e.getType()))
           .sorted(Comparator.comparing(e -> e.getAlgorithm().charAt(0)))
           .map(e -> {
-            StringBuilder sb = new StringBuilder(e.getAlgorithm());
-            sb.append(" (")
-                .append(e.getProvider().getName())
-                .append('-')
-                .append(e.getProvider().getVersionStr())
-                .append(')');
-            return sb.toString();
+            String sb = e.getAlgorithm() + " ("
+                + e.getProvider().getName()
+                + '-'
+                + e.getProvider().getVersionStr()
+                + ')';
+            return sb;
           }).collect(Collectors.toList())));
       return allKeyTypes;
     }
@@ -103,8 +102,8 @@ public class KeyPane extends TitledPane {
       if (StringUtils.isEmpty(name)) {
         return false;
       } else {
-        return (!(name.contains(".") || name.contains("OID"))) && (type.equals("KeyGenerator") || type.equals(
-            "KeyPairGenerator"));
+        return (!(name.contains(".") || name.contains("OID"))) &&
+            (type.equals("KeyGenerator") || type.equals("KeyPairGenerator"));
       }
     }
 
@@ -118,7 +117,7 @@ public class KeyPane extends TitledPane {
       private void updateKeyPane(String keygenName) {
         try {
           Optional<Object> optionalKeyGenerator = getKeyGeneratorInstance(keygenName);
-          setCenter(new KeygenPane(stage, optionalKeyGenerator,keygenObserver));
+          setCenter(new KeygenPane(stage, optionalKeyGenerator,keyObserver));
         } catch (Exception e) {
           log.error(e.getMessage());
           setCenter(new Label(e.getMessage()));

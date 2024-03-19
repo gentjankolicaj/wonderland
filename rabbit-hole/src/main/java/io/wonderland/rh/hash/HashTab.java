@@ -1,8 +1,8 @@
 package io.wonderland.rh.hash;
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.CustomTreeItem;
-import io.wonderland.rh.base.TreeCellImpl;
+import io.wonderland.rh.base.common.CustomTreeItem;
+import io.wonderland.rh.base.common.TreeCellImpl;
 import io.wonderland.rh.base.common.ServiceTab;
 import java.security.Provider;
 import java.security.Provider.Service;
@@ -68,7 +68,7 @@ public class HashTab extends ServiceTab {
       if(CollectionUtils.isNotEmpty(digestNameNodes)) {
         cspNode.getChildren().addAll(digestNameNodes);
         //Add CSP nodes to parent
-        rootItem.getChildren().addAll(cspNode);
+        rootItem.getChildren().add(cspNode);
       }
     }
 

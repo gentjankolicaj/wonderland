@@ -5,6 +5,7 @@ import io.wonderland.alice.jca.AliceProvider;
 import io.wonderland.rh.cipher.CipherTab;
 import io.wonderland.rh.cryptanalysis.CryptanalysisTab;
 import io.wonderland.rh.hash.HashTab;
+import io.wonderland.rh.mac.MacTab;
 import io.wonderland.rh.misc.MiscTab;
 import io.wonderland.rh.keygen.KeygenTab;
 import java.security.Security;
@@ -31,10 +32,11 @@ public class RabbitHoleApplication extends Application {
     CipherTab cipherTab = new CipherTab(stage,"Crypto","Cipher");
     CryptanalysisTab cryptanalysisTab = new CryptanalysisTab(stage);
     HashTab digestTab = new HashTab(stage,"Hash", "MessageDigest");
+    MacTab macTab=new MacTab(stage,"MAC","Mac");
     KeygenTab keygenTab=new KeygenTab(stage,"Keygen","KeyGenerator","KeyPairGenerator");
     MiscTab miscTab = new MiscTab(stage,"Misc");
 
-    tabPane.getTabs().addAll(cipherTab,  digestTab,keygenTab,cryptanalysisTab, miscTab);
+    tabPane.getTabs().addAll(cipherTab,  digestTab,macTab,keygenTab,cryptanalysisTab, miscTab);
 
     Scene scene = new Scene(tabPane, 1100, 800);
     stage.setScene(scene);

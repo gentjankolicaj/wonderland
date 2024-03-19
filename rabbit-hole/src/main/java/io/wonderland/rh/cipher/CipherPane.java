@@ -1,5 +1,6 @@
 package io.wonderland.rh.cipher;
 
+import io.wonderland.rh.base.common.KeyPane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenObserver;
 import io.wonderland.rh.utils.LabelUtils;
@@ -19,12 +20,12 @@ public class CipherPane extends VBox {
 
   private final VBox infoBox= new VBox();
   private final KeyPane keyPane;
-  private final MessagePane messagePane;
+  private final CipherMessagePane cipherMessagePane;
   private final KeygenObserver keygenObserver=new KeygenObserver();
 
   public CipherPane(Stage stage, String cipherName) throws NoSuchPaddingException, NoSuchAlgorithmException{
     this.keyPane = new KeyPane(stage,"Cipher key", cipherName, keygenObserver);
-    this.messagePane = new MessagePane(stage,"Message", cipherName,  keygenObserver);
+    this.cipherMessagePane = new CipherMessagePane(stage,"Cipher message", cipherName,  keygenObserver);
     this.build(cipherName);
   }
 
@@ -32,10 +33,10 @@ public class CipherPane extends VBox {
     Scene scene=new Scene(this,width,height);
     Stage stage=new Stage();
     this.keyPane = new KeyPane(stage,"Cipher key", cipherName, keygenObserver);
-    this.messagePane = new MessagePane(stage,"Message", cipherName,  keygenObserver);
+    this.cipherMessagePane = new CipherMessagePane(stage,"Cipher message", cipherName,  keygenObserver);
     this.build(cipherName);
     stage.setScene(scene);
-    stage.setTitle("WINDOW : "+cipherName);
+    stage.setTitle("CIPHER WINDOW : "+cipherName);
     stage.show();
   }
 
@@ -43,7 +44,7 @@ public class CipherPane extends VBox {
 
   private void build(String cipherName) throws NoSuchPaddingException, NoSuchAlgorithmException {
     this.updateInfoBox(cipherName);
-    this.getChildren().addAll(infoBox,keyPane,messagePane);
+    this.getChildren().addAll(infoBox,keyPane, cipherMessagePane);
 
   }
 

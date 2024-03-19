@@ -1,4 +1,4 @@
-package io.wonderland.rh.base;
+package io.wonderland.rh.base.common;
 
 import javafx.scene.control.TreeCell;
 

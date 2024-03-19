@@ -1,5 +1,4 @@
-package io.wonderland.rh.cipher;
-
+package io.wonderland.rh.mac;
 
 import io.wonderland.rh.GlobalConstants;
 import io.wonderland.rh.base.common.CustomTreeItem;
@@ -18,34 +17,34 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-
 @Slf4j
-public class CipherTab extends ServiceTab {
+public class MacTab extends ServiceTab {
+  private final BorderPane macPaneWrapper =new BorderPane();
 
-  private final BorderPane cipherPaneWrapper = new BorderPane();
-
-  public CipherTab(Stage stage, String title, String serviceType) {
+  public MacTab(Stage stage,String title, String serviceType) {
     super(stage, title, serviceType);
 
     SplitPane splitPane = new SplitPane();
 
     //stack pane
     final StackPane stackPane = new StackPane();
-    stackPane.getChildren().add(createCiphersPane());
+    stackPane.getChildren().add(createMacPane());
 
-    this.cipherPaneWrapper.setCenter(getWelcomePane());
+    this.macPaneWrapper.setCenter(getWelcomePane());
 
-    splitPane.getItems().addAll(stackPane, cipherPaneWrapper);
-    splitPane.setDividerPositions(0.3f, 0.7f);
+    splitPane.getItems().addAll(stackPane, macPaneWrapper);
+    splitPane.setDividerPositions(0.3f, 0.6f);
 
     this.setContent(splitPane);
   }
+
 
   @Override
   protected boolean isValidServiceName(String name) {
@@ -56,7 +55,7 @@ public class CipherTab extends ServiceTab {
     }
   }
 
-  private StackPane createCiphersPane() {
+  private StackPane createMacPane() {
     TreeItem<String> rootItem = new TreeItem<>("~/", null);
     rootItem.setExpanded(true);
 
@@ -65,20 +64,19 @@ public class CipherTab extends ServiceTab {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      List<CustomTreeItem<String>> cipherNameNodes = getCipherNameNodes(cspNode.getValue());
-      if (CollectionUtils.isNotEmpty(cipherNameNodes)) {
-        cspNode.getChildren().addAll(cipherNameNodes);
-
+      List<CustomTreeItem<String>> nameNodes= getNameNodes(cspNode.getValue());
+      if(CollectionUtils.isNotEmpty(nameNodes)) {
+        cspNode.getChildren().addAll(nameNodes);
         //Add CSP nodes to parent
         rootItem.getChildren().add(cspNode);
       }
     }
 
     TreeView<String> treeView = new TreeView<>(rootItem);
-    treeView.setCellFactory(f -> new TreeCellImpl());
+    treeView.setCellFactory(f->new TreeCellImpl());
     treeView.getSelectionModel().selectedItemProperty()
         .addListener((ObservableValue<? extends TreeItem<String>> observableValue,
-            TreeItem<String> oldItem, TreeItem<String> newItem) -> selectCipher(newItem));
+            TreeItem<String> oldItem, TreeItem<String> newItem) -> selectMessageDigest(newItem));
 
     StackPane cipherStackPane = new StackPane();
     cipherStackPane.getChildren().add(treeView);
@@ -92,47 +90,47 @@ public class CipherTab extends ServiceTab {
         .collect(Collectors.toList());
   }
 
-  private List<CustomTreeItem<String>> getCipherNameNodes(String cspName) {
+  private List<CustomTreeItem<String>> getNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
     }
-    return provider.getServices().stream()
-        .filter(s -> Arrays.stream(serviceTypes).anyMatch(st -> st.equals(s.getType())))
+    return provider.getServices().stream().filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
         .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0)))
         .map(this::getCustomTreeItem).collect(Collectors.toList());
   }
 
-  private void selectCipher(TreeItem<String> node) {
-    this.updateCipherPane(node);
+  private void selectMessageDigest(TreeItem<String> node) {
+    this.updateContentPane(node);
   }
 
-  private void updateCipherPane(TreeItem<String> node) {
-    //Update cipher pane
+  private void updateContentPane(TreeItem<String> node) {
     try {
-      if (!node.isLeaf()) {
-        throw new IllegalArgumentException("Cipher not valid,please select a cipher.");
+      if(!node.isLeaf()){
+        throw new IllegalArgumentException("MAC function not valid,please select a MAC.");
       }
-      this.cipherPaneWrapper.setCenter(new CipherPane(this.stage, node.getValue()));
+      this.macPaneWrapper.setCenter(new MacPane(stage,node.getValue()));
     } catch (Exception e) {
       log.error(e.getMessage());
-      this.cipherPaneWrapper.setCenter(new BorderPane(new Label(e.getMessage())));
+      this.macPaneWrapper.setCenter(new Label(e.getMessage()));
     }
   }
 
-  private BorderPane getWelcomePane() {
-    return new BorderPane(new Label("Welcome to cipher menu.Please select a cipher from left..."));
+  private Pane getWelcomePane(){
+    BorderPane pane=new BorderPane();
+    Label welcomeLbl=new Label("Welcome to MAC menu.Please a MAC function from left...");
+    pane.setCenter(welcomeLbl);
+    return pane;
   }
 
   private CustomTreeItem<String> getCustomTreeItem(String element) {
     return new CustomTreeItem<>(element, arg -> {
       try {
-        new CipherPane(element,  GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+        new MacPane(element, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
       } catch (Exception ex) {
         log.error(ex.getMessage());
       }
     });
   }
-
 
 }
