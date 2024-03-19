@@ -8,7 +8,9 @@ import java.security.KeyPair;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,19 +35,20 @@ public class KeygenObserver extends AbstractObserver<Object> {
   }
 
   private void buildEmpty() {
-    this.vBox.getChildren().addAll(LabelUtils.getTitle("Key type : none."),
-        LabelUtils.getTitle("Encryption key : none."));
+    this.vBox.getChildren().addAll(new HBox(LabelUtils.getTitle("Key type : "),new Label("none")),
+        new HBox(LabelUtils.getTitle("Encryption key : "),new Label("none")));
   }
 
   private void buildSecretKey() {
-    this.vBox.getChildren().addAll(LabelUtils.getTitle("Key type : secret key."),
-        LabelUtils.getTitle("Encryption key : secret key."));
+    this.vBox.getChildren().addAll(new HBox(LabelUtils.getTitle("Key type : "),new Label("Secret key")),
+        new HBox(LabelUtils.getTitle("Encryption key : "),new Label("Secret key")));
   }
 
   private void buildKeyPair() {
     HToggleBox<RadioButton> encryptionKeyTypePane = new HToggleBox<>("Encryption key : ", 10, RadioButton::new,
         Map.of("Private key", () -> setPublicKeySelected(false), "Public key", () -> setPublicKeySelected(true)));
-    this.vBox.getChildren().addAll(LabelUtils.getTitle("Key type : key pair."), encryptionKeyTypePane);
+    encryptionKeyTypePane.selectToggle("Public key");
+    this.vBox.getChildren().addAll(new HBox(LabelUtils.getTitle("Key type : "),new Label("Key pair")),encryptionKeyTypePane);
   }
 
   @Override

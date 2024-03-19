@@ -6,7 +6,6 @@ import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenObserver;
 import java.io.File;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -31,7 +30,6 @@ import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.K;
 
 @Slf4j
 public class MessagePane extends TitledPane {

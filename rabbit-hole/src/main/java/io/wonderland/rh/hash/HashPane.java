@@ -9,6 +9,7 @@ import java.util.Optional;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -29,23 +30,31 @@ public class HashPane extends BorderPane {
   private final TextPane digestPane=new TextPane("Digest",digestTextArea);
   private final HBox messageBox=new HBox();
   private final Stage stage;
-  private final String messageDigestName;
-  private Optional<MessageDigest> optionalMD;
+  private final Optional<MessageDigest> optionalMD;
 
   public HashPane(Stage stage, String messageDigestName) throws NoSuchAlgorithmException {
     this.stage=stage;
-    this.messageDigestName=messageDigestName;
     this.optionalMD = getMessageDigestInstance(messageDigestName);
     this.build();
   }
 
-  private void build() throws NoSuchAlgorithmException {
+  public HashPane( String messageDigestName,double width,double height) throws NoSuchAlgorithmException {
+    this.stage=new Stage();
+    Scene scene=new Scene(this,width,height);
+    this.optionalMD = getMessageDigestInstance(messageDigestName);
+    this.build();
+    this.stage.setScene(scene);
+    this.stage.setTitle("HASH WINDOW : "+messageDigestName);
+    this.stage.show();
+  }
+
+  private void build() {
     this.buildToolPanel();
     this.setTop(this.miscBox);
     this.setCenter(getMessageBox());
   }
 
-  private VBox buildToolPanel() {
+  private void buildToolPanel() {
     miscBox.setPadding(new Insets(5,5,5,5));
     miscBox.setSpacing(10);
 
@@ -54,7 +63,6 @@ public class HashPane extends BorderPane {
     BorderPane buttonPane = getButtonPane();
 
     miscBox.getChildren().addAll(infoBox, buttonPane);
-    return miscBox;
   }
 
   private VBox getInfoBox(){
@@ -62,7 +70,7 @@ public class HashPane extends BorderPane {
     if(optionalMD.isPresent()) {
       MessageDigest md=optionalMD.get();
       HBox hashBox = new HBox(LabelUtils.getTitle("Hash : "),new Label(md.getAlgorithm()) );
-      HBox digestLengthBox = new HBox(LabelUtils.getTitle("Digest length : "), new Label("" + md.getDigestLength()+" bits."));
+      HBox digestLengthBox = new HBox(LabelUtils.getTitle("Digest length : "), new Label(md.getDigestLength()+" bits."));
       HBox providerBox = new HBox(LabelUtils.getTitle("CSP : "), new Label(md.getProvider().getName() + "-" + md.getProvider().getVersionStr()));
       HBox otherInfoBox = new HBox(LabelUtils.getTitle("Info : "), new Label(md.getProvider().getInfo()));
       infoBox.getChildren().addAll(hashBox, digestLengthBox, providerBox, otherInfoBox);

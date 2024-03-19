@@ -1,5 +1,9 @@
 package io.wonderland.rh.keygen;
 
+import io.wonderland.rh.GlobalConstants;
+import io.wonderland.rh.base.AbstractTreeItem;
+import io.wonderland.rh.base.CustomTreeItem;
+import io.wonderland.rh.base.TreeCellImpl;
 import io.wonderland.rh.base.common.ServiceTab;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -72,7 +76,7 @@ public class KeygenTab extends ServiceTab {
 
       //Populate CSP node with correct keygen algorithm name
       for (TreeItem<String> cspNode : cspNodes) {
-        List<TreeItem<String>> keygenNodes = getKeygenNodes(cspNode.getValue(), serviceNode.getValue());
+        List<AbstractTreeItem<String>> keygenNodes = getKeygenNodes(cspNode.getValue(), serviceNode.getValue());
         if (CollectionUtils.isNotEmpty(keygenNodes)) {
           cspNode.getChildren().addAll(keygenNodes);
           serviceNode.getChildren().add(cspNode);
@@ -84,6 +88,7 @@ public class KeygenTab extends ServiceTab {
     rootItem.getChildren().addAll(serviceNodes);
 
     TreeView<String> treeView = new TreeView<>(rootItem);
+    treeView.setCellFactory(f->new TreeCellImpl());
     treeView.getSelectionModel().selectedItemProperty()
         .addListener((ObservableValue<? extends TreeItem<String>> observableValue,
             TreeItem<String> oldItem, TreeItem<String> newItem) -> selectKeygen(newItem));
@@ -104,14 +109,14 @@ public class KeygenTab extends ServiceTab {
         .collect(Collectors.toList());
   }
 
-  private List<TreeItem<String>> getKeygenNodes(String cspName, String serviceName) {
+  private List<AbstractTreeItem<String>> getKeygenNodes(String cspName, String serviceName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
     }
     return provider.getServices().stream().filter(s -> serviceName.equals(s.getType()))
-        .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0))).map(
-            TreeItem::new).collect(
+        .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0))).map(e->
+            getCustomTreeItem(cspName,e)).collect(
             Collectors.toList());
   }
 
@@ -130,16 +135,21 @@ public class KeygenTab extends ServiceTab {
       return tmp;
   }
 
-  private static Optional<Object> getSelectedKeygen(String cspName, String serviceType, String serviceName)
-      throws NoSuchAlgorithmException, NoSuchProviderException {
-    if (StringUtils.isEmpty(serviceType)) {
+
+  private static Optional<Object> getSelectedKeygen(String cspName,String serviceName) {
+    if (StringUtils.isEmpty(serviceName)) {
       return Optional.empty();
     }
-    if (serviceType.equalsIgnoreCase("KeyPairGenerator"))
-      return Optional.ofNullable(getKeyPairGenerator(cspName, serviceName));
-    else if (serviceType.equalsIgnoreCase("KeyGenerator"))
-      return Optional.ofNullable(getKeyGenerator(cspName, serviceName));
-    else
+    try{
+     return Optional.of(getKeyGenerator(cspName, serviceName));
+    }catch (Exception e){
+         log.error(e.getMessage());
+    }
+    try{
+      return Optional.of(getKeyPairGenerator(cspName,serviceName));
+    }catch (Exception e){
+      log.error(e.getMessage());
+    }
       return Optional.empty();
   }
   private void selectKeygen(TreeItem<String> node) {
@@ -151,7 +161,7 @@ public class KeygenTab extends ServiceTab {
       if(!node.isLeaf()){
         throw new IllegalArgumentException("Key generator not valid,please select a key generator.");
       }
-      Optional<Object> optionalKeygen = getSelectedKeygen(node.getParent().getValue(), node.getParent().getParent().getValue(), node.getValue());
+      Optional<Object> optionalKeygen = getSelectedKeygen(node.getParent().getValue(),node.getValue());
       this.keygenPaneWrapper.setCenter(new KeygenPane(stage,optionalKeygen));
     } catch (Exception e) {
       log.error(e.getMessage());
@@ -164,6 +174,17 @@ public class KeygenTab extends ServiceTab {
     Label welcomeLbl=new Label("Welcome to keygen menu.Please a key generator from left...");
     pane.setCenter(welcomeLbl);
     return pane;
+  }
+
+  private CustomTreeItem<String> getCustomTreeItem(String cspName,String keygenName) {
+    return new CustomTreeItem<>(keygenName, arg -> {
+      try {
+        Optional<Object> optionalKeygen = getSelectedKeygen(cspName,keygenName);
+        new KeygenPane(optionalKeygen, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+      } catch (Exception ex) {
+        log.error(ex.getMessage());
+      }
+    });
   }
 
 }

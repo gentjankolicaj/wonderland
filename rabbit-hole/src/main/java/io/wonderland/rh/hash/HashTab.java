@@ -1,14 +1,15 @@
 package io.wonderland.rh.hash;
 
+import io.wonderland.rh.GlobalConstants;
+import io.wonderland.rh.base.CustomTreeItem;
+import io.wonderland.rh.base.TreeCellImpl;
 import io.wonderland.rh.base.common.ServiceTab;
-import java.security.MessageDigest;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
@@ -26,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class HashTab extends ServiceTab {
   private final BorderPane hashPaneWrapper=new BorderPane();
-  private Optional<MessageDigest> messageDigest=Optional.empty();
 
   public HashTab(Stage stage,String title, String serviceType) {
     super(stage, title, serviceType);
@@ -64,7 +64,7 @@ public class HashTab extends ServiceTab {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      List<TreeItem<String>> digestNameNodes=getDigestNameNodes(cspNode.getValue());
+      List<CustomTreeItem<String>> digestNameNodes=getDigestNameNodes(cspNode.getValue());
       if(CollectionUtils.isNotEmpty(digestNameNodes)) {
         cspNode.getChildren().addAll(digestNameNodes);
         //Add CSP nodes to parent
@@ -73,6 +73,7 @@ public class HashTab extends ServiceTab {
     }
 
     TreeView<String> treeView = new TreeView<>(rootItem);
+    treeView.setCellFactory(f->new TreeCellImpl());
     treeView.getSelectionModel().selectedItemProperty()
         .addListener((ObservableValue<? extends TreeItem<String>> observableValue,
             TreeItem<String> oldItem, TreeItem<String> newItem) -> selectMessageDigest(newItem));
@@ -89,15 +90,14 @@ public class HashTab extends ServiceTab {
         .collect(Collectors.toList());
   }
 
-  private List<TreeItem<String>> getDigestNameNodes(String cspName) {
+  private List<CustomTreeItem<String>> getDigestNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
     }
     return provider.getServices().stream().filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
-        .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0))).map(
-            TreeItem::new).collect(
-            Collectors.toList());
+        .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0)))
+        .map(this::getCustomTreeItem).collect(Collectors.toList());
   }
 
   private void selectMessageDigest(TreeItem<String> node) {
@@ -121,5 +121,15 @@ public class HashTab extends ServiceTab {
     Label welcomeLbl=new Label("Welcome to hash menu.Please a hash function from left...");
     pane.setCenter(welcomeLbl);
     return pane;
+  }
+
+  private CustomTreeItem<String> getCustomTreeItem(String element) {
+    return new CustomTreeItem<>(element, arg -> {
+      try {
+        new HashPane(element, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+      } catch (Exception ex) {
+        log.error(ex.getMessage());
+      }
+    });
   }
 }

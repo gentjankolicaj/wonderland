@@ -2,8 +2,8 @@ package io.wonderland.rh;
 
 public class GlobalConstants {
 
-  public static final String ALICE_CSP = "Alice";
-  public static final String BC_CSP = "BC";
+  public static final double WINDOW_WIDTH=1100;
+  public static final double WINDOW_HEIGHT=800;
 
 
 }

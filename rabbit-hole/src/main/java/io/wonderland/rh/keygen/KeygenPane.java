@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -25,14 +26,12 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class KeygenPane extends BorderPane  {
   private static final String DEFAULT_SECRET_KEY_FILE_NAME = "secret_key";
   private static final String DEFAULT_PRIVATE_KEY_FILENAME = "private_key";
   public static final String DEFAULT_PUBLIC_KEY_FILENAME = "public_key";
-  public static final String KEYGEN_ALGORITHM = "Keygen algorithm: ";
   private final VBox miscBox = new VBox();
   private final KeygenObservable keygenObservable =new KeygenObservable() ;
   private final Stage stage;
@@ -52,13 +51,23 @@ public class KeygenPane extends BorderPane  {
     this.build();
   }
 
+  public KeygenPane(Optional<Object> optionalGen,double width,double height) {
+    this.stage=new Stage();
+    Scene scene=new Scene(this,width,height);
+    this.optionalGen=optionalGen;
+    this.build();
+    this.stage.setScene(scene);
+    this.stage.setTitle("KEYGEN WINDOW");
+    this.stage.show();
+  }
+
   private void build(){
    this.buildToolPanel();
    this.setTop(miscBox);
    this.setCenter(getCenterPane());
   }
 
-  private VBox buildToolPanel() {
+  private void buildToolPanel() {
     miscBox.setPadding(new Insets(5, 5, 5, 5));
     miscBox.setSpacing(10);
 
@@ -69,7 +78,6 @@ public class KeygenPane extends BorderPane  {
     HBox buttonBox = getButtonBox();
 
     miscBox.getChildren().addAll(infoBox, buttonBox);
-    return miscBox;
   }
 
   private BorderPane getCenterPane(){

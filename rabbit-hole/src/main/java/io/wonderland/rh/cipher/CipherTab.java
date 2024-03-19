@@ -1,6 +1,9 @@
 package io.wonderland.rh.cipher;
 
 
+import io.wonderland.rh.GlobalConstants;
+import io.wonderland.rh.base.CustomTreeItem;
+import io.wonderland.rh.base.TreeCellImpl;
 import io.wonderland.rh.base.common.ServiceTab;
 import java.security.Provider;
 import java.security.Provider.Service;
@@ -25,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class CipherTab extends ServiceTab {
 
-  private final BorderPane cipherPaneWrapper =new BorderPane();
+  private final BorderPane cipherPaneWrapper = new BorderPane();
 
   public CipherTab(Stage stage, String title, String serviceType) {
     super(stage, title, serviceType);
@@ -62,8 +65,8 @@ public class CipherTab extends ServiceTab {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      List<TreeItem<String>> cipherNameNodes= getCipherNameNodes(cspNode.getValue());
-      if(CollectionUtils.isNotEmpty(cipherNameNodes)) {
+      List<CustomTreeItem<String>> cipherNameNodes = getCipherNameNodes(cspNode.getValue());
+      if (CollectionUtils.isNotEmpty(cipherNameNodes)) {
         cspNode.getChildren().addAll(cipherNameNodes);
 
         //Add CSP nodes to parent
@@ -72,6 +75,7 @@ public class CipherTab extends ServiceTab {
     }
 
     TreeView<String> treeView = new TreeView<>(rootItem);
+    treeView.setCellFactory(f -> new TreeCellImpl());
     treeView.getSelectionModel().selectedItemProperty()
         .addListener((ObservableValue<? extends TreeItem<String>> observableValue,
             TreeItem<String> oldItem, TreeItem<String> newItem) -> selectCipher(newItem));
@@ -88,36 +92,47 @@ public class CipherTab extends ServiceTab {
         .collect(Collectors.toList());
   }
 
-  private List<TreeItem<String>> getCipherNameNodes(String cspName) {
+  private List<CustomTreeItem<String>> getCipherNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
     }
-    return provider.getServices().stream().filter(s -> Arrays.stream(serviceTypes).anyMatch(st->st.equals(s.getType())))
-        .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0))).map(
-            TreeItem::new).collect(
-            Collectors.toList());
+    return provider.getServices().stream()
+        .filter(s -> Arrays.stream(serviceTypes).anyMatch(st -> st.equals(s.getType())))
+        .map(Service::getAlgorithm).filter(this::isValidServiceName).sorted(Comparator.comparing(s -> s.charAt(0)))
+        .map(this::getCustomTreeItem).collect(Collectors.toList());
   }
-
 
   private void selectCipher(TreeItem<String> node) {
     this.updateCipherPane(node);
   }
 
-  private void updateCipherPane(TreeItem<String> node){
+  private void updateCipherPane(TreeItem<String> node) {
     //Update cipher pane
     try {
-      if(!node.isLeaf()){
+      if (!node.isLeaf()) {
         throw new IllegalArgumentException("Cipher not valid,please select a cipher.");
       }
       this.cipherPaneWrapper.setCenter(new CipherPane(this.stage, node.getValue()));
-    }catch (Exception e){
+    } catch (Exception e) {
       log.error(e.getMessage());
       this.cipherPaneWrapper.setCenter(new BorderPane(new Label(e.getMessage())));
     }
   }
 
-  private BorderPane getWelcomePane(){
-   return new BorderPane(new Label("Welcome to cipher menu.Please select a cipher from left..."));
+  private BorderPane getWelcomePane() {
+    return new BorderPane(new Label("Welcome to cipher menu.Please select a cipher from left..."));
   }
+
+  private CustomTreeItem<String> getCustomTreeItem(String element) {
+    return new CustomTreeItem<>(element, arg -> {
+      try {
+        new CipherPane(element,  GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+      } catch (Exception ex) {
+        log.error(ex.getMessage());
+      }
+    });
+  }
+
+
 }

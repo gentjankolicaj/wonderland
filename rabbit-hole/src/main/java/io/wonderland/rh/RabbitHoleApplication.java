@@ -25,21 +25,21 @@ public class RabbitHoleApplication extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage) {
+  public void start(Stage stage) {
     TabPane tabPane = new TabPane();
 
-    CipherTab cipherTab = new CipherTab(primaryStage,"Crypto","Cipher");
-    CryptanalysisTab cryptanalysisTab = new CryptanalysisTab(primaryStage);
-    HashTab digestTab = new HashTab(primaryStage,"Hash", "MessageDigest");
-    KeygenTab keygenTab=new KeygenTab(primaryStage,"Keygen","KeyGenerator","KeyPairGenerator");
-    MiscTab miscTab = new MiscTab(primaryStage,"Misc");
+    CipherTab cipherTab = new CipherTab(stage,"Crypto","Cipher");
+    CryptanalysisTab cryptanalysisTab = new CryptanalysisTab(stage);
+    HashTab digestTab = new HashTab(stage,"Hash", "MessageDigest");
+    KeygenTab keygenTab=new KeygenTab(stage,"Keygen","KeyGenerator","KeyPairGenerator");
+    MiscTab miscTab = new MiscTab(stage,"Misc");
 
     tabPane.getTabs().addAll(cipherTab,  digestTab,keygenTab,cryptanalysisTab, miscTab);
 
-    Scene scene = new Scene(tabPane, 1124, 800);
-    primaryStage.setScene(scene);
-    primaryStage.setTitle("Rabbit hole");
-    primaryStage.show();
+    Scene scene = new Scene(tabPane, 1100, 800);
+    stage.setScene(scene);
+    stage.setTitle("Rabbit hole");
+    stage.show();
   }
 
   private static void addSecurityProviders(){

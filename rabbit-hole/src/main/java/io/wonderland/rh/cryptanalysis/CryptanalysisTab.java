@@ -84,7 +84,6 @@ public class CryptanalysisTab extends Tab {
     if (CollectionUtils.isNotEmpty(this.contextWorkPane.getChildren())) {
       this.contextWorkPane.getChildren().removeAll(this.contextWorkPane.getChildren());
     }
-
     if (WORK_PANES.get(newItem.getValue()) == null) {
       //build language pane
       this.contextWorkPane.getChildren().add(new LanguageFrequencyPane(newItem.getValue()));

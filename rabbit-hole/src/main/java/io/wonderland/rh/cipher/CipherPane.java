@@ -5,11 +5,10 @@ import io.wonderland.rh.keygen.KeygenObserver;
 import io.wonderland.rh.utils.LabelUtils;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -18,22 +17,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CipherPane extends VBox {
 
-  private final VBox infoBox;
-  public KeyPane keyPane;
-  public MessagePane messagePane;
-  private String cipherName;
+  private final VBox infoBox= new VBox();
+  private final KeyPane keyPane;
+  private final MessagePane messagePane;
   private final KeygenObserver keygenObserver=new KeygenObserver();
 
   public CipherPane(Stage stage, String cipherName) throws NoSuchPaddingException, NoSuchAlgorithmException{
-    this.cipherName = cipherName;
-    this.infoBox = new VBox();
     this.keyPane = new KeyPane(stage,"Cipher key", cipherName, keygenObserver);
     this.messagePane = new MessagePane(stage,"Message", cipherName,  keygenObserver);
-    this.build();
+    this.build(cipherName);
   }
 
-  private void build() throws NoSuchPaddingException, NoSuchAlgorithmException {
-    this.updateInfoBox();
+  public CipherPane(String cipherName,double width,double height) throws NoSuchPaddingException, NoSuchAlgorithmException{
+    Scene scene=new Scene(this,width,height);
+    Stage stage=new Stage();
+    this.keyPane = new KeyPane(stage,"Cipher key", cipherName, keygenObserver);
+    this.messagePane = new MessagePane(stage,"Message", cipherName,  keygenObserver);
+    this.build(cipherName);
+    stage.setScene(scene);
+    stage.setTitle("WINDOW : "+cipherName);
+    stage.show();
+  }
+
+
+
+  private void build(String cipherName) throws NoSuchPaddingException, NoSuchAlgorithmException {
+    this.updateInfoBox(cipherName);
     this.getChildren().addAll(infoBox,keyPane,messagePane);
 
   }
@@ -42,10 +51,10 @@ public class CipherPane extends VBox {
       throws ServiceException, NoSuchPaddingException, NoSuchAlgorithmException {
     Cipher tmp = Cipher.getInstance(serviceName);
       log.info("Selected cipher '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
-    return Optional.ofNullable(tmp);
+    return Optional.of(tmp);
   }
 
-  protected void updateInfoBox() throws NoSuchPaddingException, NoSuchAlgorithmException {
+  protected void updateInfoBox(String cipherName) throws NoSuchPaddingException, NoSuchAlgorithmException {
     Optional<Cipher> optionalCipher = getCipherInstance(cipherName);
     if(optionalCipher.isPresent()) {
       Cipher c=optionalCipher.get();

@@ -2,9 +2,6 @@ package io.wonderland.rh.base.common;
 
 import io.wonderland.rh.utils.LabelUtils;
 import java.util.Objects;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -14,8 +11,6 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import lombok.Getter;
 import lombok.Setter;
 
