@@ -20,7 +20,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -40,16 +39,17 @@ public class CipherMessagePane extends TitledPane {
   private final Alert alert = new Alert(AlertType.NONE);
   private final VBox controlBox = new VBox();
   private final HBox textBox = new HBox();
-  private final BorderPane rootPane = new BorderPane();
+  private final VBox rootBox = new VBox();
   private final TextArea cipherTextArea = new TextArea();
   private final TextArea plainTextArea = new TextArea();
 
   //Observers of content arrays
   private final TypeObserver<byte[]> ciphertextObserver=new TypeObserver<>();
+  private final TypeObserver<byte[]> plaintextObserver=new TypeObserver<>() ;
   private final Dropdown<String,byte[],TextArea> ciphertextDropdown=DropdownHelper.getEncodingDropdown(cipherTextArea,ciphertextObserver);
-
+  private final Dropdown<String,byte[],TextArea> plaintextDropdown=DropdownHelper.getCharsetDropdown(plainTextArea,plaintextObserver);
   //text panes
-  private final TextPane plaintextPane = new TextPane("Plaintext", plainTextArea);
+  private final TextPane plaintextPane = new TextPane("Plaintext", plaintextDropdown,plainTextArea);
   private final TextPane ciphertextPane = new TextPane( "Ciphertext",ciphertextDropdown, cipherTextArea);
   private final Button encryptBtn = new Button("encrypt");
   private final Button decryptBtn = new Button("decrypt");
@@ -80,9 +80,9 @@ public class CipherMessagePane extends TitledPane {
     HBox.setHgrow(plaintextPane, Priority.ALWAYS);
     HBox.setHgrow(ciphertextPane, Priority.ALWAYS);
 
-    this.rootPane.setTop(controlBox);
-    this.rootPane.setCenter(textBox);
-    this.setContent(rootPane);
+    this.rootBox.setSpacing(5);
+    this.rootBox.getChildren().addAll(controlBox,textBox);
+    this.setContent(rootBox);
   }
 
   private void buildControlBox() {

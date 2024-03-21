@@ -2,7 +2,7 @@ package io.wonderland.rh.keygen;
 
 import io.wonderland.rh.base.AbstractObserver;
 import io.wonderland.rh.base.common.HToggleBox;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.security.Key;
 import java.security.KeyPair;
 import java.util.Map;
@@ -35,20 +35,20 @@ public class KeygenObserver extends AbstractObserver<Object> {
   }
 
   private void buildEmpty() {
-    this.vBox.getChildren().addAll(new HBox(LabelUtils.getTitle("Key type : "),new Label("none")),
-        new HBox(LabelUtils.getTitle("Encryption key : "),new Label("none")));
+    this.vBox.getChildren().addAll(new HBox(GuiUtils.getTitle("Key type : "),new Label("none")),
+        new HBox(GuiUtils.getTitle("Encryption key : "),new Label("none")));
   }
 
   private void buildSecretKey() {
-    this.vBox.getChildren().addAll(new HBox(LabelUtils.getTitle("Key type : "),new Label("Secret key")),
-        new HBox(LabelUtils.getTitle("Encryption key : "),new Label("Secret key")));
+    this.vBox.getChildren().addAll(new HBox(GuiUtils.getTitle("Key type : "),new Label("Secret key")),
+        new HBox(GuiUtils.getTitle("Encryption key : "),new Label("Secret key")));
   }
 
   private void buildKeyPair() {
     HToggleBox<RadioButton> encryptionKeyTypePane = new HToggleBox<>("Encryption key : ", 10, RadioButton::new,
         Map.of("Private key", () -> setPublicKeySelected(false), "Public key", () -> setPublicKeySelected(true)));
     encryptionKeyTypePane.selectToggle("Public key");
-    this.vBox.getChildren().addAll(new HBox(LabelUtils.getTitle("Key type : "),new Label("Key pair")),encryptionKeyTypePane);
+    this.vBox.getChildren().addAll(new HBox(GuiUtils.getTitle("Key type : "),new Label("Key pair")),encryptionKeyTypePane);
   }
 
   @Override

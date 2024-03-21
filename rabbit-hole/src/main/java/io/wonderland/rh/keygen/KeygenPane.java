@@ -2,7 +2,7 @@ package io.wonderland.rh.keygen;
 
 
 import io.wonderland.rh.base.Observer;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.io.File;
 import java.io.OutputStream;
 import java.security.Key;
@@ -98,16 +98,16 @@ public class KeygenPane extends BorderPane  {
       Object service = optionalGen.get();
       if (service instanceof KeyGenerator) {
         KeyGenerator kg=(KeyGenerator) service;
-        HBox keygenNameBox=new HBox(LabelUtils.getTitle("Algorithm : "),new Label(kg.getAlgorithm()));
-        HBox providerBox=new HBox(LabelUtils.getTitle("CSP : "),new Label(kg.getProvider().getName()+"-"+kg.getProvider().getVersionStr()));
-        HBox otherInfoBox=new HBox(LabelUtils.getTitle("Info : "),new Label(kg.getProvider().getInfo()));
+        HBox keygenNameBox=new HBox(GuiUtils.getTitle("Algorithm : "),new Label(kg.getAlgorithm()));
+        HBox providerBox=new HBox(GuiUtils.getTitle("CSP : "),new Label(kg.getProvider().getName()+"-"+kg.getProvider().getVersionStr()));
+        HBox otherInfoBox=new HBox(GuiUtils.getTitle("Info : "),new Label(kg.getProvider().getInfo()));
         infoBox.getChildren().addAll(keygenNameBox,providerBox,otherInfoBox);
 
       } else if (service instanceof KeyPairGenerator) {
         KeyPairGenerator kg=(KeyPairGenerator) service;
-        HBox keygenNameBox=new HBox(LabelUtils.getTitle("Algorithm : "),new Label(kg.getAlgorithm()));
-        HBox providerBox=new HBox(LabelUtils.getTitle("CSP : "),new Label(kg.getProvider().getName()+"-"+kg.getProvider().getVersionStr()));
-        HBox otherInfoBox=new HBox(LabelUtils.getTitle("Info : "),new Label(kg.getProvider().getInfo()));
+        HBox keygenNameBox=new HBox(GuiUtils.getTitle("Algorithm : "),new Label(kg.getAlgorithm()));
+        HBox providerBox=new HBox(GuiUtils.getTitle("CSP : "),new Label(kg.getProvider().getName()+"-"+kg.getProvider().getVersionStr()));
+        HBox otherInfoBox=new HBox(GuiUtils.getTitle("Info : "),new Label(kg.getProvider().getInfo()));
         infoBox.getChildren().addAll(keygenNameBox,providerBox,otherInfoBox);
       }
     }

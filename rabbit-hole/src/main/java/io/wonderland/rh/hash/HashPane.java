@@ -1,7 +1,7 @@
 package io.wonderland.rh.hash;
 
 import io.wonderland.rh.base.common.TextPane;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -69,10 +69,11 @@ public class HashPane extends BorderPane {
     VBox infoBox=new VBox();
     if(optionalMD.isPresent()) {
       MessageDigest md=optionalMD.get();
-      HBox hashBox = new HBox(LabelUtils.getTitle("Hash : "),new Label(md.getAlgorithm()) );
-      HBox digestLengthBox = new HBox(LabelUtils.getTitle("Digest length : "), new Label(md.getDigestLength()+" bits."));
-      HBox providerBox = new HBox(LabelUtils.getTitle("CSP : "), new Label(md.getProvider().getName() + "-" + md.getProvider().getVersionStr()));
-      HBox otherInfoBox = new HBox(LabelUtils.getTitle("Info : "), new Label(md.getProvider().getInfo()));
+      HBox hashBox = new HBox(GuiUtils.getTitle("Hash : "),new Label(md.getAlgorithm()) );
+      HBox digestLengthBox = new HBox(GuiUtils.getTitle("Digest length : "), new Label(md.getDigestLength()+" bits."));
+      HBox providerBox = new HBox(
+          GuiUtils.getTitle("CSP : "), new Label(md.getProvider().getName() + "-" + md.getProvider().getVersionStr()));
+      HBox otherInfoBox = new HBox(GuiUtils.getTitle("Info : "), new Label(md.getProvider().getInfo()));
       infoBox.getChildren().addAll(hashBox, digestLengthBox, providerBox, otherInfoBox);
     }
     return infoBox;

@@ -2,7 +2,7 @@ package io.wonderland.rh.keygen;
 
 import io.wonderland.commons.Arrays;
 import io.wonderland.rh.base.common.HToggleBox;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import io.wonderland.rh.utils.ZxingUtils;
 import java.security.Key;
 import java.security.KeyPair;
@@ -56,7 +56,7 @@ public class KeyPairGeneratorPane extends BorderPane {
       ImageView imageView = ZxingUtils.getImageView(this, keyPair.getPublic());
       VBox vBox = new VBox();
       VBox.setVgrow(imageView, Priority.ALWAYS);
-      vBox.getChildren().addAll(LabelUtils.getTitle(PUBLIC_KEY), imageView);
+      vBox.getChildren().addAll(GuiUtils.getTitle(PUBLIC_KEY), imageView);
       hBox.getChildren().add(vBox);
     } catch (Exception e) {
       log.error(e.getMessage());
@@ -69,7 +69,7 @@ public class KeyPairGeneratorPane extends BorderPane {
       ImageView imageView = ZxingUtils.getImageView(this, keyPair.getPrivate());
       VBox vBox = new VBox();
       VBox.setVgrow(imageView, Priority.ALWAYS);
-      vBox.getChildren().addAll(LabelUtils.getTitle(PRIVATE_KEY), imageView);
+      vBox.getChildren().addAll(GuiUtils.getTitle(PRIVATE_KEY), imageView);
       hBox.getChildren().add(vBox);
     } catch (Exception e) {
       log.error(e.getMessage());
@@ -91,7 +91,7 @@ public class KeyPairGeneratorPane extends BorderPane {
     HBox hBox = new HBox();
     TextField textField = new TextField();
     textField.setText(Arrays.getStringValueOf(key.getEncoded(), ','));
-    Label label = LabelUtils.getTitle(text);
+    Label label = GuiUtils.getTitle(text);
     HBox.setHgrow(textField, Priority.ALWAYS);
     hBox.getChildren().addAll(label, textField);
     hBox.setSpacing(10);

@@ -5,9 +5,14 @@ import io.wonderland.rh.base.TypeObserver;
 import io.wonderland.rh.base.common.Dropdown;
 import io.wonderland.rh.base.common.DropdownElement;
 import io.wonderland.rh.utils.BaseUtils;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.scene.control.TextArea;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class DropdownHelper {
 
@@ -21,7 +26,7 @@ public class DropdownHelper {
     dropdownElements = ArrayUtils.addAll(dropdownElements, getOctal());
     dropdownElements = ArrayUtils.addAll(dropdownElements, getBinary());
 
-    return new Dropdown<>("Encoding scheme : ", textArea, typeObserver, dropdownElements);
+    return new Dropdown<>("Encoding scheme : ", null,textArea, typeObserver, dropdownElements);
   }
 
   private static DropdownElement<String, byte[], TextArea>[] getBase64() {
@@ -113,5 +118,28 @@ public class DropdownHelper {
           }
         }));
   }
+
+  public static Dropdown<String, byte[], TextArea> getCharsetDropdown(TextArea textArea, TypeObserver<byte[]> typeObserver) {
+    return new Dropdown<>("Charset : ", StandardCharsets.UTF_8.name(), textArea, typeObserver, getCharsetsElements());
+  }
+
+  private static List<DropdownElement<String, byte[], TextArea>> getCharsetsElements(){
+    return Charset.availableCharsets().entrySet().stream().map(e->
+      new DropdownElement<String,byte[],TextArea>(e.getKey(), (observer, textarea) -> {
+        if(StringUtils.isNotEmpty(textarea.getText())) {
+          String actual=textarea.getText();
+          String newText=new String(actual.getBytes(),e.getValue());
+          textarea.clear();
+          textarea.setText(newText);
+          observer.update(newText.getBytes(e.getValue()));
+        }
+      })
+    ).collect(Collectors.toList());
+
+  }
+
+
+
+
 
 }

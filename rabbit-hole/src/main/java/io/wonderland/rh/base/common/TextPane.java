@@ -1,6 +1,6 @@
 package io.wonderland.rh.base.common;
 
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -20,7 +20,7 @@ public class TextPane extends VBox {
     this.title=title;
     this.setSpacing(10);
     VBox.setVgrow(textArea, Priority.ALWAYS);
-    getChildren().addAll(LabelUtils.getTitle(title),textArea);
+    getChildren().addAll(GuiUtils.getTitle(title),textArea);
   }
 
   public TextPane(String title, Pane pane, TextArea textArea) {
@@ -29,7 +29,7 @@ public class TextPane extends VBox {
     this.title=title;
     this.setSpacing(10);
     VBox.setVgrow(textArea, Priority.ALWAYS);
-    getChildren().addAll(LabelUtils.getTitle(title),pane,textArea);
+    getChildren().addAll(GuiUtils.getTitle(title),pane,textArea);
   }
 
 }

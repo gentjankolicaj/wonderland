@@ -17,6 +17,7 @@ module rabbit.hole {
   requires org.jfree.jfreechart;
   requires com.google.zxing.javase;
   requires com.google.zxing;
+  requires org.reflections;
 
   //csp
   requires org.bouncycastle.provider;

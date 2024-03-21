@@ -1,11 +1,9 @@
 package io.wonderland.rh.misc;
 
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.util.Optional;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,7 +12,7 @@ public class MiscPane extends BorderPane {
 
   private final HBox infoBox = new HBox();
 
-  private Optional<Misc> optionalMisc;
+  private final Optional<Misc> optionalMisc;
 
   MiscPane(Optional<Misc> optionalMisc){
     this.optionalMisc=optionalMisc;
@@ -37,7 +35,7 @@ public class MiscPane extends BorderPane {
         this.infoBox.getChildren().add(new Label(" "));
       }
     } else {
-      this.infoBox.getChildren().add(LabelUtils.getTitle("Please choose on misc option on the left."));
+      this.infoBox.getChildren().add(GuiUtils.getTitle("Please choose on misc option on the left."));
     }
   }
 
@@ -49,7 +47,7 @@ public class MiscPane extends BorderPane {
     miscBox.setSpacing(10);
 
     //info labels
-    this.infoBox.getChildren().add(LabelUtils.getTitle("Choose o misc option on the left..."));
+    this.infoBox.getChildren().add(GuiUtils.getTitle("Choose o misc option on the left..."));
 
     miscBox.getChildren().addAll(this.infoBox);
     return miscBox;

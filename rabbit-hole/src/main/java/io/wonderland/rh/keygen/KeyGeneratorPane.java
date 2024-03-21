@@ -2,7 +2,7 @@ package io.wonderland.rh.keygen;
 
 import io.wonderland.commons.Arrays;
 import io.wonderland.rh.base.common.HToggleBox;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import io.wonderland.rh.utils.ZxingUtils;
 import java.security.Key;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class KeyGeneratorPane extends BorderPane {
     HBox hBox=new HBox();
     TextField textField=new TextField();
     textField.setText(Arrays.getStringValueOf(key.getEncoded(),','));
-    Label label= LabelUtils.getTitle(text);
+    Label label= GuiUtils.getTitle(text);
     HBox.setHgrow(textField, Priority.ALWAYS);
     hBox.getChildren().addAll(label,textField);
     hBox.setSpacing(10);

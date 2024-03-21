@@ -1,7 +1,7 @@
 package io.wonderland.rh.base.common;
 
 
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class HToggleBox<T extends ToggleButton> extends HBox {
         buttonList.add(toggle);
       }
       buttonList.forEach(b -> b.setToggleGroup(toggleGroup));
-      this.getChildren().add(LabelUtils.getTitle(title));
+      this.getChildren().add(GuiUtils.getTitle(title));
       this.getChildren().addAll(buttonList);
 
       this.toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {

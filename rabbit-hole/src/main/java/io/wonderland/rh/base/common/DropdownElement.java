@@ -1,6 +1,5 @@
 package io.wonderland.rh.base.common;
 
-import io.wonderland.rh.base.Observer;
 import io.wonderland.rh.base.TypeObserver;
 import java.util.Objects;
 import java.util.function.BiConsumer;

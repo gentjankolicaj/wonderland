@@ -1,7 +1,9 @@
 package io.wonderland.rh.utils;
 
+
 import java.io.IOException;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -12,12 +14,26 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GuiUtils {
+public final class GuiUtils {
 
   private GuiUtils(){}
+
+  public static Label getTitle(String text){
+    Label label = new javafx.scene.control.Label(text);
+    label.setFont(Font.font("ARIAL", FontWeight.BOLD, 13));
+    return label;
+  }
+
+  public static Label getTitle(String text,Font font){
+    Label label = new javafx.scene.control.Label(text);
+    label.setFont(font);
+    return label;
+  }
 
   public static ImageView getImageView(String filePath) {
     try {
@@ -45,5 +61,6 @@ public class GuiUtils {
       return new Background(new BackgroundFill(Paint.valueOf("WHITE"), CornerRadii.EMPTY, Insets.EMPTY));
     }
   }
+
 
 }

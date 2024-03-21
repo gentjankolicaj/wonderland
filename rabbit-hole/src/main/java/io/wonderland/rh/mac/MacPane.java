@@ -3,7 +3,7 @@ package io.wonderland.rh.mac;
 import io.wonderland.rh.base.KeyObserver;
 import io.wonderland.rh.base.SecretKeyObserver;
 import io.wonderland.rh.base.common.KeyPane;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import javafx.scene.Scene;
@@ -12,7 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javax.crypto.Mac;
-import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,10 +54,11 @@ public class MacPane extends VBox {
     Optional<Mac> optionalMac=MacMessagePane.getMacInstance(macName);
     if(optionalMac.isPresent()) {
       Mac mac= optionalMac.get();
-      HBox macBox = new HBox(LabelUtils.getTitle("MAC : "),new Label(mac.getAlgorithm()) );
-      HBox macLengthBox = new HBox(LabelUtils.getTitle("MAC length : "), new Label(mac.getMacLength()+" bits."));
-      HBox providerBox = new HBox(LabelUtils.getTitle("CSP : "), new Label(mac.getProvider().getName() + "-" + mac.getProvider().getVersionStr()));
-      HBox otherInfoBox = new HBox(LabelUtils.getTitle("Info : "), new Label(mac.getProvider().getInfo()));
+      HBox macBox = new HBox(GuiUtils.getTitle("MAC : "),new Label(mac.getAlgorithm()) );
+      HBox macLengthBox = new HBox(GuiUtils.getTitle("MAC length : "), new Label(mac.getMacLength()+" bits."));
+      HBox providerBox = new HBox(
+          GuiUtils.getTitle("CSP : "), new Label(mac.getProvider().getName() + "-" + mac.getProvider().getVersionStr()));
+      HBox otherInfoBox = new HBox(GuiUtils.getTitle("Info : "), new Label(mac.getProvider().getInfo()));
       infoBox.getChildren().addAll(macBox, macLengthBox, providerBox, otherInfoBox);
     }
   }

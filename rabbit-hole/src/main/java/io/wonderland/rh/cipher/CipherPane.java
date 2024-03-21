@@ -3,7 +3,7 @@ package io.wonderland.rh.cipher;
 import io.wonderland.rh.base.common.KeyPane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenObserver;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import javafx.scene.Scene;
@@ -59,10 +59,10 @@ public class CipherPane extends VBox {
     Optional<Cipher> optionalCipher = getCipherInstance(cipherName);
     if(optionalCipher.isPresent()) {
       Cipher c=optionalCipher.get();
-      HBox cipherNameBox=new HBox(LabelUtils.getTitle("Cipher : "),new Label(c.getAlgorithm()));
-      HBox blockSizeBox=new HBox(LabelUtils.getTitle("Block size : "),new Label(""+c.getBlockSize()));
-      HBox providerBox=new HBox(LabelUtils.getTitle("CSP : "),new Label(c.getProvider().getName()+"-"+c.getProvider().getVersionStr()));
-      HBox otherInfoBox=new HBox(LabelUtils.getTitle("Info : "),new Label(c.getProvider().getInfo()));
+      HBox cipherNameBox=new HBox(GuiUtils.getTitle("Cipher : "),new Label(c.getAlgorithm()));
+      HBox blockSizeBox=new HBox(GuiUtils.getTitle("Block size : "),new Label(""+c.getBlockSize()));
+      HBox providerBox=new HBox(GuiUtils.getTitle("CSP : "),new Label(c.getProvider().getName()+"-"+c.getProvider().getVersionStr()));
+      HBox otherInfoBox=new HBox(GuiUtils.getTitle("Info : "),new Label(c.getProvider().getInfo()));
       this.infoBox.getChildren().addAll(cipherNameBox,blockSizeBox,providerBox,otherInfoBox);
     }
   }

@@ -6,7 +6,7 @@ import io.wonderland.rh.cipher.key.AbstractKeyPane;
 import io.wonderland.rh.cipher.key.DefaultKeyPane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenPane;
-import io.wonderland.rh.utils.LabelUtils;
+import io.wonderland.rh.utils.GuiUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.KeyPairGenerator;
@@ -78,7 +78,7 @@ public class KeyPane extends TitledPane {
     private void build() {
       this.keyComboBox = new SearchableComboBox<>(FXCollections.observableArrayList(getKeyTypesString()));
       this.keyComboBox.setOnAction(new KeygenComboBoxEventHandler());
-      this.hBox.getChildren().addAll(LabelUtils.getTitle("Key generator : "), keyComboBox);
+      this.hBox.getChildren().addAll(GuiUtils.getTitle("Key generator : "), keyComboBox);
       this.setTop(hBox);
     }
 
