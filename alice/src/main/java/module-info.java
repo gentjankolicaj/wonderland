@@ -6,9 +6,11 @@ module alice {
   requires lombok;
   requires org.slf4j;
   requires jmathematics;
-  requires common;
+  requires commons;
 
   provides java.security.Provider with io.wonderland.alice.jca.AliceProvider;
   exports io.wonderland.alice.jca.cipher;
+  exports io.wonderland.alice.crypto.cipher.key;
+  exports io.wonderland.alice.jca;
 
 }

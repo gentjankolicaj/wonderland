@@ -16,4 +16,5 @@ public final class RailfenceKeyPane extends DefaultKeyPane<RailfenceKey> {
  public RailfenceKey getKey() {
     return new RailfenceKey(Integer.parseInt(textArea.getText()));
   }
+
 }

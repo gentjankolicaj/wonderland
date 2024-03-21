@@ -5,8 +5,7 @@ module red.queen {
   requires org.apache.commons.io;
   requires lombok;
   requires org.slf4j;
-  requires common;
-
+  requires commons;
 
   //make public classes visible outside module.
   exports io.wonderland.rq.cryptanalysis;

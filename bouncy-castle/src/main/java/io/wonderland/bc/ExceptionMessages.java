@@ -2,7 +2,6 @@ package io.wonderland.bc;
 
 public final class ExceptionMessages {
 
-
   public static final String ARRAY_OFFSET_NOT_VALID = "Array offset can't be less than 0.";
   public static final String PLAINTEXT_NOT_VALID = "Plaintext can't be empty.";
   public static final String CIPHERTEXT_NOT_VALID = "Ciphertext can't be empty.";

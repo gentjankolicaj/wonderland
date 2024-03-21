@@ -19,7 +19,7 @@
     <module>rabbit-hole</module>
     <module>garden</module>
     <module>red-queen</module>
-    <module>common</module>
+    <module>commons</module>
   </modules>
 
   <properties>

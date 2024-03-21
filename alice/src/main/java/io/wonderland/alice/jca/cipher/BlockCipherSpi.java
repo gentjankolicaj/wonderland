@@ -1,7 +1,7 @@
 package io.wonderland.alice.jca.cipher;
 
 import io.wonderland.alice.crypto.BlockCipher;
-import io.wonderland.common.Arrays;
+import io.wonderland.commons.Arrays;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -20,7 +20,7 @@ public abstract class BlockCipherSpi extends CipherSpi {
 
   private final BlockCipher blockCipher;
   private AlgorithmParameters algParams;
-  private byte[] iv;
+  private final byte[] iv;
 
   public BlockCipherSpi(BlockCipher blockCipher) {
     this.blockCipher = blockCipher;

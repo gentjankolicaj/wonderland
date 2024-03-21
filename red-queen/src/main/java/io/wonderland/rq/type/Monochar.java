@@ -1,6 +1,6 @@
 package io.wonderland.rq.type;
 
-import io.wonderland.common.PrimitiveUtils;
+import io.wonderland.commons.PrimitiveUtils;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import lombok.EqualsAndHashCode;

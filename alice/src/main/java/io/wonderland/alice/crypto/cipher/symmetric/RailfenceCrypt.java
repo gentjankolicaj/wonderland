@@ -13,7 +13,7 @@ import io.wonderland.alice.crypto.params.KeyWithIVParameter;
 import io.wonderland.alice.crypto.params.ParameterList;
 import io.wonderland.alice.crypto.params.WrappedKeyParameter;
 import io.wonderland.alice.exception.CipherException;
-import io.wonderland.common.PrimitiveUtils;
+import io.wonderland.commons.PrimitiveUtils;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.wonderland.common;
+package io.wonderland.commons;
 
 import org.apache.commons.lang3.ArrayUtils;
 

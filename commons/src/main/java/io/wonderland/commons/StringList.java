@@ -1,4 +1,4 @@
-package io.wonderland.common;
+package io.wonderland.commons;
 
 public interface StringList extends Iterable<String> {
 

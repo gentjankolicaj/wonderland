@@ -1,7 +1,7 @@
 package io.wonderland.alice.crypto.cipher.key;
 
 import io.wonderland.alice.crypto.cipher.AlgNames;
-import io.wonderland.common.PrimitiveUtils;
+import io.wonderland.commons.PrimitiveUtils;
 import javax.crypto.SecretKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

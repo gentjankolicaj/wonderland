@@ -1,6 +1,6 @@
 package io.wonderland.alice.crypto;
 
-import io.wonderland.common.PrimitiveUtils;
+import io.wonderland.commons.PrimitiveUtils;
 import java.nio.ByteBuffer;
 import lombok.extern.slf4j.Slf4j;
 

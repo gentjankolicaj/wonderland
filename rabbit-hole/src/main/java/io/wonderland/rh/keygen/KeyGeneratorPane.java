@@ -1,6 +1,6 @@
 package io.wonderland.rh.keygen;
 
-import io.wonderland.common.Arrays;
+import io.wonderland.commons.Arrays;
 import io.wonderland.rh.base.common.HToggleBox;
 import io.wonderland.rh.utils.LabelUtils;
 import io.wonderland.rh.utils.ZxingUtils;

@@ -1,4 +1,4 @@
-package io.wonderland.common;
+package io.wonderland.commons;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

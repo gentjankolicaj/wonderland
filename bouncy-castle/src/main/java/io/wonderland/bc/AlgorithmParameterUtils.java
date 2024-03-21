@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class AlgorithmParameterUtils {
 
-
   public static final String ALGORITHM_CAN_T_BE_EMPTY = "Algorithm can't be empty.";
 
 

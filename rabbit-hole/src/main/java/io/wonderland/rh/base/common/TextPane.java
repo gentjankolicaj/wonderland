@@ -1,49 +1,35 @@
 package io.wonderland.rh.base.common;
 
 import io.wonderland.rh.utils.LabelUtils;
-import java.util.Objects;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class TextPane extends BorderPane {
+public class TextPane extends VBox {
 
+  private String title;
+  private Pane pane;
   private TextArea textArea;
-  private String label;
-
-  public TextPane(String label, TextArea textArea) {
+  public TextPane(String title, TextArea textArea) {
     this.textArea = textArea;
-    this.label = label;
-
-    setTop(LabelUtils.getTitle(label));
-    setCenter(textArea);
+    this.title=title;
+    this.setSpacing(10);
+    VBox.setVgrow(textArea, Priority.ALWAYS);
+    getChildren().addAll(LabelUtils.getTitle(title),textArea);
   }
 
-  public TextPane(String label, TextArea textArea, Pane leftPane, Pane rightPane) {
+  public TextPane(String title, Pane pane, TextArea textArea) {
     this.textArea = textArea;
-    this.label = label;
-
-    setTop(LabelUtils.getTitle(label));
-    setCenter(textArea);
-
-    if (Objects.nonNull(leftPane)) {
-      setLeft(leftPane);
-    }
-    if (Objects.nonNull(rightPane)) {
-      setRight(rightPane);
-    }
-    setBorder(new Border(new BorderStroke(Color.BLACK,
-        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+    this.pane=pane;
+    this.title=title;
+    this.setSpacing(10);
+    VBox.setVgrow(textArea, Priority.ALWAYS);
+    getChildren().addAll(LabelUtils.getTitle(title),pane,textArea);
   }
 
 }

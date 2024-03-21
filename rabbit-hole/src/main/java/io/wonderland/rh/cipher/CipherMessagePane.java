@@ -1,6 +1,8 @@
 package io.wonderland.rh.cipher;
 
-import io.wonderland.common.Arrays;
+import io.wonderland.commons.Arrays;
+import io.wonderland.rh.base.TypeObserver;
+import io.wonderland.rh.base.common.Dropdown;
 import io.wonderland.rh.base.common.TextPane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenObserver;
@@ -9,7 +11,6 @@ import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import javafx.event.Event;
@@ -40,14 +41,22 @@ public class CipherMessagePane extends TitledPane {
   private final VBox controlBox = new VBox();
   private final HBox textBox = new HBox();
   private final BorderPane rootPane = new BorderPane();
-  private final TextArea plainTextArea = new TextArea();
   private final TextArea cipherTextArea = new TextArea();
+  private final TextArea plainTextArea = new TextArea();
+
+  //Observers of content arrays
+  private final TypeObserver<byte[]> ciphertextObserver=new TypeObserver<>();
+  private final Dropdown<String,byte[],TextArea> ciphertextDropdown=DropdownHelper.getEncodingDropdown(cipherTextArea,ciphertextObserver);
+
+  //text panes
   private final TextPane plaintextPane = new TextPane("Plaintext", plainTextArea);
-  private final TextPane ciphertextPane = new TextPane("Ciphertext", cipherTextArea);
+  private final TextPane ciphertextPane = new TextPane( "Ciphertext",ciphertextDropdown, cipherTextArea);
   private final Button encryptBtn = new Button("encrypt");
   private final Button decryptBtn = new Button("decrypt");
   private final Button clearBtn = new Button("clear");
   private final Button exportBtn = new Button("export");
+
+  //encrypt & decrypt cipher
   private final Optional<Cipher> optionalEC;
   private final Optional<Cipher> optionalDC;
   private final KeygenObserver keygenObserver;
@@ -61,6 +70,7 @@ public class CipherMessagePane extends TitledPane {
     this.build();
 
   }
+
 
   private void build() {
     this.buildControlBox();
@@ -185,10 +195,10 @@ public class CipherMessagePane extends TitledPane {
 
         byte[] plaintext = plainTextArea.getText().getBytes();
         byte[] ciphertext = encryptCipher.doFinal(plaintext);
+        ciphertextObserver.update(ciphertext);
 
-        //update gui
-        cipherTextArea.clear();
-        cipherTextArea.setText(Base64.getEncoder().encodeToString(ciphertext));
+        //update ciphertext area
+        ciphertextDropdown.getSelectedDropdownElement().runConsumer(ciphertextObserver,cipherTextArea);
 
         log.info("E-Plaintext len="+plaintext.length+","+ Arrays.getStringValueOf(plaintext,','));
         log.info("E-Ciphertext len="+ciphertext.length+"," + Arrays.getStringValueOf(ciphertext,','));
@@ -213,14 +223,16 @@ public class CipherMessagePane extends TitledPane {
         cipherInit();
         Cipher decryptCipher = optionalDC.get();
 
-        byte[] ciphertext = Base64.getDecoder().decode(cipherTextArea.getText().getBytes());
-        byte[] plaintext = decryptCipher.doFinal(ciphertext);
+        if(ciphertextObserver.getValue().isPresent()) {
+          byte[] ciphertext = ciphertextObserver.getValue().get();
+          byte[] plaintext = decryptCipher.doFinal(ciphertext);
 
-        plainTextArea.clear();
-        plainTextArea.setText(new String(plaintext));
+          plainTextArea.clear();
+          plainTextArea.setText(new String(plaintext));
 
-        log.info("D-Ciphertext len="+ciphertext.length+"," + Arrays.getStringValueOf(ciphertext,','));
-        log.info("D-Plaintext len="+plaintext.length+","+ Arrays.getStringValueOf(plaintext,','));
+          log.info("D-Ciphertext len=" + ciphertext.length + "," + Arrays.getStringValueOf(ciphertext, ','));
+          log.info("D-Plaintext len=" + plaintext.length + "," + Arrays.getStringValueOf(plaintext, ','));
+        }
       } catch (Exception e) {
         log.error(e.getMessage());
         alert.setAlertType(AlertType.ERROR);

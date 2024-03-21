@@ -14,7 +14,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Paint;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 public class GuiUtils {
 

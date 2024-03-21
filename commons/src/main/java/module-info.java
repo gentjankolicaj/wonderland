@@ -1,4 +1,4 @@
-module common {
+module commons {
   requires java.se;
   requires org.apache.commons.lang3;
   requires org.apache.commons.collections4;
@@ -7,5 +7,5 @@ module common {
   requires org.slf4j;
 
   //make public classes visible outside module.
-  exports io.wonderland.common;
+  exports io.wonderland.commons;
 }

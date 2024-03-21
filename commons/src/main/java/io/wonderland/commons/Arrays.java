@@ -1,4 +1,4 @@
-package io.wonderland.common;
+package io.wonderland.commons;
 
 public class Arrays {
 
@@ -48,6 +48,10 @@ public class Arrays {
       }
       return sb.toString();
     }
+  }
+ @SafeVarargs
+ public static <T> T[] asArray(T... values) {
+    return values;
   }
 
 }
