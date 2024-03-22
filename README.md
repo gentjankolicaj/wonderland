@@ -44,6 +44,5 @@ Personal project around cryptography.
 
 * keygen ui :
   ![](img/keygen_0.png)
-  ![](img/keygen_1.png)
   ![](img/keygen_2.png)
   ![](img/keygen_3.png)
