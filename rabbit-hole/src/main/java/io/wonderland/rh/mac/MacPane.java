@@ -12,13 +12,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MacPane extends VBox {
 
   private final VBox infoBox=new VBox();
-  private final KeyObserver keyObserver=new SecretKeyObserver() ;
+  private final KeyObserver<SecretKey> keyObserver=new SecretKeyObserver() ;
   private final Stage stage;
   private final String macName;
   private final KeyPane keyPane;
@@ -29,7 +30,7 @@ public class MacPane extends VBox {
     this.stage=stage;
     this.macName=macName;
     this.keyPane=new KeyPane(stage,"MAC key",macName,keyObserver  );
-    this.macMessagePane =new MacMessagePane(stage,"MAC message",macName,keyObserver);
+    this.macMessagePane =new MacMessagePane("MAC message",macName,keyObserver);
     this.build();
   }
 
@@ -38,7 +39,7 @@ public class MacPane extends VBox {
     Scene scene=new Scene(this,width,height);
     this.macName=macName;
     this.keyPane=new KeyPane(stage,"MAC key",macName,keyObserver  );
-    this.macMessagePane =new MacMessagePane(stage,"MAC message",macName,keyObserver);
+    this.macMessagePane =new MacMessagePane("MAC message",macName,keyObserver);
     this.build();
     this.stage.setScene(scene);
     this.stage.setTitle("MAC WINDOW : "+macName);

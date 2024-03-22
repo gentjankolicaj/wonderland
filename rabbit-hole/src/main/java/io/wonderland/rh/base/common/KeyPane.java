@@ -1,5 +1,6 @@
 package io.wonderland.rh.base.common;
 
+import io.wonderland.rh.base.KeyObserver;
 import io.wonderland.rh.base.Observer;
 import io.wonderland.rh.cipher.CipherConstants;
 import io.wonderland.rh.cipher.key.AbstractKeyPane;
@@ -41,9 +42,9 @@ public class KeyPane extends TitledPane {
   private final BorderPane containerPane = new BorderPane();
   private final HToggleBox<RadioButton> keyOriginPane = new HToggleBox<>("Key source : ", 10, RadioButton::new,
       Map.of("new", this::setNewKeyPane, "old", this:: setOldKeyPane));
-  private final Observer<Integer,Object> keyObserver;
+  private final KeyObserver keyObserver;
 
-  public KeyPane(Stage stage, String title, String cipherName,Observer<Integer,Object> keyObserver) {
+  public KeyPane(Stage stage, String title, String cipherName, KeyObserver keyObserver) {
     this.stage = stage;
     this.cipherName = cipherName;
     this.keyObserver=keyObserver;

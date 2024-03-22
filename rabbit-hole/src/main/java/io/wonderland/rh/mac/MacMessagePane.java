@@ -1,8 +1,10 @@
 package io.wonderland.rh.mac;
 
 import io.wonderland.rh.base.KeyObserver;
+import io.wonderland.rh.base.TypeObserver;
+import io.wonderland.rh.base.common.Dropdown;
 import io.wonderland.rh.base.common.TextPane;
-import java.nio.charset.StandardCharsets;
+import io.wonderland.rh.cipher.DropdownHelper;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +20,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
@@ -28,22 +29,26 @@ import org.apache.commons.lang3.StringUtils;
 public class MacMessagePane extends TitledPane {
 
   private static final int SPACING = 10;
-  private final Stage stage;
   private final Alert alert = new Alert(AlertType.NONE);
   private final VBox controlBox = new VBox();
   private final HBox textBox = new HBox();
-  private final BorderPane rootPane = new BorderPane();
+  private final VBox rootBox = new VBox();
   private final TextArea messageTextArea = new TextArea();
   private final TextArea macTextArea = new TextArea();
-  private final TextPane messagePane = new TextPane("Message", messageTextArea);
-  private final TextPane macPane = new TextPane("Message Authentication Code (MAC)", macTextArea);
+
+  //Observers of message & digest arrays
+  private final TypeObserver<byte[]> messageObserver=new TypeObserver<>();
+  private final TypeObserver<byte[]> macObserver=new TypeObserver<>() ;
+  private final Dropdown<String,byte[],TextArea> messageDropdown= DropdownHelper.getCharsetDropdown(messageTextArea,messageObserver);
+  private final Dropdown<String,byte[],TextArea> macDropdown= DropdownHelper.getEncodingDropdown(macTextArea,macObserver);
+  private final TextPane messagePane = new TextPane("Message",messageDropdown, messageTextArea);
+  private final TextPane macPane = new TextPane("Message Authentication Code (MAC)", macDropdown,macTextArea);
   private final Button signBtn=new Button("sign");
   private final String macName;
   private final Optional<Mac> optionalMac;
   private final KeyObserver<?> keyObserver;
 
-  public MacMessagePane(Stage stage, String title, String macName, KeyObserver<?> keyObserver) throws NoSuchAlgorithmException {
-    this.stage = stage;
+  public MacMessagePane(String title, String macName, KeyObserver<?> keyObserver) throws NoSuchAlgorithmException {
     this.macName=macName;
     this.optionalMac = getMacInstance(macName);
     this.keyObserver = keyObserver;
@@ -60,9 +65,9 @@ public class MacMessagePane extends TitledPane {
     HBox.setHgrow(messagePane, Priority.ALWAYS);
     HBox.setHgrow(macPane, Priority.ALWAYS);
 
-    this.rootPane.setTop(controlBox);
-    this.rootPane.setCenter(textBox);
-    this.setContent(rootPane);
+    this.rootBox.setSpacing(5);
+    this.rootBox.getChildren().addAll(controlBox,textBox);
+    this.setContent(this.rootBox);
   }
 
   private void buildControlBox() {
@@ -95,14 +100,14 @@ public class MacMessagePane extends TitledPane {
       try {
         macInit();
         Mac mac= optionalMac.get();
-        String input =  StringUtils.isEmpty(messageTextArea.getText())? StringUtils.EMPTY:messageTextArea.getText();
+        String message =  StringUtils.isEmpty(messageTextArea.getText())? StringUtils.EMPTY:messageTextArea.getText();
+        byte[] tag = mac.doFinal(message.getBytes());
+        macObserver.update(tag);
 
-        byte[] inputDigested = mac.doFinal(input.getBytes());
-        log.info("MAC message '{}', digest '{}'", input, new String(inputDigested));
+        //update mac text area
+        macDropdown.getSelectedDropdownElement().runConsumer(macObserver, macTextArea);
 
-        //update digest text area
-        macTextArea.clear();
-        macTextArea.setText(new String(inputDigested, StandardCharsets.UTF_8));
+        log.debug("MAC: message={}, mac={}", message.getBytes(),tag);
       } catch (Exception e) {
         log.error(e.getMessage());
         alert.setAlertType(AlertType.ERROR);
@@ -114,13 +119,13 @@ public class MacMessagePane extends TitledPane {
     private void macInit() throws InvalidKeyException {
       if(optionalMac.isPresent() && keyObserver.isUpdated() && (keyObserver.getOptionalKey().isPresent())) {
           Optional<?>  optional=keyObserver.getOptionalKey();
-          Key key=(Key) optional.get();
-          SecretKeySpec secretKeySpec = new SecretKeySpec(key.getEncoded(), macName);
-          optionalMac.get().init(secretKeySpec);
-
+          if(optional.isPresent()) {
+            Key key = (Key) optional.get();
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getEncoded(), macName);
+            optionalMac.get().init(secretKeySpec);
+          }
       }
     }
-
   }
 
 }

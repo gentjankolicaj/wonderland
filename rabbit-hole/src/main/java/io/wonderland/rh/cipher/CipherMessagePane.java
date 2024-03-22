@@ -200,8 +200,8 @@ public class CipherMessagePane extends TitledPane {
         //update ciphertext area
         ciphertextDropdown.getSelectedDropdownElement().runConsumer(ciphertextObserver,cipherTextArea);
 
-        log.info("E-Plaintext len="+plaintext.length+","+ Arrays.getStringValueOf(plaintext,','));
-        log.info("E-Ciphertext len="+ciphertext.length+"," + Arrays.getStringValueOf(ciphertext,','));
+        log.debug("Plaintext: len={}, content={}",plaintext.length,plaintext);
+        log.debug("Ciphertext: len={}, content={}",ciphertext.length,ciphertext);
       } catch (Exception e) {
         log.error(e.getMessage());
         alert.setAlertType(AlertType.ERROR);
@@ -230,8 +230,8 @@ public class CipherMessagePane extends TitledPane {
           plainTextArea.clear();
           plainTextArea.setText(new String(plaintext));
 
-          log.info("D-Ciphertext len=" + ciphertext.length + "," + Arrays.getStringValueOf(ciphertext, ','));
-          log.info("D-Plaintext len=" + plaintext.length + "," + Arrays.getStringValueOf(plaintext, ','));
+          log.debug("Plaintext: len={}, content={}",plaintext.length,plaintext);
+          log.debug("Ciphertext: len={}, content={}",ciphertext.length,ciphertext);
         }
       } catch (Exception e) {
         log.error(e.getMessage());

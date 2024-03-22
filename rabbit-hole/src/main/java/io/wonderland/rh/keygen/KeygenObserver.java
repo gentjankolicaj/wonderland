@@ -1,6 +1,6 @@
 package io.wonderland.rh.keygen;
 
-import io.wonderland.rh.base.AbstractObserver;
+import io.wonderland.rh.base.KeyObserver;
 import io.wonderland.rh.base.common.HToggleBox;
 import io.wonderland.rh.utils.GuiUtils;
 import java.security.Key;
@@ -17,7 +17,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class KeygenObserver extends AbstractObserver<Object> {
+public class KeygenObserver extends KeyObserver<Object> {
 
   @Getter
   private VBox vBox =new VBox();

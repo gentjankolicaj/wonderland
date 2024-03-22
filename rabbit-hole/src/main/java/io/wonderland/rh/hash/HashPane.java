@@ -1,6 +1,9 @@
 package io.wonderland.rh.hash;
 
+import io.wonderland.rh.base.TypeObserver;
+import io.wonderland.rh.base.common.Dropdown;
 import io.wonderland.rh.base.common.TextPane;
+import io.wonderland.rh.cipher.DropdownHelper;
 import io.wonderland.rh.utils.GuiUtils;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -23,28 +26,37 @@ import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class HashPane extends BorderPane {
+
   private final VBox miscBox = new VBox();
   private final TextArea messageTextArea = new TextArea();
   private final TextArea digestTextArea = new TextArea();
-  private final TextPane messagePane=new TextPane("Message", messageTextArea);
-  private final TextPane digestPane=new TextPane("Digest",digestTextArea);
-  private final HBox messageBox=new HBox();
+
+  //Observers of message & digest arrays
+  private final TypeObserver<byte[]> messageObserver = new TypeObserver<>();
+  private final TypeObserver<byte[]> digestObserver = new TypeObserver<>();
+  private final Dropdown<String, byte[], TextArea> messageDropdown = DropdownHelper.getCharsetDropdown(messageTextArea,
+      messageObserver);
+  private final Dropdown<String, byte[], TextArea> digestDropdown = DropdownHelper.getEncodingDropdown(digestTextArea,
+      digestObserver);
+  private final TextPane messagePane = new TextPane("Message", messageDropdown, messageTextArea);
+  private final TextPane digestPane = new TextPane("Digest", digestDropdown, digestTextArea);
+  private final HBox messageBox = new HBox();
   private final Stage stage;
   private final Optional<MessageDigest> optionalMD;
 
   public HashPane(Stage stage, String messageDigestName) throws NoSuchAlgorithmException {
-    this.stage=stage;
+    this.stage = stage;
     this.optionalMD = getMessageDigestInstance(messageDigestName);
     this.build();
   }
 
-  public HashPane( String messageDigestName,double width,double height) throws NoSuchAlgorithmException {
-    this.stage=new Stage();
-    Scene scene=new Scene(this,width,height);
+  public HashPane(String messageDigestName, double width, double height) throws NoSuchAlgorithmException {
+    this.stage = new Stage();
+    Scene scene = new Scene(this, width, height);
     this.optionalMD = getMessageDigestInstance(messageDigestName);
     this.build();
     this.stage.setScene(scene);
-    this.stage.setTitle("HASH WINDOW : "+messageDigestName);
+    this.stage.setTitle("HASH WINDOW : " + messageDigestName);
     this.stage.show();
   }
 
@@ -55,22 +67,23 @@ public class HashPane extends BorderPane {
   }
 
   private void buildToolPanel() {
-    miscBox.setPadding(new Insets(5,5,5,5));
+    miscBox.setPadding(new Insets(5, 5, 5, 5));
     miscBox.setSpacing(10);
 
-    VBox infoBox=getInfoBox();
+    VBox infoBox = getInfoBox();
     //button
     BorderPane buttonPane = getButtonPane();
 
     miscBox.getChildren().addAll(infoBox, buttonPane);
   }
 
-  private VBox getInfoBox(){
-    VBox infoBox=new VBox();
-    if(optionalMD.isPresent()) {
-      MessageDigest md=optionalMD.get();
-      HBox hashBox = new HBox(GuiUtils.getTitle("Hash : "),new Label(md.getAlgorithm()) );
-      HBox digestLengthBox = new HBox(GuiUtils.getTitle("Digest length : "), new Label(md.getDigestLength()+" bits."));
+  private VBox getInfoBox() {
+    VBox infoBox = new VBox();
+    if (optionalMD.isPresent()) {
+      MessageDigest md = optionalMD.get();
+      HBox hashBox = new HBox(GuiUtils.getTitle("Hash : "), new Label(md.getAlgorithm()));
+      HBox digestLengthBox = new HBox(GuiUtils.getTitle("Digest length : "),
+          new Label(md.getDigestLength() + " bits."));
       HBox providerBox = new HBox(
           GuiUtils.getTitle("CSP : "), new Label(md.getProvider().getName() + "-" + md.getProvider().getVersionStr()));
       HBox otherInfoBox = new HBox(GuiUtils.getTitle("Info : "), new Label(md.getProvider().getInfo()));
@@ -81,10 +94,10 @@ public class HashPane extends BorderPane {
 
   private HBox getMessageBox() {
     //Message box for plain & cipher text
-    messageBox.getChildren().addAll(messagePane,digestPane);
+    messageBox.getChildren().addAll(messagePane, digestPane);
     messageBox.setSpacing(10);
     HBox.setHgrow(messagePane, Priority.ALWAYS);
-    HBox.setHgrow(digestPane,Priority.ALWAYS);
+    HBox.setHgrow(digestPane, Priority.ALWAYS);
     return messageBox;
   }
 
@@ -110,28 +123,29 @@ public class HashPane extends BorderPane {
     return box;
   }
 
-  protected Optional<MessageDigest> getMessageDigestInstance(String serviceName) throws  NoSuchAlgorithmException {
-    MessageDigest tmp=MessageDigest.getInstance(serviceName);
-      log.info("Selected message-digest '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
+  protected Optional<MessageDigest> getMessageDigestInstance(String serviceName) throws NoSuchAlgorithmException {
+    MessageDigest tmp = MessageDigest.getInstance(serviceName);
+    log.info("Selected message-digest '{}' - provider '{}' ", tmp.getAlgorithm(), tmp.getProvider().getName());
     return Optional.of(tmp);
   }
 
 
   class MessageDigestBtnReleased implements EventHandler<Event> {
+
     @Override
     public void handle(Event event) {
       if (optionalMD.isEmpty()) {
         return;
       }
       try {
-        MessageDigest messageDigest=optionalMD.get();
-        String input =  StringUtils.isEmpty(messageTextArea.getText())? StringUtils.EMPTY:messageTextArea.getText();
-        byte[] inputDigested = messageDigest.digest(input.getBytes());
-        log.info("Digested message '{}', digest '{}'", input, new String(inputDigested));
+        MessageDigest messageDigest = optionalMD.get();
+        String message = StringUtils.isEmpty(messageTextArea.getText()) ? StringUtils.EMPTY : messageTextArea.getText();
+        byte[] digest = messageDigest.digest(message.getBytes());
+        digestObserver.update(digest);
 
         //update digest text area
-        digestTextArea.clear();
-        digestTextArea.setText(new String(inputDigested, StandardCharsets.UTF_8));
+        digestDropdown.getSelectedDropdownElement().runConsumer(digestObserver, digestTextArea);
+        log.debug("Hash: message='{}', digest={}", message.getBytes(), digest);
       } catch (Exception e) {
         log.error(e.getMessage());
       }

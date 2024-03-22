@@ -18,7 +18,7 @@ public class TextPane extends VBox {
   public TextPane(String title, TextArea textArea) {
     this.textArea = textArea;
     this.title=title;
-    this.setSpacing(10);
+    this.setSpacing(5);
     VBox.setVgrow(textArea, Priority.ALWAYS);
     getChildren().addAll(GuiUtils.getTitle(title),textArea);
   }
@@ -27,7 +27,7 @@ public class TextPane extends VBox {
     this.textArea = textArea;
     this.pane=pane;
     this.title=title;
-    this.setSpacing(10);
+    this.setSpacing(5);
     VBox.setVgrow(textArea, Priority.ALWAYS);
     getChildren().addAll(GuiUtils.getTitle(title),pane,textArea);
   }
