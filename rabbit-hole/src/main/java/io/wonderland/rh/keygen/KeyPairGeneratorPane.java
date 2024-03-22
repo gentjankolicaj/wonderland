@@ -1,17 +1,15 @@
 package io.wonderland.rh.keygen;
 
-import io.wonderland.commons.Arrays;
-import io.wonderland.rh.base.common.HToggleBox;
+import io.wonderland.rh.base.TypeObserver;
+import io.wonderland.rh.base.common.Dropdown;
+import io.wonderland.rh.base.common.DropdownHelper;
 import io.wonderland.rh.utils.GuiUtils;
 import io.wonderland.rh.utils.ZxingUtils;
-import java.security.Key;
 import java.security.KeyPair;
-import java.util.Map;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -31,71 +29,64 @@ public class KeyPairGeneratorPane extends BorderPane {
   public static final String PUBLIC_KEY = "Public key";
   private Alert alert = new Alert(AlertType.NONE);
   private static final double QR_CODE_TO_VIEW_RATIO = 0.8;
-  private HToggleBox<RadioButton> keyFormatPane = new HToggleBox<>("Key format : ", 10, RadioButton::new,
-      Map.of("qr-code", () -> setKeyPairQRCode(getKeyPair()), "decimal", () -> setKeyPairText(getKeyPair())));
+  private final TypeObserver<KeyPair> keyPairTypeObserver = new TypeObserver<>();
+  private Dropdown<String, KeyPair, KeyPairGeneratorPane> dropdown = DropdownHelper.getKeyPairGeneratorPaneDropdown(
+      keyPairTypeObserver, this);
   private KeyPair keyPair;
 
   public KeyPairGeneratorPane() {
-    this.setTop(keyFormatPane);
+    this.setTop(dropdown);
     this.setPadding(new Insets(5, 5, 5, 5));
   }
 
 
   public void update(KeyPair keyPair) {
     this.keyPair = keyPair;
-    this.setKeyPairText(keyPair);
-    this.keyFormatPane.selectToggle("decimal");
+    this.keyPairTypeObserver.update(keyPair);
+    this.dropdown.getSelectedDropdownElement().runConsumer(keyPairTypeObserver, this);
   }
 
-  private void setKeyPairQRCode(KeyPair keyPair) {
-    //set public key
+  public static HBox getKeyPairQRCode(BorderPane pane, KeyPair keyPair) {
     HBox hBox = new HBox();
     hBox.setSpacing(10);
-
     try {
-      ImageView imageView = ZxingUtils.getImageView(this, keyPair.getPublic());
+      ImageView imageView = ZxingUtils.getImageView(pane, keyPair.getPublic());
       VBox vBox = new VBox();
-      VBox.setVgrow(imageView, Priority.ALWAYS);
+      javafx.scene.layout.VBox.setVgrow(imageView, Priority.ALWAYS);
       vBox.getChildren().addAll(GuiUtils.getTitle(PUBLIC_KEY), imageView);
       hBox.getChildren().add(vBox);
     } catch (Exception e) {
       log.error(e.getMessage());
-      alert.setAlertType(AlertType.ERROR);
-      alert.show();
-      alert.setHeaderText(e.getMessage());
     }
-
     try {
-      ImageView imageView = ZxingUtils.getImageView(this, keyPair.getPrivate());
+      ImageView imageView = ZxingUtils.getImageView(pane, keyPair.getPrivate());
       VBox vBox = new VBox();
-      VBox.setVgrow(imageView, Priority.ALWAYS);
+      javafx.scene.layout.VBox.setVgrow(imageView, Priority.ALWAYS);
       vBox.getChildren().addAll(GuiUtils.getTitle(PRIVATE_KEY), imageView);
       hBox.getChildren().add(vBox);
     } catch (Exception e) {
       log.error(e.getMessage());
-      alert.setAlertType(AlertType.ERROR);
-      alert.show();
-      alert.setHeaderText(e.getMessage());
     }
-    this.setCenter(hBox);
-
+    return hBox;
   }
 
-  private void setKeyPairText(KeyPair keyPair) {
-    VBox vBox = new VBox(getKeyBox(PUBLIC_KEY, keyPair.getPublic()), getKeyBox(PRIVATE_KEY, keyPair.getPrivate()));
+  public static VBox getKeyPairTextBox(String publicKeyFormattedText, String privateKeyFormattedText) {
+    VBox vBox = new VBox(getKeyTextBox(PUBLIC_KEY, publicKeyFormattedText),
+        getKeyTextBox(PRIVATE_KEY, privateKeyFormattedText));
     vBox.setSpacing(10);
-    this.setCenter(vBox);
+    return vBox;
   }
 
-  private HBox getKeyBox(String text, Key key) {
+  public static HBox getKeyTextBox(String title, String formattedText) {
     HBox hBox = new HBox();
     TextField textField = new TextField();
-    textField.setText(Arrays.getStringValueOf(key.getEncoded(), ','));
-    Label label = GuiUtils.getTitle(text);
+    textField.setText(formattedText);
+    Label label = GuiUtils.getTitle(title);
     HBox.setHgrow(textField, Priority.ALWAYS);
     hBox.getChildren().addAll(label, textField);
     hBox.setSpacing(10);
     return hBox;
   }
+
 
 }

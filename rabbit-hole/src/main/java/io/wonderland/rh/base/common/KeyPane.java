@@ -1,7 +1,6 @@
 package io.wonderland.rh.base.common;
 
 import io.wonderland.rh.base.KeyObserver;
-import io.wonderland.rh.base.Observer;
 import io.wonderland.rh.cipher.CipherConstants;
 import io.wonderland.rh.cipher.key.AbstractKeyPane;
 import io.wonderland.rh.cipher.key.DefaultKeyPane;
@@ -88,14 +87,8 @@ public class KeyPane extends TitledPane {
       Arrays.stream(Security.getProviders()).forEach(p -> allKeyTypes.addAll(p.getServices().stream()
           .filter(e -> isValidServiceName(e.getAlgorithm(), e.getType()))
           .sorted(Comparator.comparing(e -> e.getAlgorithm().charAt(0)))
-          .map(e -> {
-            String sb = e.getAlgorithm() + " ("
-                + e.getProvider().getName()
-                + '-'
-                + e.getProvider().getVersionStr()
-                + ')';
-            return sb;
-          }).collect(Collectors.toList())));
+          .map(e -> e.getAlgorithm() + " (" + e.getProvider().getName() + '-' + e.getProvider().getVersionStr() + ')')
+          .collect(Collectors.toList())));
       return allKeyTypes;
     }
 
@@ -109,7 +102,6 @@ public class KeyPane extends TitledPane {
     }
 
     class KeygenComboBoxEventHandler implements EventHandler<ActionEvent> {
-
       @Override
       public void handle(ActionEvent actionEvent) {
         updateKeyPane(keyComboBox.getValue());

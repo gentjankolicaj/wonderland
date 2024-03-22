@@ -4,7 +4,7 @@ import io.wonderland.rh.base.KeyObserver;
 import io.wonderland.rh.base.TypeObserver;
 import io.wonderland.rh.base.common.Dropdown;
 import io.wonderland.rh.base.common.TextPane;
-import io.wonderland.rh.cipher.DropdownHelper;
+import io.wonderland.rh.base.common.DropdownHelper;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -16,7 +16,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -119,11 +118,9 @@ public class MacMessagePane extends TitledPane {
     private void macInit() throws InvalidKeyException {
       if(optionalMac.isPresent() && keyObserver.isUpdated() && (keyObserver.getOptionalKey().isPresent())) {
           Optional<?>  optional=keyObserver.getOptionalKey();
-          if(optional.isPresent()) {
-            Key key = (Key) optional.get();
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getEncoded(), macName);
-            optionalMac.get().init(secretKeySpec);
-          }
+        Key key = (Key) optional.get();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getEncoded(), macName);
+        optionalMac.get().init(secretKeySpec);
       }
     }
   }

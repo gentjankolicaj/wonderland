@@ -1,14 +1,11 @@
 package io.wonderland.rh.keygen;
 
-import io.wonderland.commons.Arrays;
-import io.wonderland.rh.base.common.HToggleBox;
+import io.wonderland.rh.base.TypeObserver;
+import io.wonderland.rh.base.common.Dropdown;
+import io.wonderland.rh.base.common.DropdownHelper;
 import io.wonderland.rh.utils.GuiUtils;
-import io.wonderland.rh.utils.ZxingUtils;
-import java.security.Key;
-import java.util.Map;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -23,44 +20,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KeyGeneratorPane extends BorderPane {
 
-  private HToggleBox<RadioButton> keyFormatPane = new HToggleBox<>("Key format : ", 10,s -> new RadioButton(s),
-      Map.of("qr-code", () -> setKeyQRCode(), "decimal", () -> setKeyText("Secret key",getSecretKey())));
+  private final TypeObserver<SecretKey> secretKeyObserver = new TypeObserver<>();
+  private Dropdown<String, SecretKey, KeyGeneratorPane> dropdown = DropdownHelper.getKeyGeneratorPaneDropdown(
+      secretKeyObserver, this);
   private SecretKey secretKey;
 
   public KeyGeneratorPane() {
-    this.setTop(keyFormatPane);
+    this.setTop(dropdown);
     this.setPadding(new Insets(5,5,5,5));
   }
 
 
   public void update(SecretKey secretKey) {
     this.secretKey = secretKey;
-    this.setKeyQRCode();
-    this.keyFormatPane.selectToggle("decimal");
+    this.secretKeyObserver.update(secretKey);
+    this.dropdown.getSelectedDropdownElement().runConsumer(secretKeyObserver, this);
   }
 
-  private void setKeyQRCode() {
-    try{
-        this.setCenter(ZxingUtils.getImageView(this,getSecretKey()));
-      } catch (Exception e) {
-        log.error("", e);
-      }
-  }
-
-  private HBox getKeyBox(String text, Key key){
+  public static HBox getKeyTextBox(String formattedText) {
     HBox hBox=new HBox();
     TextField textField=new TextField();
-    textField.setText(Arrays.getStringValueOf(key.getEncoded(),','));
-    Label label= GuiUtils.getTitle(text);
+    textField.setText(formattedText);
+    Label label = GuiUtils.getTitle("Secret key");
     HBox.setHgrow(textField, Priority.ALWAYS);
     hBox.getChildren().addAll(label,textField);
     hBox.setSpacing(10);
     return hBox;
   }
 
-
-  private void setKeyText(String text,Key key) {
-    this.setCenter(getKeyBox(text,key));
-  }
 
 }

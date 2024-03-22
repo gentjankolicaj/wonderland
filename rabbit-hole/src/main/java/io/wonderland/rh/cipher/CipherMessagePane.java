@@ -1,8 +1,8 @@
 package io.wonderland.rh.cipher;
 
-import io.wonderland.commons.Arrays;
 import io.wonderland.rh.base.TypeObserver;
 import io.wonderland.rh.base.common.Dropdown;
+import io.wonderland.rh.base.common.DropdownHelper;
 import io.wonderland.rh.base.common.TextPane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenObserver;
@@ -46,7 +46,8 @@ public class CipherMessagePane extends TitledPane {
   //Observers of content arrays
   private final TypeObserver<byte[]> ciphertextObserver=new TypeObserver<>();
   private final TypeObserver<byte[]> plaintextObserver=new TypeObserver<>() ;
-  private final Dropdown<String,byte[],TextArea> ciphertextDropdown=DropdownHelper.getEncodingDropdown(cipherTextArea,ciphertextObserver);
+  private final Dropdown<String, byte[], TextArea> ciphertextDropdown = DropdownHelper.getEncodingDropdown(
+      cipherTextArea, ciphertextObserver);
   private final Dropdown<String,byte[],TextArea> plaintextDropdown=DropdownHelper.getCharsetDropdown(plainTextArea,plaintextObserver);
   //text panes
   private final TextPane plaintextPane = new TextPane("Plaintext", plaintextDropdown,plainTextArea);
