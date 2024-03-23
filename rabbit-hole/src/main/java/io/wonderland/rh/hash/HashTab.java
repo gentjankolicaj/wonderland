@@ -1,9 +1,9 @@
 package io.wonderland.rh.hash;
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.common.CustomTreeItem;
-import io.wonderland.rh.base.common.TreeCellImpl;
-import io.wonderland.rh.base.common.ServiceTab;
+import io.wonderland.rh.base.tree.MonoTreeItem;
+import io.wonderland.rh.base.tree.TreeCellImpl;
+import io.wonderland.rh.base.tab.ServiceTab;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
@@ -64,7 +64,7 @@ public class HashTab extends ServiceTab {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      List<CustomTreeItem<String>> digestNameNodes=getDigestNameNodes(cspNode.getValue());
+      List<MonoTreeItem<String>> digestNameNodes = getDigestNameNodes(cspNode.getValue());
       if(CollectionUtils.isNotEmpty(digestNameNodes)) {
         cspNode.getChildren().addAll(digestNameNodes);
         //Add CSP nodes to parent
@@ -90,7 +90,7 @@ public class HashTab extends ServiceTab {
         .collect(Collectors.toList());
   }
 
-  private List<CustomTreeItem<String>> getDigestNameNodes(String cspName) {
+  private List<MonoTreeItem<String>> getDigestNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
@@ -123,8 +123,8 @@ public class HashTab extends ServiceTab {
     return pane;
   }
 
-  private CustomTreeItem<String> getCustomTreeItem(String element) {
-    return new CustomTreeItem<>(element, arg -> {
+  private MonoTreeItem<String> getCustomTreeItem(String element) {
+    return new MonoTreeItem<>(element, arg -> {
       try {
         new HashPane(element, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
       } catch (Exception ex) {

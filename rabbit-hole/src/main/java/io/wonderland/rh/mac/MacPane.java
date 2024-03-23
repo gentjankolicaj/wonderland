@@ -2,7 +2,7 @@ package io.wonderland.rh.mac;
 
 import io.wonderland.rh.base.KeyObserver;
 import io.wonderland.rh.base.SecretKeyObserver;
-import io.wonderland.rh.base.common.KeyPane;
+import io.wonderland.rh.base.pane.KeyPane;
 import io.wonderland.rh.utils.GuiUtils;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package io.wonderland.rh.cryptanalysis;
+package io.wonderland.rh.analysis.ciphertext;
 
 import io.wonderland.rq.cryptanalysis.IndexCoincidence;
 import java.awt.Color;
@@ -28,7 +28,7 @@ public class IndexCoincidenceStage extends Stage {
 
   private final BorderPane rootPane = new BorderPane();
   private final ScrollPane scrollPane = new ScrollPane();
-  private BorderPane chartPane = new BorderPane();
+  private final BorderPane chartPane = new BorderPane();
   private Scene scene;
   private String language;
   private String ciphertextEncoding;

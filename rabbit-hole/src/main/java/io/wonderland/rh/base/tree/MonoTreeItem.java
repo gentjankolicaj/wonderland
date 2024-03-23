@@ -1,13 +1,14 @@
-package io.wonderland.rh.base.common;
+package io.wonderland.rh.base.tree;
 
 import java.util.function.Consumer;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 
 
-public class CustomTreeItem<T> extends AbstractTreeItem<T> {
+public class MonoTreeItem<T> extends AbstractTreeItem<T> {
    private final Consumer<T> consumer;
-  public CustomTreeItem(T value, Consumer<T> consumer){
+
+  public MonoTreeItem(T value, Consumer<T> consumer) {
     this.setValue(value);
      this.consumer=consumer;
   }

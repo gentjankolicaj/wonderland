@@ -1,9 +1,9 @@
 package io.wonderland.rh.mac;
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.common.CustomTreeItem;
-import io.wonderland.rh.base.common.TreeCellImpl;
-import io.wonderland.rh.base.common.ServiceTab;
+import io.wonderland.rh.base.tree.MonoTreeItem;
+import io.wonderland.rh.base.tree.TreeCellImpl;
+import io.wonderland.rh.base.tab.ServiceTab;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
@@ -64,7 +64,7 @@ public class MacTab extends ServiceTab {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      List<CustomTreeItem<String>> nameNodes= getNameNodes(cspNode.getValue());
+      List<MonoTreeItem<String>> nameNodes = getNameNodes(cspNode.getValue());
       if(CollectionUtils.isNotEmpty(nameNodes)) {
         cspNode.getChildren().addAll(nameNodes);
         //Add CSP nodes to parent
@@ -90,7 +90,7 @@ public class MacTab extends ServiceTab {
         .collect(Collectors.toList());
   }
 
-  private List<CustomTreeItem<String>> getNameNodes(String cspName) {
+  private List<MonoTreeItem<String>> getNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
@@ -123,8 +123,8 @@ public class MacTab extends ServiceTab {
     return pane;
   }
 
-  private CustomTreeItem<String> getCustomTreeItem(String element) {
-    return new CustomTreeItem<>(element, arg -> {
+  private MonoTreeItem<String> getCustomTreeItem(String element) {
+    return new MonoTreeItem<>(element, arg -> {
       try {
         new MacPane(element, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
       } catch (Exception ex) {

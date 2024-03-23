@@ -1,7 +1,7 @@
 package io.wonderland.rh.keygen;
 
 import io.wonderland.rh.base.KeyObserver;
-import io.wonderland.rh.base.common.HToggleBox;
+import io.wonderland.rh.base.pane.HToggleBox;
 import io.wonderland.rh.utils.GuiUtils;
 import java.security.Key;
 import java.security.KeyPair;

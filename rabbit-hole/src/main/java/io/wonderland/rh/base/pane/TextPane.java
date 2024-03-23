@@ -1,4 +1,4 @@
-package io.wonderland.rh.base.common;
+package io.wonderland.rh.base.pane;
 
 import io.wonderland.rh.utils.GuiUtils;
 import javafx.scene.control.TextArea;

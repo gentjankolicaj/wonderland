@@ -1,7 +1,8 @@
-package io.wonderland.rh.cryptanalysis;
+package io.wonderland.rh.analysis.ciphertext;
 
-import io.wonderland.rh.base.common.HToggleBox;
-import io.wonderland.rh.base.common.TextPane;
+import io.wonderland.rh.analysis.AnalysisPane;
+import io.wonderland.rh.base.pane.HToggleBox;
+import io.wonderland.rh.base.pane.TextPane;
 import io.wonderland.rq.type.Language;
 import java.util.Arrays;
 import java.util.Map;
@@ -20,22 +21,33 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 
 @Slf4j
-public class CiphertextAnalysisPane extends BorderPane {
+public class CiphertextPane extends AnalysisPane<BorderPane> {
 
   public static final String CIPHERTEXT = "Ciphertext";
   private final BodyPane bodyPane = new BodyPane();
   private final HeaderPane headerPane = new HeaderPane(bodyPane);
 
-
-  public CiphertextAnalysisPane() {
-    init();
+  public CiphertextPane() {
+    super(new BorderPane());
+    build();
   }
 
-  private void init() {
-    this.setTop(this.headerPane);
-    this.setCenter(this.bodyPane);
+  private void build() {
+    container.setTop(this.headerPane);
+    container.setCenter(this.bodyPane);
+  }
+
+  @Override
+  public String getKey() {
+    return CIPHERTEXT;
+  }
+
+  @Override
+  public Map<String, Class<? extends AnalysisPane>> getChildren() {
+    return MapUtils.EMPTY_SORTED_MAP;
   }
 
 

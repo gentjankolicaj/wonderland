@@ -1,4 +1,4 @@
-package io.wonderland.rh.base.common;
+package io.wonderland.rh.base.tab;
 
 import javafx.scene.control.Tab;
 import javafx.stage.Stage;

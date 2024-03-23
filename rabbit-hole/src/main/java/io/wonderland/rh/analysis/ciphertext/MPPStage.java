@@ -1,4 +1,4 @@
-package io.wonderland.rh.cryptanalysis;
+package io.wonderland.rh.analysis.ciphertext;
 
 import io.wonderland.rq.cryptanalysis.FrequencyAnalysis;
 import io.wonderland.rq.cryptanalysis.LanguageFrequency;
@@ -35,8 +35,8 @@ public class MPPStage extends Stage {
   private final double width;
   private final double height;
   private final BorderPane rootPane = new BorderPane();
-  private BorderPane borderPane = new BorderPane();
-  private Scene scene;
+  private final BorderPane borderPane = new BorderPane();
+  private final Scene scene;
   private String language;
   private String langGraph;
   private String ciphertextEncoding;
@@ -126,8 +126,7 @@ public class MPPStage extends Stage {
           String key = entry.getKey().toString();
           MPPValue mppValue = (Objects.nonNull(entry.getValue()) && CollectionUtils.isNotEmpty(entry.getValue())
               && entry.getValue().size() > i) ? entry.getValue().get(i) : null;
-          String value = Objects.nonNull(mppValue) ? (new StringBuilder())
-              .append(mppValue.getKey().toString()).toString() : "";
+          String value = Objects.nonNull(mppValue) ? mppValue.getKey().toString() : "";
           map.put(key, value);
         }
         data.add(map);

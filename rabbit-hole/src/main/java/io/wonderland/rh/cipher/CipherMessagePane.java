@@ -1,9 +1,9 @@
 package io.wonderland.rh.cipher;
 
 import io.wonderland.rh.base.TypeObserver;
-import io.wonderland.rh.base.common.Dropdown;
-import io.wonderland.rh.base.common.DropdownHelper;
-import io.wonderland.rh.base.common.TextPane;
+import io.wonderland.rh.base.dropdown.Dropdown;
+import io.wonderland.rh.base.dropdown.DropdownHelper;
+import io.wonderland.rh.base.pane.TextPane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenObserver;
 import java.io.File;

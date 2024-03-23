@@ -2,9 +2,9 @@ package io.wonderland.rh.mac;
 
 import io.wonderland.rh.base.KeyObserver;
 import io.wonderland.rh.base.TypeObserver;
-import io.wonderland.rh.base.common.Dropdown;
-import io.wonderland.rh.base.common.TextPane;
-import io.wonderland.rh.base.common.DropdownHelper;
+import io.wonderland.rh.base.dropdown.Dropdown;
+import io.wonderland.rh.base.pane.TextPane;
+import io.wonderland.rh.base.dropdown.DropdownHelper;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;

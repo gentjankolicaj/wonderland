@@ -1,6 +1,8 @@
-package io.wonderland.rh.cryptanalysis;
+package io.wonderland.rh.analysis.language;
 
-import io.wonderland.rh.base.common.HToggleBox;
+import io.wonderland.rh.analysis.AnalysisPane;
+import io.wonderland.rh.base.pane.HToggleBox;
+import io.wonderland.rh.utils.GuiUtils;
 import io.wonderland.rq.cryptanalysis.LanguageFrequency;
 import io.wonderland.rq.resource.ResourceConfig;
 import io.wonderland.rq.type.Dichar;
@@ -14,13 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -33,51 +34,58 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-class LanguageFrequencyPane extends BorderPane {
+public class LanguageFrequencyPane extends AnalysisPane<BorderPane> {
 
-  private final String language;
+  private final Language language;
   private final BorderPane chartPane = new BorderPane();
 
   public LanguageFrequencyPane(String language) {
-    this.language = language;
-    this.init();
+    super(new BorderPane());
+    this.language = Language.findByName(language);
+    this.build();
   }
 
-  private void init() {
-    VBox infoBox = new VBox();
-    infoBox.setSpacing(10);
-    infoBox.getChildren().addAll(createLangFreqLabel(language), createLangGraphBox());
-
-    this.setTop(infoBox);
-    this.setCenter(this.chartPane);
+  public LanguageFrequencyPane() {
+    super(new BorderPane());
+    this.language = Language.EN;
+    this.build();
   }
 
-  private Label createLangFreqLabel(String language) {
-    Label langLbl = new Label(language + " language frequency");
-    langLbl.setFont(new javafx.scene.text.Font("ARIAL", 15));
-    langLbl.setAlignment(Pos.TOP_CENTER);
-    return langLbl;
+  private void build() {
+    VBox controlBox = getControlBox();
+    container.setTop(controlBox);
+    container.setCenter(this.chartPane);
+  }
+
+  private VBox getControlBox() {
+    VBox controlBox = new VBox();
+    controlBox.setSpacing(10);
+    controlBox.getChildren().addAll(GuiUtils.getTitle(language + " language frequency"), createCharGram());
+    return controlBox;
   }
 
 
-  private HBox createLangGraphBox() {
-    HToggleBox<RadioButton> toggleGroupPane = new HToggleBox<>("Character graph :",10, s->new RadioButton(s),
-        Map.of("monograph",()->{}, "digraph",()->{}, "trigraph",()->{},
-        "quadgraph",()->{}));
+  private HBox createCharGram() {
+    HToggleBox<RadioButton> toggleGroupPane = new HToggleBox<>("Character gram :", 10, s -> new RadioButton(s),
+        Map.of("monogram", () -> {
+        }, "digram", () -> {
+        }, "trigram", () -> {
+        }, "quad gram", () -> {
+        }));
     ToggleGroup toggleGroup = toggleGroupPane.getToggleGroup();
     toggleGroup.selectedToggleProperty().addListener((observableValue, oldToggle, newToggle) -> {
       if (Objects.nonNull(toggleGroup.getSelectedToggle())) {
         RadioButton radioButton = (RadioButton) toggleGroup.getSelectedToggle();
         if (Objects.nonNull(radioButton) && StringUtils.isNotEmpty(radioButton.getText())) {
           //added progress indicator
-          this.createChart(language, radioButton.getText());
+          this.createChart(this.chartPane, this.language, radioButton.getText());
         }
       }
     });
     return toggleGroupPane;
   }
 
-  public void createChart(String language, String radioButtonGraph) {
+  public void createChart(BorderPane chartPane, Language language, String radioButtonGraph) {
     XYSeriesCollection dataset = new XYSeriesCollection();
     XYSeries xySeries = null;
     List<XYTextAnnotation> textAnnotations = new ArrayList<>();
@@ -85,7 +93,7 @@ class LanguageFrequencyPane extends BorderPane {
       xySeries = new XYSeries(radioButtonGraph);
 
       Map<Monochar, Double> map = LanguageFrequency.monocharFreqPct(
-          ResourceConfig.LANGUAGE_RESOURCES.get(Language.findByName(language)).get(radioButtonGraph));
+          ResourceConfig.LANGUAGE_RESOURCES.get(language).get(radioButtonGraph));
       int i = 0;
       for (Entry<Monochar, Double> entry : map.entrySet()) {
         xySeries.add(i = i + 1, entry.getValue() * 100);
@@ -100,7 +108,7 @@ class LanguageFrequencyPane extends BorderPane {
       xySeries = new XYSeries(radioButtonGraph);
 
       Map<Dichar, Double> map = LanguageFrequency.dicharFreqPct(
-          ResourceConfig.LANGUAGE_RESOURCES.get(Language.findByName(language)).get(radioButtonGraph));
+          ResourceConfig.LANGUAGE_RESOURCES.get(language).get(radioButtonGraph));
       int i = 0;
       for (Entry<Dichar, Double> entry : map.entrySet()) {
         xySeries.add(i = i + 1, entry.getValue() * 100);
@@ -114,7 +122,7 @@ class LanguageFrequencyPane extends BorderPane {
       xySeries = new XYSeries(radioButtonGraph);
 
       Map<Trichar, Double> map = LanguageFrequency.tricharFreqPct(
-          ResourceConfig.LANGUAGE_RESOURCES.get(Language.findByName(language)).get(radioButtonGraph));
+          ResourceConfig.LANGUAGE_RESOURCES.get(language).get(radioButtonGraph));
       int i = 0;
       for (Entry<Trichar, Double> entry : map.entrySet()) {
         xySeries.add(i = i + 1, entry.getValue() * 100);
@@ -150,14 +158,22 @@ class LanguageFrequencyPane extends BorderPane {
 
       // Create chart viewer
       ChartCanvas chartCanvas = new ChartCanvas(chart);
-      chartCanvas.widthProperty().bind(this.chartPane.widthProperty());
-      chartCanvas.heightProperty().bind(this.chartPane.heightProperty());
+      chartCanvas.widthProperty().bind(chartPane.widthProperty());
+      chartCanvas.heightProperty().bind(chartPane.heightProperty());
 
       //Update chart pane
-      this.chartPane.getChildren().removeAll();
-      this.chartPane.setCenter(chartCanvas);
+      chartPane.getChildren().removeAll();
+      chartPane.setCenter(chartCanvas);
     }
   }
 
+  @Override
+  public Map<String, Class<? extends AnalysisPane>> getChildren() {
+    return MapUtils.EMPTY_SORTED_MAP;
+  }
+
+  public String getKey() {
+    return language.getName();
+  }
 
 }

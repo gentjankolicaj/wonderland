@@ -1,10 +1,10 @@
 package io.wonderland.rh.keygen;
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.common.AbstractTreeItem;
-import io.wonderland.rh.base.common.CustomTreeItem;
-import io.wonderland.rh.base.common.TreeCellImpl;
-import io.wonderland.rh.base.common.ServiceTab;
+import io.wonderland.rh.base.tree.AbstractTreeItem;
+import io.wonderland.rh.base.tree.MonoTreeItem;
+import io.wonderland.rh.base.tree.TreeCellImpl;
+import io.wonderland.rh.base.tab.ServiceTab;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -176,8 +176,8 @@ public class KeygenTab extends ServiceTab {
     return pane;
   }
 
-  private CustomTreeItem<String> getCustomTreeItem(String cspName,String keygenName) {
-    return new CustomTreeItem<>(keygenName, arg -> {
+  private MonoTreeItem<String> getCustomTreeItem(String cspName, String keygenName) {
+    return new MonoTreeItem<>(keygenName, arg -> {
       try {
         Optional<Object> optionalKeygen = getSelectedKeygen(cspName,keygenName);
         new KeygenPane(optionalKeygen, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);

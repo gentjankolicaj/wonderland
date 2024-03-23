@@ -1,4 +1,4 @@
-package io.wonderland.rh.base.common;
+package io.wonderland.rh.base.dropdown;
 
 import io.wonderland.rh.base.TypeObserver;
 import io.wonderland.rh.utils.GuiUtils;

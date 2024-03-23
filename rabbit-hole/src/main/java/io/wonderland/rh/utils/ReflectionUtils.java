@@ -18,5 +18,10 @@ public class ReflectionUtils {
     return CHARSET_REFLECTIONS.get(SubTypes.of(Charset.class).asClass());
   }
 
+  public static <T> Set<Class<? extends T>> getChildClasses(Class<T> t) {
+    final Reflections reflections = new Reflections(t.getPackageName());
+    return reflections.getSubTypesOf(t);
+  }
+
 
 }

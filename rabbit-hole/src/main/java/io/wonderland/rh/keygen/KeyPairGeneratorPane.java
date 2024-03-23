@@ -1,8 +1,8 @@
 package io.wonderland.rh.keygen;
 
 import io.wonderland.rh.base.TypeObserver;
-import io.wonderland.rh.base.common.Dropdown;
-import io.wonderland.rh.base.common.DropdownHelper;
+import io.wonderland.rh.base.dropdown.Dropdown;
+import io.wonderland.rh.base.dropdown.DropdownHelper;
 import io.wonderland.rh.utils.GuiUtils;
 import io.wonderland.rh.utils.ZxingUtils;
 import java.security.KeyPair;

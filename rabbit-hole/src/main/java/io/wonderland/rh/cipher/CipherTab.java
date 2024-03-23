@@ -2,9 +2,9 @@ package io.wonderland.rh.cipher;
 
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.common.CustomTreeItem;
-import io.wonderland.rh.base.common.TreeCellImpl;
-import io.wonderland.rh.base.common.ServiceTab;
+import io.wonderland.rh.base.tree.MonoTreeItem;
+import io.wonderland.rh.base.tree.TreeCellImpl;
+import io.wonderland.rh.base.tab.ServiceTab;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
@@ -65,7 +65,7 @@ public class CipherTab extends ServiceTab {
 
     //Populate CSP node with correct cipher algorithm name
     for (TreeItem<String> cspNode : cspNodes) {
-      List<CustomTreeItem<String>> cipherNameNodes = getCipherNameNodes(cspNode.getValue());
+      List<MonoTreeItem<String>> cipherNameNodes = getCipherNameNodes(cspNode.getValue());
       if (CollectionUtils.isNotEmpty(cipherNameNodes)) {
         cspNode.getChildren().addAll(cipherNameNodes);
 
@@ -92,7 +92,7 @@ public class CipherTab extends ServiceTab {
         .collect(Collectors.toList());
   }
 
-  private List<CustomTreeItem<String>> getCipherNameNodes(String cspName) {
+  private List<MonoTreeItem<String>> getCipherNameNodes(String cspName) {
     Provider provider = Security.getProvider(cspName);
     if (provider == null) {
       return List.of();
@@ -124,8 +124,8 @@ public class CipherTab extends ServiceTab {
     return new BorderPane(new Label("Welcome to cipher menu.Please select a cipher from left..."));
   }
 
-  private CustomTreeItem<String> getCustomTreeItem(String element) {
-    return new CustomTreeItem<>(element, arg -> {
+  private MonoTreeItem<String> getCustomTreeItem(String element) {
+    return new MonoTreeItem<>(element, arg -> {
       try {
         new CipherPane(element,  GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
       } catch (Exception ex) {

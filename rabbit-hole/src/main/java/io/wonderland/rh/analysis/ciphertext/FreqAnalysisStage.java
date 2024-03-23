@@ -1,6 +1,6 @@
-package io.wonderland.rh.cryptanalysis;
+package io.wonderland.rh.analysis.ciphertext;
 
-import static io.wonderland.rh.cryptanalysis.CiphertextAnalysisPane.CIPHERTEXT;
+import static io.wonderland.rh.analysis.ciphertext.CiphertextPane.CIPHERTEXT;
 
 import io.wonderland.rq.cryptanalysis.FrequencyAnalysis;
 import io.wonderland.rq.cryptanalysis.LanguageFrequency;
@@ -42,8 +42,8 @@ public class FreqAnalysisStage extends Stage {
 
   private final BorderPane rootPane = new BorderPane();
   private final ScrollPane scrollPane = new ScrollPane();
-  private BorderPane chartPane = new BorderPane();
-  private Scene scene;
+  private final BorderPane chartPane = new BorderPane();
+  private final Scene scene;
   private String language;
   private String langGraph;
   private String ciphertextEncoding;

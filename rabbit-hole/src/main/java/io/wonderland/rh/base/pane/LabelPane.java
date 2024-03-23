@@ -1,4 +1,4 @@
-package io.wonderland.rh.base.common;
+package io.wonderland.rh.base.pane;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;

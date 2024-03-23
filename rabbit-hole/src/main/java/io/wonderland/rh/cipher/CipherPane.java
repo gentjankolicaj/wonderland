@@ -1,6 +1,6 @@
 package io.wonderland.rh.cipher;
 
-import io.wonderland.rh.base.common.KeyPane;
+import io.wonderland.rh.base.pane.KeyPane;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.keygen.KeygenObserver;
 import io.wonderland.rh.utils.GuiUtils;
