@@ -13,7 +13,7 @@
   <artifactId>rabbit-hole</artifactId>
   <name>rabbit-hole</name>
   <packaging>jar</packaging>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
 
   <properties>
     <bouncycastle.version>1.77</bouncycastle.version>
