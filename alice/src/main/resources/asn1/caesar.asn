@@ -1,0 +1,15 @@
+CAESAR DEFINITIONS::=
+BEGIN
+
+IMPORTS Algorithm FROM ALGORITHM;
+
+-- Key definition
+CaesarKeyASN1 ::= INTEGER
+
+-- Cipher definition
+CaesarASN1 ::= SEQUENCE {
+  algorithm Algorithm,
+  key CaesarKeyASN1
+}
+
+END

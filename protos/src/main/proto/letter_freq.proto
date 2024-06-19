@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "io.wonderland.protos";
+option java_outer_classname = "LetterFreqProto";
+option objc_class_prefix = "LF";
+
+package letter_freq;
+
+service LetterFreq{
+  rpc getLang(google.protobuf.Empty) returns(LetterFreqResponse) {};
+  rpc getGrapheme(GraphemeRequest) returns (stream GraphemeResponse){};
+
+}
+
+message LetterFreqResponse{
+  string key = 1;
+  repeated string langCodes = 2;
+}
+
+message GraphemeRequest{
+  string key = 1;
+}
+
+message GraphemeResponse{
+  string gramType = 1;
+  bytes freq = 2;
+}

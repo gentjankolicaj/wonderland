@@ -1,0 +1,19 @@
+VIGENERE DEFINITIONS::=
+BEGIN
+
+IMPORTS Algorithm FROM ALGORITHM;
+
+-- Key definition
+VigenereKeyASN1 ::= SEQUENCE {
+ m INTEGER, -- modulus
+ k OCTET STRING -- sequence of keys for each symbol/character/code
+}
+
+
+-- Cipher definition
+VigenereASN1 ::= SEQUENCE {
+  algorithm Algorithm,
+  key VigenereKeyASN1
+}
+
+END

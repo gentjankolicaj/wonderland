@@ -1,0 +1,17 @@
+ALGORITHM DEFINITIONS::=
+
+BEGIN
+
+-- Algorithm identifier definition
+AlgorithmIdentifier ::= SEQUENCE {
+   algorithm OBJECT IDENTIFIER,
+   parameters ANY DEFINED BY algorithm OPTIONAL
+}
+
+-- Algorithm definition
+Algorithm ::=SEQUENCE{
+ name OCTET STRING,
+ id AlgorithmIdentifier
+}
+
+END

@@ -1,0 +1,16 @@
+{
+  "settings": [
+    {
+      "options": {
+        "grpc": {
+          "endpoint": "http://localhost:9001",
+          "disableServerCertificateValidation": true,
+          "maxReceiveMessageSize": 20048576
+        },
+        "rest": {
+          "pathParams": []
+        }
+      }
+    }
+  ]
+}

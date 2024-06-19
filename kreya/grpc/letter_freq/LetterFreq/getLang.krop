@@ -1,0 +1,13 @@
+{
+  "details": {
+    "methodFqn": "letter_freq.LetterFreq.getLang"
+  },
+  "requests": [
+    {
+      "location": "getLang-request.json"
+    }
+  ],
+  "operationType": "unary",
+  "invokerName": "grpc",
+  "importStreamId": "a25175ca-e302-4674-8442-75021978826a"
+}

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>wonderland</artifactId>
+    <groupId>io.wonderland</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>alice</artifactId>
+  <name>alice</name>
+  <packaging>jar</packaging>
+  <version>0.0.2-SNAPSHOT</version>
+
+  <properties>
+    <java.version>11</java.version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <asn1.compile.dir>${basedir}/src/main/java</asn1.compile.dir>
+    <asn1.compile.package>io.wonderland.alice.asn1</asn1.compile.package>
+    <asn1.file.dir>${basedir}/src/main/resources/asn1</asn1.file.dir>
+  </properties>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>io.wonderland</groupId>
+      <artifactId>base</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <artifactId>asn1bean</artifactId>
+      <groupId>com.beanit</groupId>
+      <version>1.14.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>asn1bean-compiler</artifactId>
+      <groupId>com.beanit</groupId>
+      <version>1.14.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+       <plugins>
+          <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+          </plugin>
+          <plugin>
+              <artifactId>maven-resources-plugin</artifactId>
+              <groupId>org.apache.maven.plugins</groupId>
+              <version>3.3.1</version>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.3.0</version>
+             <executions>
+               <execution>
+                  <id>asn1-compile</id>
+                  <phase>validate</phase>
+                   <goals>
+                    <goal>java</goal>
+                   </goals>
+                </execution>
+             </executions>
+            <configuration>
+              <executable>java</executable>
+              <arguments>
+                <argument>-f</argument>
+                <argument>${asn1.file.dir}/algorithm.asn</argument>
+                <argument>${asn1.file.dir}/affine.asn</argument>
+                <argument>${asn1.file.dir}/caesar.asn</argument>
+                <argument>${asn1.file.dir}/otp.asn</argument>
+                <argument>${asn1.file.dir}/vigenere.asn</argument>
+                <argument>${asn1.file.dir}/vernam.asn</argument>
+                <argument>${asn1.file.dir}/railfence.asn</argument>
+                <argument>${asn1.file.dir}/rsa.asn</argument>
+                <argument>-o</argument>
+                <argument>${asn1.compile.dir}</argument>
+                <argument>-p</argument>
+                <argument>${asn1.compile.package}</argument>
+              </arguments>
+              <mainClass>com.beanit.asn1bean.compiler.Compiler</mainClass>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <annotationProcessorPaths>
+                <path>
+                  <artifactId>mapstruct-processor</artifactId>
+                  <groupId>org.mapstruct</groupId>
+                  <version>${mapstruct.version}</version>
+                </path>
+                <path>
+                  <artifactId>lombok</artifactId>
+                  <groupId>org.projectlombok</groupId>
+                  <version>${lombok.version}</version>
+                </path>
+                <path>
+                  <artifactId>lombok-mapstruct-binding</artifactId>
+                  <groupId>org.projectlombok</groupId>
+                  <version>${lombok-mapstruct-binding.version}</version>
+                </path>
+                <path>
+                  <artifactId>jmh-generator-annprocess</artifactId>
+                  <groupId>org.openjdk.jmh</groupId>
+                  <version>${jmh.version}</version>
+                </path>
+              </annotationProcessorPaths>
+              <source>${maven.compiler.source}</source>
+              <target>${maven.compiler.target}</target>
+            </configuration>
+            <groupId>org.apache.maven.plugins</groupId>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <artifactId>maven-install-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.8.2</version>
+          </plugin>
+          <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+          <plugin>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.7.1</version>
+          </plugin>
+          <plugin>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>3.0.0</version>
+          </plugin>
+        </plugins>
+    </build>
+
+
+</project>

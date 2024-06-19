@@ -1,0 +1,19 @@
+OTP DEFINITIONS::=
+BEGIN
+
+IMPORTS Algorithm FROM ALGORITHM;
+
+-- Key definition
+OTPKeyASN1 ::= SEQUENCE {
+ m INTEGER, -- modulus
+ k SEQUENCE OF INTEGER -- sequence of keys for each symbol/character/code
+}
+
+
+-- Cipher definition
+OTPASN1 ::= SEQUENCE {
+  algorithm Algorithm,
+  key OTPKeyASN1
+}
+
+END

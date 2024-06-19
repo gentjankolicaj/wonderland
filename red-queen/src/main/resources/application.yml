@@ -1,0 +1,5 @@
+name: red-queen
+
+grpcClient:
+  host: localhost
+  port: 9001

@@ -1,0 +1,8 @@
+name: test-prop
+
+client:
+  host: ${REDIS_HOST:-127.0.0.1}
+  port: ${REDIS_PORT:-6379}
+  username: ${REDIS_USERNAME:-garden}
+  password: ${REDIS_PASSWORD:-P4ssword}
+  db: ${REDIS_DB:-0}

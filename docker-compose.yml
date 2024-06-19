@@ -1,0 +1,41 @@
+networks:
+  internal_network: { }
+
+volumes:
+  redis_data:
+    driver: local
+services:
+  garden:
+    build:
+      context: garden
+      dockerfile: Dockerfile
+    image: garden:0.0.1
+    container_name: garden_server
+    environment:
+      - GRPC_SERVER_PORT=9001
+      - REDIS_HOST=redis_server
+      - REDIS_PORT=6379
+      - REDIS_USERNAME=garden
+      - REDIS_PASSWORD=P4ssword
+      - REDIS_DB=0
+    ports:
+      - "9001:9001"
+    networks:
+      internal_network:
+    depends_on:
+      - redis
+  redis:
+    image: redis:7.2.5-alpine
+    container_name: redis_server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/users.acl:/etc/redis/users.acl
+    command: [ "sh", "-c", "mkdir -p /var/log/redis && chown redis:redis /var/log/redis && redis-server /usr/local/etc/redis/redis.conf" ]
+    environment:
+      - REDIS_PASSWORD=P4ssword
+    restart: no
+    networks:
+      internal_network:

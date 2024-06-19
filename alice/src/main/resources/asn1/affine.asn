@@ -1,0 +1,20 @@
+AFFINE DEFINITIONS::=
+BEGIN
+
+-- imports from other modules
+IMPORTS Algorithm FROM ALGORITHM;
+
+-- Key definition
+AffineKeyASN1 ::= SEQUENCE {
+ a OCTET STRING,
+ b OCTET STRING,
+ m OCTET STRING
+}
+
+-- Cipher definition
+AffineASN1 ::= SEQUENCE {
+  algorithm Algorithm,
+  key AffineKeyASN1
+}
+
+END

@@ -1,0 +1,5 @@
+name: rabbit-hole
+
+grpcClient:
+  host: localhost
+  port: 9000

@@ -1,0 +1,8 @@
+name: garden
+
+grpcClient:
+  host: localhost
+  port: 8000
+
+grpcServer:
+  port: 8000

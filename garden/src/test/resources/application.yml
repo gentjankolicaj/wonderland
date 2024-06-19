@@ -1,0 +1,11 @@
+name: garden
+
+grpcServer:
+  port: ${GRPC_SERVER_PORT:-9001}
+
+redisClient:
+  host: ${REDIS_HOST:-localhost}
+  port: ${REDIS_PORT:-6379}
+  username: ${REDIS_USERNAME:-garden}
+  password: ${REDIS_PASSWORD:-P4ssword}
+  db: ${REDIS_DB:-0}

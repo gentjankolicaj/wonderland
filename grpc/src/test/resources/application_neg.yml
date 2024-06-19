@@ -1,0 +1,8 @@
+name: grpc-app
+
+grpcClient:
+  host:
+  port:
+
+grpcServer:
+  port:

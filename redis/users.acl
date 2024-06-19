@@ -1,0 +1,3 @@
+user garden on >P4ssword ~* &* +get +set +hset +hget +hgetall +hdel +sadd +smembers +srem +client|setinfo
+
+user admin on >P4ssword ~* &* +@all

@@ -1,0 +1,15 @@
+RAILFENCE DEFINITIONS::=
+BEGIN
+
+IMPORTS Algorithm FROM ALGORITHM;
+
+-- Key definition
+RailfenceKeyASN1 ::= INTEGER
+
+-- Cipher definition
+RailfenceASN1 ::= SEQUENCE {
+  algorithm Algorithm,
+  key RailfenceKeyASN1
+}
+
+END

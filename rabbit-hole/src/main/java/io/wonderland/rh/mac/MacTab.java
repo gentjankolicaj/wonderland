@@ -1,0 +1,128 @@
+package io.wonderland.rh.mac;
+
+import io.wonderland.rh.GlobalConstants;
+import io.wonderland.rh.base.fx.CSPTreeItem;
+import io.wonderland.rh.base.fx.MonoTreeItem;
+import io.wonderland.rh.base.fx.ServiceTab;
+import io.wonderland.rh.base.fx.TreeViewCellImpl;
+import java.security.Provider;
+import java.security.Provider.Service;
+import java.security.Security;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+
+@Slf4j
+public class MacTab extends ServiceTab {
+
+  private final BorderPane container = new BorderPane();
+
+  public MacTab(String title, String serviceType) {
+    super(title, serviceType);
+
+    SplitPane splitPane = new SplitPane();
+
+    //stack pane
+    final StackPane stackPane = new StackPane();
+    stackPane.getChildren().add(createMacPane());
+
+    this.container.setCenter(getWelcomePane());
+
+    splitPane.getItems().addAll(stackPane, container);
+    splitPane.setDividerPositions(0.2f, 0.8f);
+
+    this.setContent(splitPane);
+  }
+
+  private Node createMacPane() {
+    TreeItem<String> rootItem = new TreeItem<>("~/", null);
+    rootItem.setExpanded(true);
+
+    //Cryptographic Service Provider nodes
+    List<CSPTreeItem> cspNodes = getCSPNodes();
+
+    //Populate CSP node with correct cipher algorithm name
+    for (CSPTreeItem cspNode : cspNodes) {
+      List<MonoTreeItem<String>> nameNodes = getMacNodes(cspNode.getName());
+      if (CollectionUtils.isNotEmpty(nameNodes)) {
+        cspNode.getChildren().addAll(nameNodes);
+        //Add CSP nodes to parent
+        rootItem.getChildren().add(cspNode);
+      }
+    }
+
+    TreeView<String> treeView = new TreeView<>(rootItem);
+    treeView.setCellFactory(f -> new TreeViewCellImpl());
+    treeView.getSelectionModel().selectedItemProperty()
+        .addListener((ObservableValue<? extends TreeItem<String>> observableValue,
+            TreeItem<String> oldItem, TreeItem<String> newItem) -> selectMessageDigest(newItem));
+
+    return treeView;
+  }
+
+
+  private List<CSPTreeItem> getCSPNodes() {
+    return Arrays.stream(Security.getProviders())
+        .map(csp -> new CSPTreeItem(csp.getName(), csp.getVersionStr()))
+        .sorted(Comparator.comparing(e -> e.getValue().charAt(0))).collect(Collectors.toList());
+  }
+
+  private List<MonoTreeItem<String>> getMacNodes(String cspName) {
+    Provider provider = Security.getProvider(cspName);
+    if (provider == null) {
+      return List.of();
+    }
+    return provider.getServices().stream()
+        .filter(s -> Arrays.stream(serviceTypes).anyMatch(st -> st.equals(s.getType())))
+        .map(Service::getAlgorithm).filter(this::isValidServiceName)
+        .sorted(Comparator.comparing(s -> s.charAt(0)))
+        .map(e -> getCustomTreeItem(cspName, e)).collect(Collectors.toList());
+  }
+
+  private void selectMessageDigest(TreeItem<String> node) {
+    this.updateContentPane(node);
+  }
+
+  private void updateContentPane(TreeItem<String> node) {
+    try {
+      if (!node.isLeaf()) {
+        throw new IllegalArgumentException("MAC function not valid,please select a MAC.");
+      }
+      String cspName = parseCspName(node.getParent().getValue());
+      this.container.setCenter(new MacPane(cspName, node.getValue()));
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      this.container.setCenter(new Label(e.getMessage()));
+    }
+  }
+
+  private Pane getWelcomePane() {
+    BorderPane pane = new BorderPane();
+    Label welcomeLbl = new Label("Welcome to MAC menu.Please a MAC function from left...");
+    pane.setCenter(welcomeLbl);
+    return pane;
+  }
+
+  private MonoTreeItem<String> getCustomTreeItem(String cspName, String macName) {
+    return new MonoTreeItem<>(macName, arg -> {
+      try {
+        new MacPane(cspName, macName, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+      } catch (Exception ex) {
+        log.error(ex.getMessage());
+      }
+    });
+  }
+
+}

@@ -1,0 +1,19 @@
+VERNAM DEFINITIONS::=
+BEGIN
+
+IMPORTS Algorithm FROM ALGORITHM;
+
+-- Key definition
+VernamKeyASN1 ::= SEQUENCE {
+ m INTEGER, -- modulus
+ k OCTET STRING -- sequence of keys for each symbol/character/code
+}
+
+
+-- Cipher definition
+VernamASN1 ::= SEQUENCE {
+  algorithm Algorithm,
+  key VernamKeyASN1
+}
+
+END
