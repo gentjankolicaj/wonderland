@@ -15,16 +15,16 @@ RSAPublicKeyASN1 ::= SEQUENCE{
 
 -- Private key definition , this outputs the key in PKCS1v2 format.
 RSAPrivateKeyASN1 ::= SEQUENCE {
- version Version OPTIONAL,
+ version [0] Version OPTIONAL,
  modulus INTEGER, -- n
  publicExponent INTEGER, -- e
  privateExponent INTEGER, -- d
  primeP INTEGER, -- p
  primeQ INTEGER, -- q
- primeExponentP INTEGER OPTIONAL, -- d mod (p-1)
- primeExponentQ INTEGER OPTIONAL, -- d mod (q-1)
+ primeExponentP INTEGER, -- d mod (p-1)
+ primeExponentQ INTEGER, -- d mod (q-1)
  coefficient INTEGER, -- (inverse of q) mod p
- otherPrimeInfos OtherPrimeInfos OPTIONAL
+ otherPrimeInfos [1] OtherPrimeInfos OPTIONAL
 }
 
 

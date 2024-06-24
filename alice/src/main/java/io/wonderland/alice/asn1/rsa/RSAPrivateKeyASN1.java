@@ -16,8 +16,10 @@ import java.io.Serializable;
 
 public class RSAPrivateKeyASN1 implements BerType, Serializable {
 
+  private static final long serialVersionUID = 1L;
+
 	public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
-	private static final long serialVersionUID = 1L;
+
 	private byte[] code = null;
 	private Version version = null;
 	private BerInteger modulus = null;
@@ -30,95 +32,95 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 	private BerInteger coefficient = null;
 	private OtherPrimeInfos otherPrimeInfos = null;
 
-	public RSAPrivateKeyASN1() {
+  public RSAPrivateKeyASN1() {
 	}
 
 	public RSAPrivateKeyASN1(byte[] code) {
 		this.code = code;
 	}
 
+  public void setVersion(Version version) {
+    this.version = version;
+  }
+
 	public Version getVersion() {
 		return version;
 	}
 
-	public void setVersion(Version version) {
-		this.version = version;
+  public void setModulus(BerInteger modulus) {
+    this.modulus = modulus;
 	}
 
 	public BerInteger getModulus() {
 		return modulus;
 	}
 
-	public void setModulus(BerInteger modulus) {
-		this.modulus = modulus;
-	}
-
-	public BerInteger getPublicExponent() {
-		return publicExponent;
-	}
-
 	public void setPublicExponent(BerInteger publicExponent) {
 		this.publicExponent = publicExponent;
 	}
 
-	public BerInteger getPrivateExponent() {
-		return privateExponent;
+  public BerInteger getPublicExponent() {
+    return publicExponent;
 	}
 
 	public void setPrivateExponent(BerInteger privateExponent) {
 		this.privateExponent = privateExponent;
 	}
 
-	public BerInteger getPrimeP() {
-		return primeP;
+  public BerInteger getPrivateExponent() {
+    return privateExponent;
 	}
 
 	public void setPrimeP(BerInteger primeP) {
 		this.primeP = primeP;
 	}
 
+  public BerInteger getPrimeP() {
+    return primeP;
+  }
+
+  public void setPrimeQ(BerInteger primeQ) {
+    this.primeQ = primeQ;
+  }
+
 	public BerInteger getPrimeQ() {
 		return primeQ;
 	}
 
-	public void setPrimeQ(BerInteger primeQ) {
-		this.primeQ = primeQ;
+  public void setPrimeExponentP(BerInteger primeExponentP) {
+    this.primeExponentP = primeExponentP;
 	}
 
 	public BerInteger getPrimeExponentP() {
 		return primeExponentP;
 	}
 
-	public void setPrimeExponentP(BerInteger primeExponentP) {
-		this.primeExponentP = primeExponentP;
+  public void setPrimeExponentQ(BerInteger primeExponentQ) {
+    this.primeExponentQ = primeExponentQ;
 	}
 
 	public BerInteger getPrimeExponentQ() {
 		return primeExponentQ;
 	}
 
-	public void setPrimeExponentQ(BerInteger primeExponentQ) {
-		this.primeExponentQ = primeExponentQ;
+  public void setCoefficient(BerInteger coefficient) {
+    this.coefficient = coefficient;
 	}
 
 	public BerInteger getCoefficient() {
 		return coefficient;
 	}
 
-	public void setCoefficient(BerInteger coefficient) {
-		this.coefficient = coefficient;
-	}
-
-	public OtherPrimeInfos getOtherPrimeInfos() {
-		return otherPrimeInfos;
-	}
-
 	public void setOtherPrimeInfos(OtherPrimeInfos otherPrimeInfos) {
 		this.otherPrimeInfos = otherPrimeInfos;
 	}
 
-	@Override
-	public int encode(OutputStream reverseOS) throws IOException {
+  public OtherPrimeInfos getOtherPrimeInfos() {
+    return otherPrimeInfos;
+  }
+
+  @Override
+  public int encode(OutputStream reverseOS) throws IOException {
 		return encode(reverseOS, true);
 	}
 
@@ -133,35 +135,43 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 		}
 
 		int codeLength = 0;
+    int sublength;
+
 		if (otherPrimeInfos != null) {
-			codeLength += otherPrimeInfos.encode(reverseOS, true);
+      sublength = otherPrimeInfos.encode(reverseOS, true);
+      codeLength += sublength;
+      codeLength += BerLength.encodeLength(reverseOS, sublength);
+      // write tag: CONTEXT_CLASS, CONSTRUCTED, 1
+      reverseOS.write(0xA1);
+      codeLength += 1;
 		}
 
-		codeLength += coefficient.encode(reverseOS, true);
+    codeLength += coefficient.encode(reverseOS, true);
 
-		if (primeExponentQ != null) {
-			codeLength += primeExponentQ.encode(reverseOS, true);
-		}
+    codeLength += primeExponentQ.encode(reverseOS, true);
 
-		if (primeExponentP != null) {
-			codeLength += primeExponentP.encode(reverseOS, true);
-		}
-
+    codeLength += primeExponentP.encode(reverseOS, true);
+		
 		codeLength += primeQ.encode(reverseOS, true);
 
-		codeLength += primeP.encode(reverseOS, true);
+    codeLength += primeP.encode(reverseOS, true);
 
-		codeLength += privateExponent.encode(reverseOS, true);
+    codeLength += privateExponent.encode(reverseOS, true);
 
-		codeLength += publicExponent.encode(reverseOS, true);
+    codeLength += publicExponent.encode(reverseOS, true);
 
-		codeLength += modulus.encode(reverseOS, true);
+    codeLength += modulus.encode(reverseOS, true);
 
-		if (version != null) {
-			codeLength += version.encode(reverseOS, true);
+    if (version != null) {
+      sublength = version.encode(reverseOS, true);
+      codeLength += sublength;
+      codeLength += BerLength.encodeLength(reverseOS, sublength);
+      // write tag: CONTEXT_CLASS, CONSTRUCTED, 0
+      reverseOS.write(0xA0);
+      codeLength += 1;
 		}
 
-		codeLength += BerLength.encodeLength(reverseOS, codeLength);
+    codeLength += BerLength.encodeLength(reverseOS, codeLength);
 
 		if (withTag) {
 			codeLength += tag.encode(reverseOS);
@@ -171,8 +181,8 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 
 	}
 
-	@Override
-	public int decode(InputStream is) throws IOException {
+  @Override
+  public int decode(InputStream is) throws IOException {
 		return decode(is, true);
 	}
 
@@ -190,64 +200,70 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 		int lengthVal = length.val;
 		vByteCount += berTag.decode(is);
 
-		if (berTag.equals(Version.tag)) {
+    if (berTag.equals(BerTag.CONTEXT_CLASS, BerTag.CONSTRUCTED, 0)) {
+      vByteCount += length.decode(is);
 			version = new Version();
-			vByteCount += version.decode(is, false);
+      vByteCount += version.decode(is, true);
+      vByteCount += length.readEocIfIndefinite(is);
 			vByteCount += berTag.decode(is);
 		}
 
-		if (berTag.equals(BerInteger.tag)) {
+    if (berTag.equals(BerInteger.tag)) {
 			modulus = new BerInteger();
 			vByteCount += modulus.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (berTag.equals(BerInteger.tag)) {
+    if (berTag.equals(BerInteger.tag)) {
 			publicExponent = new BerInteger();
 			vByteCount += publicExponent.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (berTag.equals(BerInteger.tag)) {
+    if (berTag.equals(BerInteger.tag)) {
 			privateExponent = new BerInteger();
 			vByteCount += privateExponent.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (berTag.equals(BerInteger.tag)) {
+    if (berTag.equals(BerInteger.tag)) {
 			primeP = new BerInteger();
 			vByteCount += primeP.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (berTag.equals(BerInteger.tag)) {
+    if (berTag.equals(BerInteger.tag)) {
 			primeQ = new BerInteger();
 			vByteCount += primeQ.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (berTag.equals(BerInteger.tag)) {
+    if (berTag.equals(BerInteger.tag)) {
 			primeExponentP = new BerInteger();
 			vByteCount += primeExponentP.decode(is, false);
 			vByteCount += berTag.decode(is);
-		}
-
+		} else {
+      throw new IOException("Tag does not match mandatory sequence component.");
+    }
+		
 		if (berTag.equals(BerInteger.tag)) {
 			primeExponentQ = new BerInteger();
 			vByteCount += primeExponentQ.decode(is, false);
 			vByteCount += berTag.decode(is);
-		}
-
+		} else {
+      throw new IOException("Tag does not match mandatory sequence component.");
+    }
+		
 		if (berTag.equals(BerInteger.tag)) {
 			coefficient = new BerInteger();
 			vByteCount += coefficient.decode(is, false);
@@ -255,20 +271,22 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 				return tlByteCount + vByteCount;
 			}
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (berTag.equals(OtherPrimeInfos.tag)) {
+    if (berTag.equals(BerTag.CONTEXT_CLASS, BerTag.CONSTRUCTED, 1)) {
+      vByteCount += length.decode(is);
 			otherPrimeInfos = new OtherPrimeInfos();
-			vByteCount += otherPrimeInfos.decode(is, false);
+      vByteCount += otherPrimeInfos.decode(is, true);
+      vByteCount += length.readEocIfIndefinite(is);
 			if (lengthVal >= 0 && vByteCount == lengthVal) {
 				return tlByteCount + vByteCount;
 			}
 			vByteCount += berTag.decode(is);
 		}
 
-		if (lengthVal < 0) {
+    if (lengthVal < 0) {
 			if (!berTag.equals(0, 0, 0)) {
 				throw new IOException("Decoded sequence has wrong end of contents octets");
 			}
@@ -276,8 +294,8 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 			return tlByteCount + vByteCount;
 		}
 
-		throw new IOException(
-				"Unexpected end of sequence, length tag: " + lengthVal + ", bytes decoded: " + vByteCount);
+    throw new IOException(
+        "Unexpected end of sequence, length tag: " + lengthVal + ", bytes decoded: " + vByteCount);
 
 	}
 
@@ -287,8 +305,8 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 		code = reverseOS.getArray();
 	}
 
-	@Override
-	public String toString() {
+  @Override
+  public String toString() {
 		StringBuilder sb = new StringBuilder();
 		appendAsString(sb, 0);
 		return sb.toString();
@@ -307,7 +325,7 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 			firstSelectedElement = false;
 		}
 
-		if (!firstSelectedElement) {
+    if (!firstSelectedElement) {
 			sb.append(",\n");
 		}
 		for (int i = 0; i < indentLevel + 1; i++) {
@@ -315,77 +333,81 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 		}
 		if (modulus != null) {
 			sb.append("modulus: ").append(modulus);
-		} else {
+    } else {
 			sb.append("modulus: <empty-required-field>");
 		}
 
-		sb.append(",\n");
+    sb.append(",\n");
 		for (int i = 0; i < indentLevel + 1; i++) {
 			sb.append("\t");
 		}
 		if (publicExponent != null) {
 			sb.append("publicExponent: ").append(publicExponent);
-		} else {
+    } else {
 			sb.append("publicExponent: <empty-required-field>");
 		}
 
-		sb.append(",\n");
+    sb.append(",\n");
 		for (int i = 0; i < indentLevel + 1; i++) {
 			sb.append("\t");
 		}
 		if (privateExponent != null) {
 			sb.append("privateExponent: ").append(privateExponent);
-		} else {
+    } else {
 			sb.append("privateExponent: <empty-required-field>");
 		}
 
-		sb.append(",\n");
+    sb.append(",\n");
 		for (int i = 0; i < indentLevel + 1; i++) {
 			sb.append("\t");
 		}
 		if (primeP != null) {
 			sb.append("primeP: ").append(primeP);
-		} else {
+    } else {
 			sb.append("primeP: <empty-required-field>");
 		}
 
-		sb.append(",\n");
+    sb.append(",\n");
 		for (int i = 0; i < indentLevel + 1; i++) {
 			sb.append("\t");
 		}
 		if (primeQ != null) {
 			sb.append("primeQ: ").append(primeQ);
-		} else {
+    } else {
 			sb.append("primeQ: <empty-required-field>");
 		}
 
-		if (primeExponentP != null) {
-			sb.append(",\n");
-			for (int i = 0; i < indentLevel + 1; i++) {
-				sb.append("\t");
-			}
+    sb.append(",\n");
+    for (int i = 0; i < indentLevel + 1; i++) {
+      sb.append("\t");
+    }
+    if (primeExponentP != null) {
 			sb.append("primeExponentP: ").append(primeExponentP);
-		}
+		} else {
+      sb.append("primeExponentP: <empty-required-field>");
+    }
 
-		if (primeExponentQ != null) {
-			sb.append(",\n");
-			for (int i = 0; i < indentLevel + 1; i++) {
-				sb.append("\t");
-			}
+    sb.append(",\n");
+    for (int i = 0; i < indentLevel + 1; i++) {
+      sb.append("\t");
+    }
+    if (primeExponentQ != null) {
 			sb.append("primeExponentQ: ").append(primeExponentQ);
-		}
-
+		} else {
+      sb.append("primeExponentQ: <empty-required-field>");
+    }
+		
 		sb.append(",\n");
 		for (int i = 0; i < indentLevel + 1; i++) {
 			sb.append("\t");
 		}
 		if (coefficient != null) {
 			sb.append("coefficient: ").append(coefficient);
-		} else {
+    } else {
 			sb.append("coefficient: <empty-required-field>");
 		}
 
-		if (otherPrimeInfos != null) {
+    if (otherPrimeInfos != null) {
 			sb.append(",\n");
 			for (int i = 0; i < indentLevel + 1; i++) {
 				sb.append("\t");
@@ -394,7 +416,7 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 			otherPrimeInfos.appendAsString(sb, indentLevel + 1);
 		}
 
-		sb.append("\n");
+    sb.append("\n");
 		for (int i = 0; i < indentLevel; i++) {
 			sb.append("\t");
 		}
