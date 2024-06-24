@@ -31,11 +31,11 @@ public final class CaesarKeyASN1Codec implements SecretKeyCodec<CaesarKey> {
   @Override
   public Function<CaesarKey, byte[]> encoder() {
     return key -> {
-      ReverseByteArrayOutputStream ber = new ReverseByteArrayOutputStream(100, true);
+      ReverseByteArrayOutputStream os = new ReverseByteArrayOutputStream(100, true);
       CaesarKeyASN1 keyASN1 = new CaesarKeyASN1(key.getShift());
       try {
-        keyASN1.encode(ber, true);
-        return ber.getArray();
+        keyASN1.encode(os, true);
+        return os.getArray();
       } catch (IOException e) {
         log.error("", e);
         return ArrayUtils.EMPTY_BYTE_ARRAY;
@@ -45,8 +45,8 @@ public final class CaesarKeyASN1Codec implements SecretKeyCodec<CaesarKey> {
 
   @Override
   public Function<byte[], CaesarKey> decoder() {
-    return array -> {
-      ByteArrayInputStream bais = new ByteArrayInputStream(array);
+    return encoded -> {
+      ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
       CaesarKeyASN1 keyASN1 = new CaesarKeyASN1();
       try {
         keyASN1.decode(bais, true);

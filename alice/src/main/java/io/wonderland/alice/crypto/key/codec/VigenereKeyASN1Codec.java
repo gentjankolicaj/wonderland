@@ -32,13 +32,13 @@ public final class VigenereKeyASN1Codec implements SecretKeyCodec<VigenereKey> {
   @Override
   public Function<VigenereKey, byte[]> encoder() {
     return key -> {
-      ReverseByteArrayOutputStream ber = new ReverseByteArrayOutputStream(100, true);
+      ReverseByteArrayOutputStream os = new ReverseByteArrayOutputStream(100, true);
       VigenereKeyASN1 keyASN1 = new VigenereKeyASN1();
       keyASN1.setM(new BerInteger(key.getModulus()));
       keyASN1.setK(new BerOctetString(key.getKey()));
       try {
-        keyASN1.encode(ber, true);
-        return ber.getArray();
+        keyASN1.encode(os, true);
+        return os.getArray();
       } catch (IOException e) {
         log.error("", e);
         return ArrayUtils.EMPTY_BYTE_ARRAY;
@@ -48,8 +48,8 @@ public final class VigenereKeyASN1Codec implements SecretKeyCodec<VigenereKey> {
 
   @Override
   public Function<byte[], VigenereKey> decoder() {
-    return array -> {
-      ByteArrayInputStream bais = new ByteArrayInputStream(array);
+    return encoded -> {
+      ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
       VigenereKeyASN1 keyASN1 = new VigenereKeyASN1();
       try {
         keyASN1.decode(bais, true);

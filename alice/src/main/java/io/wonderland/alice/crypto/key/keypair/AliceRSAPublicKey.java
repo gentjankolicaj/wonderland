@@ -6,9 +6,7 @@ import io.wonderland.alice.crypto.key.codec.RSAKeyPairASN1Codec;
 import java.math.BigInteger;
 import java.security.interfaces.RSAPublicKey;
 import java.util.function.Function;
-import lombok.Getter;
 
-@Getter
 public class AliceRSAPublicKey implements RSAPublicKey {
 
   private static final Function<AliceRSAPublicKey, byte[]> PK_ENCODER = RSAKeyPairASN1Codec.getInstance()

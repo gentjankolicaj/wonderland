@@ -45,13 +45,13 @@ public final class OTPKeyASN1Codec implements SecretKeyCodec<OTPKey> {
   @Override
   public Function<OTPKey, byte[]> encoder() {
     return key -> {
-      ReverseByteArrayOutputStream ber = new ReverseByteArrayOutputStream(100, true);
+      ReverseByteArrayOutputStream os = new ReverseByteArrayOutputStream(100, true);
       OTPKeyASN1 keyASN1 = new OTPKeyASN1();
       keyASN1.setM(new BerInteger(key.getModulus()));
       keyASN1.setK(getK(key.getCodeKeys()));
       try {
-        keyASN1.encode(ber, true);
-        return ber.getArray();
+        keyASN1.encode(os, true);
+        return os.getArray();
       } catch (IOException e) {
         log.error("", e);
         return ArrayUtils.EMPTY_BYTE_ARRAY;
@@ -61,8 +61,8 @@ public final class OTPKeyASN1Codec implements SecretKeyCodec<OTPKey> {
 
   @Override
   public Function<byte[], OTPKey> decoder() {
-    return array -> {
-      ByteArrayInputStream bais = new ByteArrayInputStream(array);
+    return encoded -> {
+      ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
       OTPKeyASN1 keyASN1 = new OTPKeyASN1();
       try {
         keyASN1.decode(bais, true);

@@ -32,13 +32,13 @@ public final class VernamKeyASN1Codec implements SecretKeyCodec<VernamKey> {
   @Override
   public Function<VernamKey, byte[]> encoder() {
     return key -> {
-      ReverseByteArrayOutputStream ber = new ReverseByteArrayOutputStream(100, true);
+      ReverseByteArrayOutputStream os = new ReverseByteArrayOutputStream(100, true);
       VernamKeyASN1 keyASN1 = new VernamKeyASN1();
       keyASN1.setM(new BerInteger(key.getModulus()));
       keyASN1.setK(new BerOctetString(key.getKey()));
       try {
-        keyASN1.encode(ber, true);
-        return ber.getArray();
+        keyASN1.encode(os, true);
+        return os.getArray();
       } catch (IOException e) {
         log.error("", e);
         return ArrayUtils.EMPTY_BYTE_ARRAY;
@@ -48,8 +48,8 @@ public final class VernamKeyASN1Codec implements SecretKeyCodec<VernamKey> {
 
   @Override
   public Function<byte[], VernamKey> decoder() {
-    return array -> {
-      ByteArrayInputStream bais = new ByteArrayInputStream(array);
+    return encoded -> {
+      ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
       VernamKeyASN1 keyASN1 = new VernamKeyASN1();
       try {
         keyASN1.decode(bais, true);

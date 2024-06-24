@@ -33,14 +33,14 @@ public final class AffineKeyASN1Codec implements SecretKeyCodec<AffineKey> {
   @Override
   public Function<AffineKey, byte[]> encoder() {
     return affineKey -> {
-      ReverseByteArrayOutputStream ber = new ReverseByteArrayOutputStream(100, true);
+      ReverseByteArrayOutputStream os = new ReverseByteArrayOutputStream(100, true);
       AffineKeyASN1 affineKeyASN1 = new AffineKeyASN1();
       affineKeyASN1.setA(new BerOctetString(affineKey.getA().toByteArray()));
       affineKeyASN1.setB(new BerOctetString(affineKey.getB().toByteArray()));
       affineKeyASN1.setM(new BerOctetString(affineKey.getM().toByteArray()));
       try {
-        affineKeyASN1.encode(ber, true);
-        return ber.getArray();
+        affineKeyASN1.encode(os, true);
+        return os.getArray();
       } catch (IOException e) {
         log.error("", e);
         return ArrayUtils.EMPTY_BYTE_ARRAY;
@@ -50,8 +50,8 @@ public final class AffineKeyASN1Codec implements SecretKeyCodec<AffineKey> {
 
   @Override
   public Function<byte[], AffineKey> decoder() {
-    return array -> {
-      ByteArrayInputStream bais = new ByteArrayInputStream(array);
+    return encoded -> {
+      ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
       AffineKeyASN1 affineKeyASN1 = new AffineKeyASN1();
       try {
         affineKeyASN1.decode(bais, true);

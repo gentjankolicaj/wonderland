@@ -31,11 +31,11 @@ public final class RailfenceKeyASN1Codec implements SecretKeyCodec<RailfenceKey>
   @Override
   public Function<RailfenceKey, byte[]> encoder() {
     return key -> {
-      ReverseByteArrayOutputStream ber = new ReverseByteArrayOutputStream(100, true);
+      ReverseByteArrayOutputStream os = new ReverseByteArrayOutputStream(100, true);
       RailfenceKeyASN1 keyASN1 = new RailfenceKeyASN1(key.getRails());
       try {
-        keyASN1.encode(ber, true);
-        return ber.getArray();
+        keyASN1.encode(os, true);
+        return os.getArray();
       } catch (IOException e) {
         log.error("", e);
         return ArrayUtils.EMPTY_BYTE_ARRAY;
@@ -45,8 +45,8 @@ public final class RailfenceKeyASN1Codec implements SecretKeyCodec<RailfenceKey>
 
   @Override
   public Function<byte[], RailfenceKey> decoder() {
-    return array -> {
-      ByteArrayInputStream bais = new ByteArrayInputStream(array);
+    return encoded -> {
+      ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
       RailfenceKeyASN1 keyASN1 = new RailfenceKeyASN1();
       try {
         keyASN1.decode(bais, true);

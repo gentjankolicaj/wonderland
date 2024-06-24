@@ -8,9 +8,8 @@ import io.wonderland.alice.exception.KeyException;
 import java.math.BigInteger;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.function.Function;
-import lombok.Getter;
 
-@Getter
+
 public class AliceRSAPrivateKey implements RSAPrivateCrtKey {
 
   private static final Function<AliceRSAPrivateKey, byte[]> PK_ENCODER = RSAKeyPairASN1Codec.getInstance()
@@ -21,42 +20,22 @@ public class AliceRSAPrivateKey implements RSAPrivateCrtKey {
   private final BigInteger q;
   private final BigInteger e;
   private final BigInteger d;
-  private final BigInteger pe;
-  private final BigInteger qe;
+  private final BigInteger dp;
+  private final BigInteger dq;
+  private final BigInteger qInv;
 
-
-  //todo: to replace all long type with biginteger,including method invocations
-  public AliceRSAPrivateKey(BigInteger p, BigInteger q, BigInteger e) {
-    if (p.gcd(q).intValueExact() != 1) {
-      throw new KeyException("Co-primality exception, p & q are not co-prime.Must be coprime");
-    }
+  public AliceRSAPrivateKey(BigInteger n, BigInteger p, BigInteger q, BigInteger e, BigInteger d,
+      BigInteger dp, BigInteger dq, BigInteger qInv) {
+    this.n = n;
     this.p = p;
     this.q = q;
-    this.n = this.p.multiply(this.q);
-    BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-    this.e = RSAUtils.randPublicExponent(phi);
-    this.d = e.modInverse(phi);
-    this.pe = this.p.multiply(this.e);
-    this.qe = this.q.multiply(this.e);
+    this.e = e;
+    this.d = d;
+    this.dp = dp;
+    this.dq = dq;
+    this.qInv = qInv;
   }
 
-  //todo: to replace all long type with biginteger,including method invocations
-  public AliceRSAPrivateKey(BigInteger p, BigInteger q) {
-    if (p.gcd(q).intValueExact() != 1) {
-      throw new KeyException("Co-primality exception, p & q are not co-prime.Must be coprime");
-    }
-    this.p = p;
-    this.q = q;
-    this.n = this.p.multiply(this.q);
-    BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-    this.e = RSAUtils.randPublicExponent(phi);
-    this.d = e.modInverse(phi);
-    this.pe = this.p.multiply(this.e);
-    this.qe = this.q.multiply(this.e);
-  }
-
-
-  //todo: to replace all long type with biginteger,including method invocations
   public AliceRSAPrivateKey(long p, long q) {
     this.p = BigInteger.valueOf(p);
     this.q = BigInteger.valueOf(q);
@@ -65,25 +44,56 @@ public class AliceRSAPrivateKey implements RSAPrivateCrtKey {
     }
     this.n = this.p.multiply(this.q);
     BigInteger phi = this.p.subtract(BigInteger.ONE).multiply(this.q.subtract(BigInteger.ONE));
-    this.e = RSAUtils.randPublicExponent(phi);
+    this.e = RSAUtils.randCoprime(phi);
     this.d = e.modInverse(phi);
-    this.pe = this.p.multiply(this.e);
-    this.qe = this.q.multiply(this.e);
+    this.dp = this.d.mod(this.p.subtract(BigInteger.ONE));
+    this.dq = this.d.mod(this.q.subtract(BigInteger.ONE));
+    this.qInv = RSAUtils.qInv(this.p, this.q);
   }
 
-  //todo: to replace all long type with biginteger,including method invocations
+  public AliceRSAPrivateKey(BigInteger p, BigInteger q) {
+    if (p.gcd(q).intValueExact() != 1) {
+      throw new KeyException("Co-primality exception, p & q are not co-prime.Must be coprime");
+    }
+    this.p = p;
+    this.q = q;
+    this.n = this.p.multiply(this.q);
+    BigInteger phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+    this.e = RSAUtils.randCoprime(phi);
+    this.d = e.modInverse(phi);
+    this.dp = this.d.mod(this.p.subtract(BigInteger.ONE));
+    this.dq = this.d.mod(this.q.subtract(BigInteger.ONE));
+    this.qInv = RSAUtils.qInv(this.p, this.q);
+  }
+
   public AliceRSAPrivateKey(long p, long q, long e) {
     this.p = BigInteger.valueOf(p);
     this.q = BigInteger.valueOf(q);
     this.e = BigInteger.valueOf(e);
+    this.n = this.p.multiply(this.q);
     BigInteger phi = this.p.subtract(BigInteger.ONE).multiply(this.q.subtract(BigInteger.ONE));
     if (this.e.gcd(phi).intValueExact() != 1) {
       throw new KeyException("Co-primality exception, p & q are not co-prime.Must be coprime");
     }
-    this.n = this.p.multiply(this.q);
     this.d = this.e.modInverse(phi);
-    this.pe = this.p.multiply(this.e);
-    this.qe = this.q.multiply(this.e);
+    this.dp = this.d.mod(this.p.subtract(BigInteger.ONE));
+    this.dq = this.d.mod(this.q.subtract(BigInteger.ONE));
+    this.qInv = RSAUtils.qInv(this.p, this.q);
+  }
+
+  public AliceRSAPrivateKey(BigInteger p, BigInteger q, BigInteger e) {
+    if (p.gcd(q).intValueExact() != 1) {
+      throw new KeyException("Co-primality exception, p & q are not co-prime.Must be coprime");
+    }
+    this.p = p;
+    this.q = q;
+    this.e = e;
+    this.n = this.p.multiply(this.q);
+    BigInteger phi = this.p.subtract(BigInteger.ONE).multiply(this.q.subtract(BigInteger.ONE));
+    this.d = this.e.modInverse(phi);
+    this.dp = this.d.mod(this.p.subtract(BigInteger.ONE));
+    this.dq = this.d.mod(this.q.subtract(BigInteger.ONE));
+    this.qInv = RSAUtils.qInv(this.p, this.q);
   }
 
   @Override
@@ -100,7 +110,6 @@ public class AliceRSAPrivateKey implements RSAPrivateCrtKey {
   public byte[] getEncoded() {
     return PK_ENCODER.apply(this);
   }
-
 
   @Override
   public BigInteger getPublicExponent() {
@@ -119,17 +128,17 @@ public class AliceRSAPrivateKey implements RSAPrivateCrtKey {
 
   @Override
   public BigInteger getPrimeExponentP() {
-    return pe;
+    return dp;
   }
 
   @Override
   public BigInteger getPrimeExponentQ() {
-    return qe;
+    return dq;
   }
 
   @Override
   public BigInteger getCrtCoefficient() {
-    return null;
+    return qInv;
   }
 
   @Override
@@ -141,4 +150,5 @@ public class AliceRSAPrivateKey implements RSAPrivateCrtKey {
   public BigInteger getModulus() {
     return n;
   }
+
 }
