@@ -16,8 +16,10 @@ import java.io.Serializable;
 
 public class RailfenceASN1 implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private Algorithm algorithm = null;
   private RailfenceKeyASN1 key = null;
@@ -29,20 +31,20 @@ public class RailfenceASN1 implements BerType, Serializable {
     this.code = code;
   }
 
-  public Algorithm getAlgorithm() {
-    return algorithm;
-  }
-
   public void setAlgorithm(Algorithm algorithm) {
     this.algorithm = algorithm;
   }
 
-  public RailfenceKeyASN1 getKey() {
-    return key;
+  public Algorithm getAlgorithm() {
+    return algorithm;
   }
 
   public void setKey(RailfenceKeyASN1 key) {
     this.key = key;
+  }
+
+  public RailfenceKeyASN1 getKey() {
+    return key;
   }
 
   @Override

@@ -16,8 +16,10 @@ import java.io.Serializable;
 
 public class RSAASN1 implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private Algorithm algorithm = null;
   private RSAPublicKeyASN1 publicKey = null;
@@ -30,28 +32,28 @@ public class RSAASN1 implements BerType, Serializable {
     this.code = code;
   }
 
-  public Algorithm getAlgorithm() {
-    return algorithm;
-  }
-
   public void setAlgorithm(Algorithm algorithm) {
     this.algorithm = algorithm;
   }
 
-  public RSAPublicKeyASN1 getPublicKey() {
-    return publicKey;
+  public Algorithm getAlgorithm() {
+    return algorithm;
   }
 
   public void setPublicKey(RSAPublicKeyASN1 publicKey) {
     this.publicKey = publicKey;
   }
 
-  public RSAPrivateKeyASN1 getPrivateKey() {
-    return privateKey;
+  public RSAPublicKeyASN1 getPublicKey() {
+    return publicKey;
   }
 
   public void setPrivateKey(RSAPrivateKeyASN1 privateKey) {
     this.privateKey = privateKey;
+  }
+
+  public RSAPrivateKeyASN1 getPrivateKey() {
+    return privateKey;
   }
 
   @Override

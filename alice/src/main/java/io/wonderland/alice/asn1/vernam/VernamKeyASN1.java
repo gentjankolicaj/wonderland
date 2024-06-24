@@ -17,8 +17,10 @@ import java.io.Serializable;
 
 public class VernamKeyASN1 implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private BerInteger m = null;
   private BerOctetString k = null;
@@ -30,20 +32,20 @@ public class VernamKeyASN1 implements BerType, Serializable {
     this.code = code;
   }
 
-  public BerInteger getM() {
-    return m;
-  }
-
   public void setM(BerInteger m) {
     this.m = m;
   }
 
-  public BerOctetString getK() {
-    return k;
+  public BerInteger getM() {
+    return m;
   }
 
   public void setK(BerOctetString k) {
     this.k = k;
+  }
+
+  public BerOctetString getK() {
+    return k;
   }
 
   @Override

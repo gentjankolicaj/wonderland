@@ -16,8 +16,10 @@ import java.io.Serializable;
 
 public class RSAPublicKeyASN1 implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private BerInteger modulus = null;
   private BerInteger publicExponent = null;
@@ -29,20 +31,20 @@ public class RSAPublicKeyASN1 implements BerType, Serializable {
     this.code = code;
   }
 
-  public BerInteger getModulus() {
-    return modulus;
-  }
-
   public void setModulus(BerInteger modulus) {
     this.modulus = modulus;
   }
 
-  public BerInteger getPublicExponent() {
-    return publicExponent;
+  public BerInteger getModulus() {
+    return modulus;
   }
 
   public void setPublicExponent(BerInteger publicExponent) {
     this.publicExponent = publicExponent;
+  }
+
+  public BerInteger getPublicExponent() {
+    return publicExponent;
   }
 
   @Override

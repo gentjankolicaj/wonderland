@@ -18,8 +18,10 @@ import java.io.Serializable;
 
 public class AlgorithmIdentifier implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private BerObjectIdentifier algorithm = null;
   private BerAny parameters = null;
@@ -31,20 +33,20 @@ public class AlgorithmIdentifier implements BerType, Serializable {
     this.code = code;
   }
 
-  public BerObjectIdentifier getAlgorithm() {
-    return algorithm;
-  }
-
   public void setAlgorithm(BerObjectIdentifier algorithm) {
     this.algorithm = algorithm;
   }
 
-  public BerAny getParameters() {
-    return parameters;
+  public BerObjectIdentifier getAlgorithm() {
+    return algorithm;
   }
 
   public void setParameters(BerAny parameters) {
     this.parameters = parameters;
+  }
+
+  public BerAny getParameters() {
+    return parameters;
   }
 
   @Override

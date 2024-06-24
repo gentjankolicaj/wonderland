@@ -16,392 +16,390 @@ import java.io.Serializable;
 
 public class RSAPrivateKeyASN1 implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
-  private static final long serialVersionUID = 1L;
-  private byte[] code = null;
-  private Version version = null;
-  private BerInteger modulus = null;
-  private BerInteger publicExponent = null;
-  private BerInteger privateExponent = null;
-  private BerInteger prime1 = null;
-  private BerInteger prime2 = null;
-  private BerInteger exponent1 = null;
-  private BerInteger exponent2 = null;
-  private BerInteger coefficient = null;
-  private OtherPrimeInfos otherPrimeInfos = null;
-
-  public RSAPrivateKeyASN1() {
-  }
-
-  public RSAPrivateKeyASN1(byte[] code) {
-    this.code = code;
-  }
-
-  public Version getVersion() {
-    return version;
-  }
-
-  public void setVersion(Version version) {
-    this.version = version;
-  }
-
-  public BerInteger getModulus() {
-    return modulus;
-  }
-
-  public void setModulus(BerInteger modulus) {
-    this.modulus = modulus;
-  }
+	public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+	private static final long serialVersionUID = 1L;
+	private byte[] code = null;
+	private Version version = null;
+	private BerInteger modulus = null;
+	private BerInteger publicExponent = null;
+	private BerInteger privateExponent = null;
+	private BerInteger primeP = null;
+	private BerInteger primeQ = null;
+	private BerInteger primeExponentP = null;
+	private BerInteger primeExponentQ = null;
+	private BerInteger coefficient = null;
+	private OtherPrimeInfos otherPrimeInfos = null;
+
+	public RSAPrivateKeyASN1() {
+	}
+
+	public RSAPrivateKeyASN1(byte[] code) {
+		this.code = code;
+	}
+
+	public Version getVersion() {
+		return version;
+	}
+
+	public void setVersion(Version version) {
+		this.version = version;
+	}
+
+	public BerInteger getModulus() {
+		return modulus;
+	}
+
+	public void setModulus(BerInteger modulus) {
+		this.modulus = modulus;
+	}
+
+	public BerInteger getPublicExponent() {
+		return publicExponent;
+	}
+
+	public void setPublicExponent(BerInteger publicExponent) {
+		this.publicExponent = publicExponent;
+	}
+
+	public BerInteger getPrivateExponent() {
+		return privateExponent;
+	}
 
-  public BerInteger getPublicExponent() {
-    return publicExponent;
-  }
+	public void setPrivateExponent(BerInteger privateExponent) {
+		this.privateExponent = privateExponent;
+	}
 
-  public void setPublicExponent(BerInteger publicExponent) {
-    this.publicExponent = publicExponent;
-  }
+	public BerInteger getPrimeP() {
+		return primeP;
+	}
 
-  public BerInteger getPrivateExponent() {
-    return privateExponent;
-  }
+	public void setPrimeP(BerInteger primeP) {
+		this.primeP = primeP;
+	}
 
-  public void setPrivateExponent(BerInteger privateExponent) {
-    this.privateExponent = privateExponent;
-  }
+	public BerInteger getPrimeQ() {
+		return primeQ;
+	}
 
-  public BerInteger getPrime1() {
-    return prime1;
-  }
+	public void setPrimeQ(BerInteger primeQ) {
+		this.primeQ = primeQ;
+	}
 
-  public void setPrime1(BerInteger prime1) {
-    this.prime1 = prime1;
-  }
+	public BerInteger getPrimeExponentP() {
+		return primeExponentP;
+	}
 
-  public BerInteger getPrime2() {
-    return prime2;
-  }
+	public void setPrimeExponentP(BerInteger primeExponentP) {
+		this.primeExponentP = primeExponentP;
+	}
 
-  public void setPrime2(BerInteger prime2) {
-    this.prime2 = prime2;
-  }
+	public BerInteger getPrimeExponentQ() {
+		return primeExponentQ;
+	}
 
-  public BerInteger getExponent1() {
-    return exponent1;
-  }
-
-  public void setExponent1(BerInteger exponent1) {
-    this.exponent1 = exponent1;
-  }
-
-  public BerInteger getExponent2() {
-    return exponent2;
-  }
-
-  public void setExponent2(BerInteger exponent2) {
-    this.exponent2 = exponent2;
-  }
-
-  public BerInteger getCoefficient() {
-    return coefficient;
-  }
-
-  public void setCoefficient(BerInteger coefficient) {
-    this.coefficient = coefficient;
-  }
-
-  public OtherPrimeInfos getOtherPrimeInfos() {
-    return otherPrimeInfos;
-  }
-
-  public void setOtherPrimeInfos(OtherPrimeInfos otherPrimeInfos) {
-    this.otherPrimeInfos = otherPrimeInfos;
-  }
-
-  @Override
-  public int encode(OutputStream reverseOS) throws IOException {
-    return encode(reverseOS, true);
-  }
-
-  public int encode(OutputStream reverseOS, boolean withTag) throws IOException {
-
-    if (code != null) {
-      reverseOS.write(code);
-      if (withTag) {
-        return tag.encode(reverseOS) + code.length;
-      }
-      return code.length;
-    }
-
-    int codeLength = 0;
-    if (otherPrimeInfos != null) {
-      codeLength += otherPrimeInfos.encode(reverseOS, true);
-    }
-
-    codeLength += coefficient.encode(reverseOS, true);
-
-    codeLength += exponent2.encode(reverseOS, true);
-
-    codeLength += exponent1.encode(reverseOS, true);
-
-    codeLength += prime2.encode(reverseOS, true);
-
-    codeLength += prime1.encode(reverseOS, true);
-
-    codeLength += privateExponent.encode(reverseOS, true);
-
-    codeLength += publicExponent.encode(reverseOS, true);
-
-    codeLength += modulus.encode(reverseOS, true);
-
-    codeLength += version.encode(reverseOS, true);
-
-    codeLength += BerLength.encodeLength(reverseOS, codeLength);
-
-    if (withTag) {
-      codeLength += tag.encode(reverseOS);
-    }
-
-    return codeLength;
-
-  }
-
-  @Override
-  public int decode(InputStream is) throws IOException {
-    return decode(is, true);
-  }
-
-  public int decode(InputStream is, boolean withTag) throws IOException {
-    int tlByteCount = 0;
-    int vByteCount = 0;
-    BerTag berTag = new BerTag();
-
-    if (withTag) {
-      tlByteCount += tag.decodeAndCheck(is);
-    }
-
-    BerLength length = new BerLength();
-    tlByteCount += length.decode(is);
-    int lengthVal = length.val;
-    vByteCount += berTag.decode(is);
-
-    if (berTag.equals(Version.tag)) {
-      version = new Version();
-      vByteCount += version.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      modulus = new BerInteger();
-      vByteCount += modulus.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      publicExponent = new BerInteger();
-      vByteCount += publicExponent.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      privateExponent = new BerInteger();
-      vByteCount += privateExponent.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      prime1 = new BerInteger();
-      vByteCount += prime1.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      prime2 = new BerInteger();
-      vByteCount += prime2.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      exponent1 = new BerInteger();
-      vByteCount += exponent1.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      exponent2 = new BerInteger();
-      vByteCount += exponent2.decode(is, false);
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(BerInteger.tag)) {
-      coefficient = new BerInteger();
-      vByteCount += coefficient.decode(is, false);
-      if (lengthVal >= 0 && vByteCount == lengthVal) {
-        return tlByteCount + vByteCount;
-      }
-      vByteCount += berTag.decode(is);
-    } else {
-      throw new IOException("Tag does not match mandatory sequence component.");
-    }
-
-    if (berTag.equals(OtherPrimeInfos.tag)) {
-      otherPrimeInfos = new OtherPrimeInfos();
-      vByteCount += otherPrimeInfos.decode(is, false);
-      if (lengthVal >= 0 && vByteCount == lengthVal) {
-        return tlByteCount + vByteCount;
-      }
-      vByteCount += berTag.decode(is);
-    }
-
-    if (lengthVal < 0) {
-      if (!berTag.equals(0, 0, 0)) {
-        throw new IOException("Decoded sequence has wrong end of contents octets");
-      }
-      vByteCount += BerLength.readEocByte(is);
-      return tlByteCount + vByteCount;
-    }
-
-    throw new IOException(
-        "Unexpected end of sequence, length tag: " + lengthVal + ", bytes decoded: " + vByteCount);
-
-  }
-
-  public void encodeAndSave(int encodingSizeGuess) throws IOException {
-    ReverseByteArrayOutputStream reverseOS = new ReverseByteArrayOutputStream(encodingSizeGuess);
-    encode(reverseOS, false);
-    code = reverseOS.getArray();
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    appendAsString(sb, 0);
-    return sb.toString();
-  }
-
-  public void appendAsString(StringBuilder sb, int indentLevel) {
-
-    sb.append("{");
-    sb.append("\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (version != null) {
-      sb.append("version: ").append(version);
-    } else {
-      sb.append("version: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (modulus != null) {
-      sb.append("modulus: ").append(modulus);
-    } else {
-      sb.append("modulus: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (publicExponent != null) {
-      sb.append("publicExponent: ").append(publicExponent);
-    } else {
-      sb.append("publicExponent: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (privateExponent != null) {
-      sb.append("privateExponent: ").append(privateExponent);
-    } else {
-      sb.append("privateExponent: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (prime1 != null) {
-      sb.append("prime1: ").append(prime1);
-    } else {
-      sb.append("prime1: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (prime2 != null) {
-      sb.append("prime2: ").append(prime2);
-    } else {
-      sb.append("prime2: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (exponent1 != null) {
-      sb.append("exponent1: ").append(exponent1);
-    } else {
-      sb.append("exponent1: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (exponent2 != null) {
-      sb.append("exponent2: ").append(exponent2);
-    } else {
-      sb.append("exponent2: <empty-required-field>");
-    }
-
-    sb.append(",\n");
-    for (int i = 0; i < indentLevel + 1; i++) {
-      sb.append("\t");
-    }
-    if (coefficient != null) {
-      sb.append("coefficient: ").append(coefficient);
-    } else {
-      sb.append("coefficient: <empty-required-field>");
-    }
-
-    if (otherPrimeInfos != null) {
-      sb.append(",\n");
-      for (int i = 0; i < indentLevel + 1; i++) {
-        sb.append("\t");
-      }
-      sb.append("otherPrimeInfos: ");
-      otherPrimeInfos.appendAsString(sb, indentLevel + 1);
-    }
-
-    sb.append("\n");
-    for (int i = 0; i < indentLevel; i++) {
-      sb.append("\t");
-    }
-    sb.append("}");
-  }
+	public void setPrimeExponentQ(BerInteger primeExponentQ) {
+		this.primeExponentQ = primeExponentQ;
+	}
+
+	public BerInteger getCoefficient() {
+		return coefficient;
+	}
+
+	public void setCoefficient(BerInteger coefficient) {
+		this.coefficient = coefficient;
+	}
+
+	public OtherPrimeInfos getOtherPrimeInfos() {
+		return otherPrimeInfos;
+	}
+
+	public void setOtherPrimeInfos(OtherPrimeInfos otherPrimeInfos) {
+		this.otherPrimeInfos = otherPrimeInfos;
+	}
+
+	@Override
+	public int encode(OutputStream reverseOS) throws IOException {
+		return encode(reverseOS, true);
+	}
+
+	public int encode(OutputStream reverseOS, boolean withTag) throws IOException {
+
+		if (code != null) {
+			reverseOS.write(code);
+			if (withTag) {
+				return tag.encode(reverseOS) + code.length;
+			}
+			return code.length;
+		}
+
+		int codeLength = 0;
+		if (otherPrimeInfos != null) {
+			codeLength += otherPrimeInfos.encode(reverseOS, true);
+		}
+
+		codeLength += coefficient.encode(reverseOS, true);
+
+		if (primeExponentQ != null) {
+			codeLength += primeExponentQ.encode(reverseOS, true);
+		}
+
+		if (primeExponentP != null) {
+			codeLength += primeExponentP.encode(reverseOS, true);
+		}
+
+		codeLength += primeQ.encode(reverseOS, true);
+
+		codeLength += primeP.encode(reverseOS, true);
+
+		codeLength += privateExponent.encode(reverseOS, true);
+
+		codeLength += publicExponent.encode(reverseOS, true);
+
+		codeLength += modulus.encode(reverseOS, true);
+
+		if (version != null) {
+			codeLength += version.encode(reverseOS, true);
+		}
+
+		codeLength += BerLength.encodeLength(reverseOS, codeLength);
+
+		if (withTag) {
+			codeLength += tag.encode(reverseOS);
+		}
+
+		return codeLength;
+
+	}
+
+	@Override
+	public int decode(InputStream is) throws IOException {
+		return decode(is, true);
+	}
+
+	public int decode(InputStream is, boolean withTag) throws IOException {
+		int tlByteCount = 0;
+		int vByteCount = 0;
+		BerTag berTag = new BerTag();
+
+		if (withTag) {
+			tlByteCount += tag.decodeAndCheck(is);
+		}
+
+		BerLength length = new BerLength();
+		tlByteCount += length.decode(is);
+		int lengthVal = length.val;
+		vByteCount += berTag.decode(is);
+
+		if (berTag.equals(Version.tag)) {
+			version = new Version();
+			vByteCount += version.decode(is, false);
+			vByteCount += berTag.decode(is);
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			modulus = new BerInteger();
+			vByteCount += modulus.decode(is, false);
+			vByteCount += berTag.decode(is);
+		} else {
+			throw new IOException("Tag does not match mandatory sequence component.");
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			publicExponent = new BerInteger();
+			vByteCount += publicExponent.decode(is, false);
+			vByteCount += berTag.decode(is);
+		} else {
+			throw new IOException("Tag does not match mandatory sequence component.");
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			privateExponent = new BerInteger();
+			vByteCount += privateExponent.decode(is, false);
+			vByteCount += berTag.decode(is);
+		} else {
+			throw new IOException("Tag does not match mandatory sequence component.");
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			primeP = new BerInteger();
+			vByteCount += primeP.decode(is, false);
+			vByteCount += berTag.decode(is);
+		} else {
+			throw new IOException("Tag does not match mandatory sequence component.");
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			primeQ = new BerInteger();
+			vByteCount += primeQ.decode(is, false);
+			vByteCount += berTag.decode(is);
+		} else {
+			throw new IOException("Tag does not match mandatory sequence component.");
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			primeExponentP = new BerInteger();
+			vByteCount += primeExponentP.decode(is, false);
+			vByteCount += berTag.decode(is);
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			primeExponentQ = new BerInteger();
+			vByteCount += primeExponentQ.decode(is, false);
+			vByteCount += berTag.decode(is);
+		}
+
+		if (berTag.equals(BerInteger.tag)) {
+			coefficient = new BerInteger();
+			vByteCount += coefficient.decode(is, false);
+			if (lengthVal >= 0 && vByteCount == lengthVal) {
+				return tlByteCount + vByteCount;
+			}
+			vByteCount += berTag.decode(is);
+		} else {
+			throw new IOException("Tag does not match mandatory sequence component.");
+		}
+
+		if (berTag.equals(OtherPrimeInfos.tag)) {
+			otherPrimeInfos = new OtherPrimeInfos();
+			vByteCount += otherPrimeInfos.decode(is, false);
+			if (lengthVal >= 0 && vByteCount == lengthVal) {
+				return tlByteCount + vByteCount;
+			}
+			vByteCount += berTag.decode(is);
+		}
+
+		if (lengthVal < 0) {
+			if (!berTag.equals(0, 0, 0)) {
+				throw new IOException("Decoded sequence has wrong end of contents octets");
+			}
+			vByteCount += BerLength.readEocByte(is);
+			return tlByteCount + vByteCount;
+		}
+
+		throw new IOException(
+				"Unexpected end of sequence, length tag: " + lengthVal + ", bytes decoded: " + vByteCount);
+
+	}
+
+	public void encodeAndSave(int encodingSizeGuess) throws IOException {
+		ReverseByteArrayOutputStream reverseOS = new ReverseByteArrayOutputStream(encodingSizeGuess);
+		encode(reverseOS, false);
+		code = reverseOS.getArray();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		appendAsString(sb, 0);
+		return sb.toString();
+	}
+
+	public void appendAsString(StringBuilder sb, int indentLevel) {
+
+		sb.append("{");
+		boolean firstSelectedElement = true;
+		if (version != null) {
+			sb.append("\n");
+			for (int i = 0; i < indentLevel + 1; i++) {
+				sb.append("\t");
+			}
+			sb.append("version: ").append(version);
+			firstSelectedElement = false;
+		}
+
+		if (!firstSelectedElement) {
+			sb.append(",\n");
+		}
+		for (int i = 0; i < indentLevel + 1; i++) {
+			sb.append("\t");
+		}
+		if (modulus != null) {
+			sb.append("modulus: ").append(modulus);
+		} else {
+			sb.append("modulus: <empty-required-field>");
+		}
+
+		sb.append(",\n");
+		for (int i = 0; i < indentLevel + 1; i++) {
+			sb.append("\t");
+		}
+		if (publicExponent != null) {
+			sb.append("publicExponent: ").append(publicExponent);
+		} else {
+			sb.append("publicExponent: <empty-required-field>");
+		}
+
+		sb.append(",\n");
+		for (int i = 0; i < indentLevel + 1; i++) {
+			sb.append("\t");
+		}
+		if (privateExponent != null) {
+			sb.append("privateExponent: ").append(privateExponent);
+		} else {
+			sb.append("privateExponent: <empty-required-field>");
+		}
+
+		sb.append(",\n");
+		for (int i = 0; i < indentLevel + 1; i++) {
+			sb.append("\t");
+		}
+		if (primeP != null) {
+			sb.append("primeP: ").append(primeP);
+		} else {
+			sb.append("primeP: <empty-required-field>");
+		}
+
+		sb.append(",\n");
+		for (int i = 0; i < indentLevel + 1; i++) {
+			sb.append("\t");
+		}
+		if (primeQ != null) {
+			sb.append("primeQ: ").append(primeQ);
+		} else {
+			sb.append("primeQ: <empty-required-field>");
+		}
+
+		if (primeExponentP != null) {
+			sb.append(",\n");
+			for (int i = 0; i < indentLevel + 1; i++) {
+				sb.append("\t");
+			}
+			sb.append("primeExponentP: ").append(primeExponentP);
+		}
+
+		if (primeExponentQ != null) {
+			sb.append(",\n");
+			for (int i = 0; i < indentLevel + 1; i++) {
+				sb.append("\t");
+			}
+			sb.append("primeExponentQ: ").append(primeExponentQ);
+		}
+
+		sb.append(",\n");
+		for (int i = 0; i < indentLevel + 1; i++) {
+			sb.append("\t");
+		}
+		if (coefficient != null) {
+			sb.append("coefficient: ").append(coefficient);
+		} else {
+			sb.append("coefficient: <empty-required-field>");
+		}
+
+		if (otherPrimeInfos != null) {
+			sb.append(",\n");
+			for (int i = 0; i < indentLevel + 1; i++) {
+				sb.append("\t");
+			}
+			sb.append("otherPrimeInfos: ");
+			otherPrimeInfos.appendAsString(sb, indentLevel + 1);
+		}
+
+		sb.append("\n");
+		for (int i = 0; i < indentLevel; i++) {
+			sb.append("\t");
+		}
+		sb.append("}");
+	}
 
 }
 

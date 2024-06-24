@@ -17,8 +17,10 @@ import java.io.Serializable;
 
 public class Algorithm implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private BerOctetString name = null;
   private AlgorithmIdentifier id = null;
@@ -30,20 +32,20 @@ public class Algorithm implements BerType, Serializable {
     this.code = code;
   }
 
-  public BerOctetString getName() {
-    return name;
-  }
-
   public void setName(BerOctetString name) {
     this.name = name;
   }
 
-  public AlgorithmIdentifier getId() {
-    return id;
+  public BerOctetString getName() {
+    return name;
   }
 
   public void setId(AlgorithmIdentifier id) {
     this.id = id;
+  }
+
+  public AlgorithmIdentifier getId() {
+    return id;
   }
 
   @Override

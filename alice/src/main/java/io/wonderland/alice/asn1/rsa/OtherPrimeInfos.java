@@ -16,8 +16,10 @@ import java.io.Serializable;
 
 public class OtherPrimeInfos implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private BerAny parameters = null;
 
@@ -28,12 +30,12 @@ public class OtherPrimeInfos implements BerType, Serializable {
     this.code = code;
   }
 
-  public BerAny getParameters() {
-    return parameters;
-  }
-
   public void setParameters(BerAny parameters) {
     this.parameters = parameters;
+  }
+
+  public BerAny getParameters() {
+    return parameters;
   }
 
   @Override

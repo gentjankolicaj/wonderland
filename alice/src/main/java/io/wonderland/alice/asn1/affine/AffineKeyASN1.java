@@ -16,8 +16,10 @@ import java.io.Serializable;
 
 public class AffineKeyASN1 implements BerType, Serializable {
 
-  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
   private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
   private byte[] code = null;
   private BerOctetString a = null;
   private BerOctetString b = null;
@@ -30,28 +32,28 @@ public class AffineKeyASN1 implements BerType, Serializable {
     this.code = code;
   }
 
-  public BerOctetString getA() {
-    return a;
-  }
-
   public void setA(BerOctetString a) {
     this.a = a;
   }
 
-  public BerOctetString getB() {
-    return b;
+  public BerOctetString getA() {
+    return a;
   }
 
   public void setB(BerOctetString b) {
     this.b = b;
   }
 
-  public BerOctetString getM() {
-    return m;
+  public BerOctetString getB() {
+    return b;
   }
 
   public void setM(BerOctetString m) {
     this.m = m;
+  }
+
+  public BerOctetString getM() {
+    return m;
   }
 
   @Override
