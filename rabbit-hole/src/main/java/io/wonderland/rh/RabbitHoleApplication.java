@@ -1,6 +1,7 @@
 package io.wonderland.rh;
 
 
+import com.amazon.corretto.crypto.provider.AmazonCorrettoCryptoProvider;
 import io.wonderland.alice.jca.AliceProvider;
 import io.wonderland.rh.base.fx.Dock;
 import io.wonderland.rh.menu.MenuBarUtil;
@@ -27,7 +28,9 @@ public class RabbitHoleApplication extends Application {
     Security.addProvider(new BouncyCastleProvider());
     Security.addProvider(new BouncyCastlePQCProvider());
     Security.addProvider(new OpenSSLProvider());
+    Security.addProvider(new AmazonCorrettoCryptoProvider());
     Security.addProvider(new AliceProvider());
+
   }
 
   @Override

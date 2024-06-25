@@ -21,7 +21,9 @@ module rabbit.hole {
   requires org.bouncycastle.provider;
   requires org.bouncycastle.pkix;
   requires org.conscrypt;
-  requires org.checkerframework.checker.qual;
+  requires com.amazon.corretto.crypto.provider;
+
+  //grpc
   requires io.grpc;
   requires jsr305;
   requires com.google.common;
