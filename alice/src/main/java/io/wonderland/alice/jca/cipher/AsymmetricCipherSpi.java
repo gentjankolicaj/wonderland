@@ -7,6 +7,7 @@ import io.wonderland.alice.crypto.params.KeyWithIVParameter;
 import io.wonderland.alice.crypto.params.ParameterList;
 import io.wonderland.alice.crypto.spec.CipherSpecUtils;
 import io.wonderland.alice.exception.DataLengthException;
+import io.wonderland.base.ArgUtils;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -129,8 +130,8 @@ public abstract class AsymmetricCipherSpi extends CipherSpi {
       SecureRandom secureRandom) throws InvalidKeyException, InvalidAlgorithmParameterException {
 
     if (!(key instanceof Key)) {
-      throw new InvalidKeyException(
-          "Key for algorithm " + key.getAlgorithm() + " not suitable for symmetric encryption");
+      throw new InvalidKeyException(ArgUtils.stringArg(' ',
+          "Key for algorithm", key.getAlgorithm(), "not suitable for symmetric encryption"));
     }
     ParameterList parameterList = new ParameterList(new KeyParameter<>(key));
 
@@ -171,7 +172,7 @@ public abstract class AsymmetricCipherSpi extends CipherSpi {
 
   @Override
   protected byte[] engineUpdate(byte[] input, int inputOffset, int inputLen) {
-    this.cipher.updateBlock(input, inputOffset, inputLen);
+    this.cipher.update(input, inputOffset, inputLen);
     return EMPTY;
   }
 
@@ -183,7 +184,7 @@ public abstract class AsymmetricCipherSpi extends CipherSpi {
       throw new ShortBufferException("output buffer to short for input.");
     }
     try {
-      this.cipher.updateBlock(input, inputOffset, inputLen, output, outputOffset);
+      this.cipher.update(input, inputOffset, inputLen, output, outputOffset);
       return ZERO;
     } catch (Exception e) {
       throw new DataLengthException(e.getMessage());

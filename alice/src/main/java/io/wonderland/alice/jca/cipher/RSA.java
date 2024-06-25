@@ -9,7 +9,8 @@ import io.wonderland.alice.crypto.padding.RSAPadding;
  */
 public class RSA extends AsymmetricCipherSpi {
 
-  protected RSA() {
+  //changed to public because it was failing instantiation with reflection
+  public RSA() {
     super(new RSACrypt(new RSAPadding()), null, new RSAPadding());
   }
 

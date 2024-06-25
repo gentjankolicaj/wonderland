@@ -14,7 +14,7 @@ import io.wonderland.alice.crypto.params.RawKeyParameter;
 import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.exception.DataLengthException;
 import io.wonderland.base.IntUtils;
-import java.nio.charset.Charset;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,6 @@ public final class RailfenceCrypt implements StreamCipher {
   private boolean encryption;
 
   public RailfenceCrypt() {
-    log.warn("Railfence cipher implemented for charset : {}", Charset.defaultCharset());
   }
 
 
@@ -173,36 +172,60 @@ public final class RailfenceCrypt implements StreamCipher {
       ParameterList parameterList = (ParameterList) params;
       for (CipherParameters param : parameterList) {
         if (param instanceof KeyParameter) {
-          this.rails = ((RailfenceKey) ((KeyParameter<?>) param).getKey()).getRails();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyParameter<?>) param).getKey();
+          if (key instanceof RailfenceKey) {
+            this.rails = ((RailfenceKey) key).getRails();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
         } else if (param instanceof KeyWithIVParameter) {
-          this.rails = ((RailfenceKey) ((KeyWithIVParameter<?>) param).getKey()).getRails();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyWithIVParameter<?>) param).getKey();
+          if (key instanceof RailfenceKey) {
+            this.rails = ((RailfenceKey) key).getRails();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
+        } else {
+          throw new IllegalArgumentException(invalidParamMessage());
         }
       }
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Railfence init - key parameter not found.");
     } else if (params instanceof KeyParameter) {
-      this.rails = ((RailfenceKey) ((KeyParameter<?>) params).getKey()).getRails();
-      this.encryption = encryption;
+      Key key = ((KeyParameter<?>) params).getKey();
+      if (key instanceof RailfenceKey) {
+        this.rails = ((RailfenceKey) key).getRails();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else if (params instanceof KeyWithIVParameter) {
-      this.rails = ((RailfenceKey) ((KeyWithIVParameter<?>) params).getKey()).getRails();
-      this.encryption = encryption;
+      Key key = ((KeyWithIVParameter<?>) params).getKey();
+      if (key instanceof RailfenceKey) {
+        this.rails = ((RailfenceKey) key).getRails();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else if (params instanceof RawKeyParameter) {
       RawKeyParameter rawKeyParameter = (RawKeyParameter) params;
       this.rails = IntUtils.parseInt(rawKeyParameter.getKey());
       this.encryption = encryption;
     } else {
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Railfence init - " + params.getClass().getName());
+      throw new IllegalArgumentException(invalidParamMessage());
     }
   }
 
   @Override
   public String getAlgorithmName() {
     return Algorithms.RAILFENCE.getName();
+  }
+
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{RailfenceKey.class.getName()};
   }
 
   @Override

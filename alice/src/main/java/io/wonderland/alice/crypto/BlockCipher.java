@@ -16,12 +16,6 @@ public interface BlockCipher extends ICipher {
    */
   void init(boolean encryption, CipherParameters params) throws IllegalArgumentException;
 
-  /**
-   * Return the name of the algorithm the cipher implements.
-   *
-   * @return the name of the algorithm the cipher implements.
-   */
-  String getAlgorithmName();
 
   /**
    * Return the block size for this cipher (in bytes).
@@ -49,4 +43,9 @@ public interface BlockCipher extends ICipher {
    * init (if there was one).
    */
   void reset();
+
+  @Override
+  default String[] getKeyTypeNames() {
+    return new String[0];
+  }
 }

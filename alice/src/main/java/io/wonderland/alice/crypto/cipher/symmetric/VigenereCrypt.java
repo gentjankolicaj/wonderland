@@ -12,6 +12,7 @@ import io.wonderland.alice.crypto.params.RawKeyParameter;
 import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.exception.DataLengthException;
 import io.wonderland.alice.exception.ExceptionMessages;
+import java.security.Key;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -97,44 +98,68 @@ public final class VigenereCrypt implements StreamCipher {
       ParameterList parameterList = (ParameterList) params;
       for (CipherParameters param : parameterList) {
         if (param instanceof KeyParameter) {
-          VigenereKey vigenereKey = (VigenereKey) ((KeyParameter<?>) param).getKey();
-          this.key = vigenereKey.getKey();
-          this.m = vigenereKey.getModulus();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyParameter<?>) param).getKey();
+          if (key instanceof VigenereKey) {
+            VigenereKey vigenereKey = (VigenereKey) key;
+            this.key = vigenereKey.getKey();
+            this.m = vigenereKey.getModulus();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
         } else if (param instanceof KeyWithIVParameter) {
-          VigenereKey vigenereKey = (VigenereKey) ((KeyWithIVParameter<?>) param).getKey();
-          this.key = vigenereKey.getKey();
-          this.m = vigenereKey.getModulus();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyWithIVParameter<?>) param).getKey();
+          if (key instanceof VigenereKey) {
+            VigenereKey vigenereKey = (VigenereKey) key;
+            this.key = vigenereKey.getKey();
+            this.m = vigenereKey.getModulus();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
+        } else {
+          throw new IllegalArgumentException(invalidParamMessage());
         }
       }
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Vigenere init - key parameter not found.");
     } else if (params instanceof KeyParameter) {
-      VigenereKey vigenereKey = (VigenereKey) ((KeyParameter<?>) params).getKey();
-      this.key = vigenereKey.getKey();
-      this.m = vigenereKey.getModulus();
-      this.encryption = encryption;
+      Key key = ((KeyParameter<?>) params).getKey();
+      if (key instanceof VigenereKey) {
+        VigenereKey vigenereKey = (VigenereKey) key;
+        this.key = vigenereKey.getKey();
+        this.m = vigenereKey.getModulus();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else if (params instanceof KeyWithIVParameter) {
-      VigenereKey vigenereKey = (VigenereKey) ((KeyWithIVParameter<?>) params).getKey();
-      this.key = vigenereKey.getKey();
-      this.m = vigenereKey.getModulus();
-      this.encryption = encryption;
+      Key key = ((KeyWithIVParameter<?>) params).getKey();
+      if (key instanceof VigenereKey) {
+        VigenereKey vigenereKey = (VigenereKey) key;
+        this.key = vigenereKey.getKey();
+        this.m = vigenereKey.getModulus();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else if (params instanceof RawKeyParameter) {
       RawKeyParameter rawKeyParameter = (RawKeyParameter) params;
       this.key = rawKeyParameter.getKey();
       this.encryption = encryption;
     } else {
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Vigenere init - " + params.getClass().getName());
+      throw new IllegalArgumentException(invalidParamMessage());
     }
   }
 
   @Override
   public String getAlgorithmName() {
     return Algorithms.VERNAM.getName();
+  }
+
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{VigenereKey.class.getName()};
   }
 
   @Override

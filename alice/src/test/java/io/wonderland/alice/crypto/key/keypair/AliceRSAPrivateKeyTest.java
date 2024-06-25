@@ -59,7 +59,7 @@ class AliceRSAPrivateKeyTest {
     assertThat(key3.getCrtCoefficient()).isNotNull();
     assertThat(key3.getModulus()).isNotNull();
 
-    //
+    //private key args
     BigInteger n = BigInteger.valueOf(89 * 97);
     BigInteger p = BigInteger.valueOf(89);
     BigInteger q = BigInteger.valueOf(97);

@@ -11,6 +11,7 @@ import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.exception.DataLengthException;
 import io.wonderland.alice.exception.ExceptionMessages;
 import io.wonderland.base.IntUtils;
+import java.security.Key;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -106,39 +107,64 @@ public final class OTPCrypt implements StreamCipher {
       ParameterList parameterList = (ParameterList) params;
       for (CipherParameters param : parameterList) {
         if (param instanceof KeyParameter) {
-          OTPKey otpKey = (OTPKey) ((KeyParameter<?>) param).getKey();
-          this.keys = IntUtils.array(otpKey.getCodeKeys());
-          this.modulus = otpKey.getModulus();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyParameter<?>) param).getKey();
+          if (key instanceof OTPKey) {
+            OTPKey otpKey = (OTPKey) key;
+            this.keys = IntUtils.array(otpKey.getCodeKeys());
+            this.modulus = otpKey.getModulus();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
         } else if (param instanceof KeyWithIVParameter) {
-          OTPKey otpKey = (OTPKey) ((KeyWithIVParameter<?>) param).getKey();
-          this.keys = IntUtils.array(otpKey.getCodeKeys());
-          this.modulus = otpKey.getModulus();
-          this.encryption = encryption;
+          Key key = ((KeyWithIVParameter<?>) param).getKey();
+          if (key instanceof OTPKey) {
+            OTPKey otpKey = (OTPKey) key;
+            this.keys = IntUtils.array(otpKey.getCodeKeys());
+            this.modulus = otpKey.getModulus();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
+        } else {
+          throw new IllegalArgumentException(invalidParamMessage());
         }
       }
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to OTP init - key parameter not found.");
     } else if (params instanceof KeyParameter) {
-      OTPKey otpKey = (OTPKey) ((KeyParameter<?>) params).getKey();
-      this.keys = IntUtils.array(otpKey.getCodeKeys());
-      this.modulus = otpKey.getModulus();
-      this.encryption = encryption;
+      Key key = ((KeyParameter<?>) params).getKey();
+      if (key instanceof OTPKey) {
+        OTPKey otpKey = (OTPKey) key;
+        this.keys = IntUtils.array(otpKey.getCodeKeys());
+        this.modulus = otpKey.getModulus();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else if (params instanceof KeyWithIVParameter) {
-      OTPKey otpKey = (OTPKey) ((KeyWithIVParameter<?>) params).getKey();
-      this.keys = IntUtils.array(otpKey.getCodeKeys());
-      this.modulus = otpKey.getModulus();
-      this.encryption = encryption;
+      Key key = ((KeyWithIVParameter<?>) params).getKey();
+      if (key instanceof OTPKey) {
+        OTPKey otpKey = (OTPKey) key;
+        this.keys = IntUtils.array(otpKey.getCodeKeys());
+        this.modulus = otpKey.getModulus();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else {
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to OTP init - " + params.getClass().getName());
+      throw new IllegalArgumentException(invalidParamMessage());
     }
   }
 
   @Override
   public String getAlgorithmName() {
     return Algorithms.OTP.getName();
+  }
+
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{OTPKey.class.getName()};
   }
 
   @Override

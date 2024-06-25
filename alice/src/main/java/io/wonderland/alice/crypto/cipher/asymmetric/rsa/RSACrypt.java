@@ -10,76 +10,82 @@ import io.wonderland.alice.crypto.params.KeyWithIVParameter;
 import io.wonderland.alice.crypto.params.ParameterList;
 import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.exception.PaddingException;
+import io.wonderland.base.ByteArrayBuilder;
 import java.math.BigInteger;
 import java.security.Key;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import lombok.Getter;
-import org.apache.commons.lang3.ArrayUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 
+@Slf4j
 public class RSACrypt implements AsymmetricCipher {
 
-  public static final String PARAMETER_NOT_FOUND = "Invalid parameter passed to RSA init - key parameter not found.";
-  private static final String INVALID_PARAMETER_TYPE_KEY = "Invalid parameter key passed to RSA init - key parameter must be (RSAPublicKey or RSAPrivateKey)";
-
+  private final List<byte[]> blocks = new LinkedList<>();
   @Getter
   private final RSAPadding rsaPadding;
-  private RSAPublicKey rsaPublicKey;
-  private RSAPrivateKey rsaPrivateKey;
+  private RSAPublicKey publicKey;
+  private RSAPrivateKey privateKey;
   private boolean encryption;
-  private byte[] buffer;
+
 
   public RSACrypt(RSAPadding rsaPadding) {
     this.rsaPadding = rsaPadding;
   }
 
-  public byte[] encrypt(byte[] in, int inOff, int len) throws CipherException {
+  public byte[] encrypt(byte[] in, int inOff, int inLen) throws CipherException {
     BigInteger exp = null;
     BigInteger mod = null;
-    if (rsaPublicKey != null) {
-      exp = rsaPublicKey.getPublicExponent();
-      mod = rsaPublicKey.getModulus();
-    } else if (rsaPrivateKey != null) {
-      exp = rsaPrivateKey.getPrivateExponent();
-      mod = rsaPrivateKey.getModulus();
+    if (publicKey != null) {
+      exp = publicKey.getPublicExponent();
+      mod = publicKey.getModulus();
+    } else if (privateKey != null) {
+      exp = privateKey.getPrivateExponent();
+      mod = privateKey.getModulus();
     }
-    int size = len - inOff;
-    byte[] message = new byte[size];
-    System.arraycopy(in, inOff, message, 0, size);
+
+    update(in, inOff, inLen);
+    byte[] message = ByteArrayBuilder.toByteArray(blocks);
 
     //rsa encrypt
-    BigInteger p = parseMsg(in, mod);
+    BigInteger p = assertMessage(message, mod);
     BigInteger c = p.modPow(exp, mod);
 
     //refill plaintext arrays
     Arrays.fill(in, (byte) 0);
     Arrays.fill(message, (byte) 0);
+    resetBlocks();
+
     return c.toByteArray();
   }
 
 
-  public byte[] decrypt(byte[] in, int inOff, int len) throws CipherException {
+  public byte[] decrypt(byte[] in, int inOff, int inLen) throws CipherException {
     BigInteger exp = null;
     BigInteger mod = null;
-    if (rsaPublicKey != null) {
-      exp = rsaPublicKey.getPublicExponent();
-      mod = rsaPublicKey.getModulus();
-    } else if (rsaPrivateKey != null) {
-      exp = rsaPrivateKey.getPrivateExponent();
-      mod = rsaPrivateKey.getModulus();
+    if (publicKey != null) {
+      exp = publicKey.getPublicExponent();
+      mod = publicKey.getModulus();
+    } else if (privateKey != null) {
+      exp = privateKey.getPrivateExponent();
+      mod = privateKey.getModulus();
     }
-    int size = len - inOff;
-    byte[] message = new byte[size];
-    System.arraycopy(in, inOff, message, 0, size);
+    update(in, inOff, inLen);
+    byte[] message = ByteArrayBuilder.toByteArray(blocks);
 
     //rsa decrypt
-    BigInteger c = parseMsg(in, mod);
+    BigInteger c = assertMessage(in, mod);
     BigInteger p = c.modPow(exp, mod);
 
     //refill plaintext arrays
     Arrays.fill(in, (byte) 0);
     Arrays.fill(message, (byte) 0);
+    resetBlocks();
+
     return p.toByteArray();
   }
 
@@ -92,42 +98,53 @@ public class RSACrypt implements AsymmetricCipher {
         if (param instanceof KeyParameter) {
           Key key = ((KeyParameter<?>) param).getKey();
           if (key instanceof RSAPrivateKey) {
-            this.rsaPrivateKey = (RSAPrivateKey) key;
+            this.privateKey = (RSAPrivateKey) key;
           } else if (key instanceof RSAPublicKey) {
-            this.rsaPublicKey = (RSAPublicKey) key;
+            this.publicKey = (RSAPublicKey) key;
           } else {
-            throw new IllegalArgumentException(INVALID_PARAMETER_TYPE_KEY);
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
           }
           this.encryption = encryption;
           return;
         } else if (param instanceof KeyWithIVParameter) {
           Key key = ((KeyWithIVParameter<?>) param).getKey();
           if (key instanceof RSAPrivateKey) {
-            this.rsaPrivateKey = (RSAPrivateKey) key;
+            this.privateKey = (RSAPrivateKey) key;
           } else if (key instanceof RSAPublicKey) {
-            this.rsaPublicKey = (RSAPublicKey) key;
+            this.publicKey = (RSAPublicKey) key;
           } else {
-            throw new IllegalArgumentException(INVALID_PARAMETER_TYPE_KEY);
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
           }
           this.encryption = encryption;
+          log.warn(String.format(DISREGARDED_IV, getAlgorithmName()));
           return;
         } else {
-          throw new IllegalArgumentException(PARAMETER_NOT_FOUND);
+          throw new IllegalArgumentException(invalidParamMessage());
         }
       }
-    } else if (params instanceof KeyParameter) {
-      Key key = ((KeyParameter<Key>) params).getKey();
+    } else if (params instanceof KeyWithIVParameter) {
+      Key key = ((KeyWithIVParameter<?>) params).getKey();
       if (key instanceof RSAPrivateKey) {
-        this.rsaPrivateKey = (RSAPrivateKey) key;
+        this.privateKey = (RSAPrivateKey) key;
       } else if (key instanceof RSAPublicKey) {
-        this.rsaPublicKey = (RSAPublicKey) key;
+        this.publicKey = (RSAPublicKey) key;
       } else {
-        throw new IllegalArgumentException(INVALID_PARAMETER_TYPE_KEY);
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
+      this.encryption = encryption;
+      log.warn(String.format(DISREGARDED_IV, getAlgorithmName()));
+    } else if (params instanceof KeyParameter) {
+      Key key = ((KeyParameter<?>) params).getKey();
+      if (key instanceof RSAPrivateKey) {
+        this.privateKey = (RSAPrivateKey) key;
+      } else if (key instanceof RSAPublicKey) {
+        this.publicKey = (RSAPublicKey) key;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
       }
       this.encryption = encryption;
     } else {
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to RSA init - " + params.getClass().getName());
+      throw new IllegalArgumentException(invalidParamMessage());
     }
   }
 
@@ -147,6 +164,12 @@ public class RSACrypt implements AsymmetricCipher {
     return Algorithms.RSA.getName();
   }
 
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{
+        RSAPrivateKey.class.getSimpleName() + " or " + RSAPublicKey.class.getSimpleName()};
+  }
+
 
   @Override
   public byte[] processBlock(byte[] in, int inOff, int len)
@@ -160,29 +183,42 @@ public class RSACrypt implements AsymmetricCipher {
 
 
   @Override
-  public void updateBlock(byte[] input, int inputOffset, int inputLen, byte[] output,
-      int outputOffset) {
-
+  public void update(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) {
+    if (inputLen > 0) {
+      byte[] des = new byte[inputLen];
+      System.arraycopy(input, inputOffset, des, 0, inputLen);
+      System.arraycopy(des, 0, output, outputOffset, des.length);
+      blocks.add(des);
+    }
   }
 
   @Override
-  public void updateBlock(byte[] input, int inputOffset, int inputLen) {
-
+  public void update(byte[] input, int inputOffset, int inputLen) {
+    if (inputLen > 0) {
+      byte[] des = new byte[inputLen];
+      System.arraycopy(input, inputOffset, des, 0, inputLen);
+      blocks.add(des);
+    }
   }
 
   @Override
   public void reset() {
-    if (ArrayUtils.isEmpty(buffer)) {
-      Arrays.fill(buffer, (byte) 0);
+    resetBlocks();
+  }
+
+  protected void resetBlocks() {
+    if (CollectionUtils.isNotEmpty(blocks)) {
+      blocks.forEach(arr -> Arrays.fill(arr, (byte) 0));
     }
   }
 
-  private BigInteger parseMsg(byte[] msg, BigInteger m) throws PaddingException {
-    BigInteger x = new BigInteger(1, msg);
-    if (x.compareTo(m) >= 0) {
-      throw new PaddingException("Message bigger than modulus.");
+  private BigInteger assertMessage(byte[] message, BigInteger modulus) throws PaddingException {
+    BigInteger x = new BigInteger(1, message);
+    if (x.compareTo(modulus) >= 0) {
+      throw new PaddingException("Message bigger than modulus, information will be lost.");
     }
     return x;
   }
+
 
 }

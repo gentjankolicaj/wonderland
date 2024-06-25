@@ -13,10 +13,10 @@ public class RawKeyParameter implements CipherParameters {
     this(key, 0, key.length);
   }
 
-  public RawKeyParameter(byte[] key, int offset, int length) {
+  public RawKeyParameter(byte[] key, int keyOffset, int keyLen) {
     Objects.requireNonNull(key, "Key encoded must not be null.");
-    this.key = new byte[length];
-    System.arraycopy(key, offset, this.key, 0, length);
+    this.key = new byte[keyLen];
+    System.arraycopy(key, keyOffset, this.key, 0, keyLen);
   }
 
 }

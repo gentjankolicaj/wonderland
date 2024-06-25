@@ -18,6 +18,7 @@ class AliceProviderTest {
   void getInstance() {
     assertThat(AliceProvider.getInstance()).isNotNull();
     Set<Service> set = AliceProvider.getInstance().getServices();
+    set.forEach(s -> System.out.println(s.getAlgorithm()));
   }
 
 

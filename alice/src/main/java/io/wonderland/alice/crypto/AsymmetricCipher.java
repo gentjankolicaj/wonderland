@@ -7,7 +7,6 @@ import io.wonderland.alice.exception.CipherException;
  */
 public interface AsymmetricCipher extends ICipher {
 
-
   /**
    * initialise the cipher.
    *
@@ -35,15 +34,7 @@ public interface AsymmetricCipher extends ICipher {
 
 
   /**
-   * Return the name of the algorithm the cipher implements.
-   *
-   * @return the name of the algorithm the cipher implements.
-   */
-  String getAlgorithmName();
-
-
-  /**
-   * process the block of len bytes stored in in from offset inOff.
+   * process the block of len bytes stored in from offset inOff.
    *
    * @param in    the input data
    * @param inOff offset into the in array where the data starts
@@ -60,10 +51,18 @@ public interface AsymmetricCipher extends ICipher {
    * @param inputOffset
    * @param inputLen
    */
-  void updateBlock(byte[] input, int inputOffset, int inputLen);
+  void update(byte[] input, int inputOffset, int inputLen);
 
-  void updateBlock(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset);
-
+  /**
+   * Update buffer block with plaintext
+   *
+   * @param input
+   * @param inputOffset
+   * @param inputLen
+   * @param output
+   * @param outputOffset
+   */
+  void update(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset);
 
   /**
    * reset the cipher. This leaves it in the same state it was at after the last init (if there was

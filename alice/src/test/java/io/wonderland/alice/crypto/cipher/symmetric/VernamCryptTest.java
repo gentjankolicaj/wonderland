@@ -1,12 +1,17 @@
 package io.wonderland.alice.crypto.cipher.symmetric;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.wonderland.alice.crypto.StreamCipher;
+import io.wonderland.alice.crypto.key.secretkey.OTPKey;
 import io.wonderland.alice.crypto.key.secretkey.VernamKey;
 import io.wonderland.alice.crypto.params.KeyParameter;
+import io.wonderland.alice.crypto.params.KeyWithIVParameter;
+import io.wonderland.alice.crypto.params.ParameterList;
 import io.wonderland.alice.crypto.params.RawKeyParameter;
+import java.security.Key;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -20,33 +25,69 @@ class VernamCryptTest {
 
     StreamCipher cipher = new VernamCrypt();
 
-    RawKeyParameter rawKeyParameter0 = new RawKeyParameter(new byte[]{});
-    cipher.init(true, rawKeyParameter0);
+    RawKeyParameter keyParam = new RawKeyParameter(new byte[]{});
+    cipher.init(true, keyParam);
     assertThatThrownBy(() ->
-        cipher.processBytes(plaintext, 0, plaintext.length, ciphertext, 0)
-    ).withFailMessage("Key can't be null or empty.").isInstanceOf(IllegalArgumentException.class);
+        cipher.processBytes(plaintext, 0, plaintext.length, ciphertext, 0))
+        .hasMessage("Key can't be null or empty.").isInstanceOf(IllegalArgumentException.class);
 
     assertThatThrownBy(() ->
-        cipher.processByte((byte) 2)
-    ).withFailMessage("Key can't be null or empty.").isInstanceOf(IllegalArgumentException.class);
+        cipher.processByte((byte) 2))
+        .hasMessage("Key can't be null or empty.").isInstanceOf(IllegalArgumentException.class);
 
     RawKeyParameter rawKeyParameter1 = new RawKeyParameter(new byte[]{5});
     cipher.init(true, rawKeyParameter1);
     assertThatThrownBy(() ->
-        cipher.processBytes(null, 0, plaintext.length, ciphertext, 0)
-    ).withFailMessage("Plaintext can't be empty.").isInstanceOf(IllegalArgumentException.class);
+        cipher.processBytes(null, 0, plaintext.length, ciphertext, 0))
+        .hasMessage("Plaintext can't be empty.").isInstanceOf(IllegalArgumentException.class);
 
     cipher.init(false, rawKeyParameter1);
     assertThatThrownBy(() ->
-        cipher.processBytes(null, 0, plaintext.length, ciphertext, 0)
-    ).withFailMessage("Ciphertext can't be empty.").isInstanceOf(IllegalArgumentException.class);
+        cipher.processBytes(null, 0, plaintext.length, ciphertext, 0))
+        .hasMessage("Ciphertext can't be empty.").isInstanceOf(IllegalArgumentException.class);
 
     cipher.init(true, rawKeyParameter1);
     assertThatThrownBy(() ->
-        cipher.processBytes(plaintext, 0, plaintext.length, ciphertext, 0)
-    ).withFailMessage("Vernam cipher requires key length bigger/equal to plaintext length.")
+        cipher.processBytes(plaintext, 0, plaintext.length, ciphertext, 0))
+        .hasMessage("Vernam cipher requires key length bigger/equal to plaintext length.")
         .isInstanceOf(IllegalArgumentException.class);
 
+  }
+
+  @Test
+  void init() {
+    StreamCipher cipher = new VernamCrypt();
+
+    KeyParameter<Key> keyParam = new KeyParameter<>(new OTPKey(12, 10));
+    assertThatThrownBy(() -> cipher.init(true, keyParam))
+        .hasMessage(cipher.invalidKeyTypeParamMessage())
+        .isInstanceOf(IllegalArgumentException.class);
+
+    KeyWithIVParameter<Key> keyWithIVParam = new KeyWithIVParameter<>(
+        new OTPKey(10, 10, 123, 1254, 12, 5), new byte[]{1, 2, 3, 4});
+    assertThatThrownBy(() -> cipher.init(true, keyWithIVParam))
+        .hasMessage(cipher.invalidKeyTypeParamMessage())
+        .isInstanceOf(IllegalArgumentException.class);
+
+    ParameterList parameterList = new ParameterList();
+    parameterList.add(keyParam);
+    parameterList.add(keyWithIVParam);
+    assertThatThrownBy(() -> cipher.init(true, parameterList))
+        .hasMessage(cipher.invalidKeyTypeParamMessage())
+        .isInstanceOf(IllegalArgumentException.class);
+
+    //positive tests
+    KeyParameter<Key> keyParam1 = new KeyParameter<>(new VernamKey(100, new byte[]{1, 10, 2, 6}));
+    assertThatCode(() -> cipher.init(true, keyParam1)).doesNotThrowAnyException();
+
+    KeyWithIVParameter<Key> keyWithIVParam1 = new KeyWithIVParameter<>(
+        new VernamKey(100, new byte[]{1, 10, 2, 6}), new byte[]{1, 2, 3, 4});
+    assertThatCode(() -> cipher.init(true, keyWithIVParam1)).doesNotThrowAnyException();
+
+    ParameterList parameterList1 = new ParameterList();
+    parameterList.add(keyParam);
+    parameterList.add(keyWithIVParam);
+    assertThatCode(() -> cipher.init(true, parameterList1)).doesNotThrowAnyException();
   }
 
 

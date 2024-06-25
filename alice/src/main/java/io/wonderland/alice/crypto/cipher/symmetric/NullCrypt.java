@@ -3,6 +3,7 @@ package io.wonderland.alice.crypto.cipher.symmetric;
 import io.wonderland.alice.crypto.Algorithms;
 import io.wonderland.alice.crypto.CipherParameters;
 import io.wonderland.alice.crypto.StreamCipher;
+import io.wonderland.alice.crypto.key.NullSecretKey;
 import io.wonderland.alice.exception.DataLengthException;
 
 /**
@@ -21,6 +22,11 @@ public final class NullCrypt implements StreamCipher {
   @Override
   public String getAlgorithmName() {
     return Algorithms.NULL.getName();
+  }
+
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{NullSecretKey.class.getName()};
   }
 
   @Override

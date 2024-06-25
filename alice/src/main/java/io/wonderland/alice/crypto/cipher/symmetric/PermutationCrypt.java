@@ -12,6 +12,7 @@ import io.wonderland.alice.crypto.params.ParameterList;
 import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.exception.DataLengthException;
 import io.wonderland.alice.exception.ExceptionMessages;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
@@ -188,27 +189,41 @@ public class PermutationCrypt implements TranspositionCipher, BlockCipher {
       ParameterList parameterList = (ParameterList) params;
       for (CipherParameters param : parameterList) {
         if (param instanceof KeyParameter) {
-          PermutationKey permutationKey = ((KeyParameter<PermutationKey>) param).getKey();
-          this.columnOrders = permutationKey.getColumnOrder();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyParameter<?>) param).getKey();
+          if (key instanceof PermutationKey) {
+            PermutationKey permutationKey = (PermutationKey) key;
+            this.columnOrders = permutationKey.getColumnOrder();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
+        } else {
+          throw new IllegalArgumentException(invalidParamMessage());
         }
       }
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Permutation init - key parameter not found.");
     } else if (params instanceof KeyParameter) {
-      PermutationKey permutationKey = ((KeyParameter<PermutationKey>) params).getKey();
-      this.columnOrders = permutationKey.getColumnOrder();
-      this.encryption = encryption;
+      Key key = ((KeyParameter<?>) params).getKey();
+      if (key instanceof PermutationKey) {
+        PermutationKey permutationKey = (PermutationKey) key;
+        this.columnOrders = permutationKey.getColumnOrder();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else {
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Permutation init - " + params.getClass().getName());
+      throw new IllegalArgumentException(invalidParamMessage());
     }
   }
 
   @Override
   public String getAlgorithmName() {
     return Algorithms.MONOALPHABET.getName();
+  }
+
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{PermutationKey.class.getName()};
   }
 
   @Override

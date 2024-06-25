@@ -17,12 +17,6 @@ public interface StreamCipher extends ICipher {
   void init(boolean encryption, CipherParameters params)
       throws IllegalArgumentException;
 
-  /**
-   * Return the name of the algorithm the cipher implements.
-   *
-   * @return the name of the algorithm the cipher implements.
-   */
-  String getAlgorithmName();
 
   /**
    * encrypt/decrypt a single byte returning the result.
@@ -51,5 +45,6 @@ public interface StreamCipher extends ICipher {
    * one).
    */
   void reset();
+
 
 }

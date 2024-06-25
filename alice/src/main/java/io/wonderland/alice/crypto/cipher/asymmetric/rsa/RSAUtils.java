@@ -1,6 +1,7 @@
 package io.wonderland.alice.crypto.cipher.asymmetric.rsa;
 
 import io.wonderland.alice.crypto.random.CommonRandom;
+import io.wonderland.alice.math.GCD;
 import java.math.BigInteger;
 
 public class RSAUtils {
@@ -12,29 +13,42 @@ public class RSAUtils {
    * @param p number for which we are going to find co-prime.
    * @return co-prime to p
    */
-  public static BigInteger randomCoprime(long p) {
-    BigInteger two = BigInteger.TWO;
-    BigInteger bigP = BigInteger.valueOf(p);
-    BigInteger e = BigInteger.ZERO;
-    while (e.intValue() != 0) {
-      BigInteger candidate = CommonRandom.secure(4, (int) p / 2);
-      if (candidate.mod(two).intValue() != 0) {
-        BigInteger gcd = candidate.gcd(bigP);
-        if (gcd.intValue() == 1) {
-          e = gcd;
-          break;
-        }
+  public static long randomCoprime(long p) {
+    long e = 0;
+    long origin = 4;
+    long bound = p / 2;
+    do {
+      long candidate = CommonRandom.secLong(origin, bound);
+      if (GCD.gcdLong(candidate, p) == 1) {
+        e = candidate;
       }
-    }
+    } while (e == 0);
+
     return e;
   }
 
-  public static long randPublicExponent(long phi) {
-    return randomCoprime(phi).longValueExact();
+
+  /**
+   * Finds a co-prime smaller than half of input.
+   *
+   * @param p number for which we are going to find co-prime.
+   * @return co-prime to p
+   */
+  public static BigInteger randCoprime(BigInteger p) {
+    BigInteger origin = BigInteger.TEN;
+    BigInteger bound = p.divide(BigInteger.TWO);
+    BigInteger e = BigInteger.ZERO;
+    do {
+      BigInteger candidate = CommonRandom.secBigInteger(origin, bound);
+      if (candidate.gcd(p).compareTo(BigInteger.ONE) == 0) {
+        e = candidate;
+      }
+    } while (e.compareTo(BigInteger.ZERO) == 0);
+    return e;
   }
 
-  public static BigInteger randPublicExponent(BigInteger phi) {
-    throw new UnsupportedOperationException("Todo: to implement method.");
+  public static BigInteger qInv(BigInteger p, BigInteger q) {
+    return q.modInverse(p);
   }
 
 }

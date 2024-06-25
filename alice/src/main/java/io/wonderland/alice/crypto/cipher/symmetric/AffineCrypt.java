@@ -5,11 +5,13 @@ import io.wonderland.alice.crypto.CipherParameters;
 import io.wonderland.alice.crypto.StreamCipher;
 import io.wonderland.alice.crypto.key.secretkey.AffineKey;
 import io.wonderland.alice.crypto.params.KeyParameter;
+import io.wonderland.alice.crypto.params.KeyWithIVParameter;
 import io.wonderland.alice.crypto.params.ParameterList;
 import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.exception.DataLengthException;
 import io.wonderland.alice.exception.ExceptionMessages;
 import java.math.BigInteger;
+import java.security.Key;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -100,31 +102,71 @@ public class AffineCrypt implements StreamCipher {
       ParameterList parameterList = (ParameterList) params;
       for (CipherParameters param : parameterList) {
         if (param instanceof KeyParameter) {
-          AffineKey affineKey = (AffineKey) ((KeyParameter<?>) param).getKey();
-          this.a = affineKey.getA();
-          this.b = affineKey.getB();
-          this.m = affineKey.getM();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyParameter<?>) param).getKey();
+          if (key instanceof AffineKey) {
+            AffineKey affineKey = (AffineKey) key;
+            this.a = affineKey.getA();
+            this.b = affineKey.getB();
+            this.m = affineKey.getM();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
+        } else if (param instanceof KeyWithIVParameter) {
+          Key key = ((KeyWithIVParameter<?>) param).getKey();
+          if (key instanceof AffineKey) {
+            AffineKey affineKey = (AffineKey) key;
+            this.a = affineKey.getA();
+            this.b = affineKey.getB();
+            this.m = affineKey.getM();
+            this.encryption = encryption;
+            log.warn(String.format(DISREGARDED_IV, getAlgorithmName()));
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
+        } else {
+          throw new IllegalArgumentException(invalidParamMessage());
         }
       }
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Affine init - key parameter not found.");
+
     } else if (params instanceof KeyParameter) {
-      AffineKey affineKey = (AffineKey) ((KeyParameter<?>) params).getKey();
-      this.a = affineKey.getA();
-      this.b = affineKey.getB();
-      this.m = affineKey.getM();
-      this.encryption = encryption;
+      Key key = ((KeyParameter<?>) params).getKey();
+      if (key instanceof AffineKey) {
+        AffineKey affineKey = (AffineKey) key;
+        this.a = affineKey.getA();
+        this.b = affineKey.getB();
+        this.m = affineKey.getM();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
+    } else if (params instanceof KeyWithIVParameter) {
+      Key key = ((KeyWithIVParameter<?>) params).getKey();
+      if (key instanceof AffineKey) {
+        AffineKey affineKey = (AffineKey) key;
+        this.a = affineKey.getA();
+        this.b = affineKey.getB();
+        this.m = affineKey.getM();
+        this.encryption = encryption;
+        log.warn(String.format(DISREGARDED_IV, getAlgorithmName()));
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else {
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Affine init - " + params.getClass().getName());
+      throw new IllegalArgumentException(invalidParamMessage());
     }
   }
 
   @Override
   public String getAlgorithmName() {
     return Algorithms.AFFINE.getName();
+  }
+
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{AffineKey.class.getName()};
   }
 
   @Override

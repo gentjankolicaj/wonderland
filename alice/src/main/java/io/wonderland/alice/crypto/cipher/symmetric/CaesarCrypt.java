@@ -17,6 +17,7 @@ import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.exception.DataLengthException;
 import io.wonderland.base.IntUtils;
 import java.nio.charset.Charset;
+import java.security.Key;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -70,7 +71,6 @@ public final class CaesarCrypt implements StreamCipher {
     return len;
   }
 
-
   public int decrypt(byte[] in, int inOff, byte[] out, int outOff) throws CipherException {
     if (ArrayUtils.isEmpty(in)) {
       throw new IllegalArgumentException(PLAINTEXT_NOT_VALID);
@@ -95,34 +95,56 @@ public final class CaesarCrypt implements StreamCipher {
       ParameterList parameterList = (ParameterList) params;
       for (CipherParameters param : parameterList) {
         if (param instanceof KeyParameter) {
-          this.shift = ((CaesarKey) ((KeyParameter<?>) param).getKey()).getShift();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyParameter<?>) param).getKey();
+          if (key instanceof CaesarKey) {
+            this.shift = ((CaesarKey) key).getShift();
+            this.encryption = encryption;
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
         } else if (param instanceof KeyWithIVParameter) {
-          this.shift = ((CaesarKey) ((KeyWithIVParameter<?>) param).getKey()).getShift();
-          this.encryption = encryption;
-          return;
+          Key key = ((KeyWithIVParameter<?>) param).getKey();
+          if (key instanceof CaesarKey) {
+            this.shift = ((CaesarKey) key).getShift();
+            this.encryption = encryption;
+            log.warn(String.format(DISREGARDED_IV, getAlgorithmName()));
+            return;
+          } else {
+            throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+          }
+        } else {
+          throw new IllegalArgumentException(invalidParamMessage());
         }
       }
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Caesar init - key parameter not found.");
     } else if (params instanceof KeyParameter) {
-      this.shift = ((CaesarKey) ((KeyParameter<?>) params).getKey()).getShift();
-      this.encryption = encryption;
+      Key key = ((KeyParameter<?>) params).getKey();
+      if (key instanceof CaesarKey) {
+        this.shift = ((CaesarKey) key).getShift();
+        this.encryption = encryption;
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else if (params instanceof KeyWithIVParameter) {
-      this.shift = ((CaesarKey) ((KeyWithIVParameter<?>) params).getKey()).getShift();
-      this.encryption = encryption;
+      Key key = ((KeyWithIVParameter<?>) params).getKey();
+      if (key instanceof CaesarKey) {
+        this.shift = ((CaesarKey) key).getShift();
+        this.encryption = encryption;
+        log.warn(String.format(DISREGARDED_IV, getAlgorithmName()));
+      } else {
+        throw new IllegalArgumentException(invalidKeyTypeParamMessage());
+      }
     } else if (params instanceof RawKeyWithIVParameter) {
       RawKeyWithIVParameter keyIvParam = (RawKeyWithIVParameter) params;
       this.shift = IntUtils.parseInt(keyIvParam.getKey());
       this.encryption = encryption;
+      log.warn(String.format(DISREGARDED_IV, getAlgorithmName()));
     } else if (params instanceof RawKeyParameter) {
       RawKeyParameter rawKeyParameter = (RawKeyParameter) params;
       this.shift = IntUtils.parseInt(rawKeyParameter.getKey());
       this.encryption = encryption;
     } else {
-      throw new IllegalArgumentException(
-          "Invalid parameter passed to Caesar init - " + params.getClass().getName());
+      throw new IllegalArgumentException(invalidParamMessage());
     }
   }
 
@@ -130,6 +152,12 @@ public final class CaesarCrypt implements StreamCipher {
   public String getAlgorithmName() {
     return Algorithms.CAESAR.getName();
   }
+
+  @Override
+  public String[] getKeyTypeNames() {
+    return new String[]{CaesarKey.class.getName()};
+  }
+
 
   @Override
   public byte processByte(byte in) {

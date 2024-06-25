@@ -4,6 +4,7 @@ import io.wonderland.alice.crypto.BlockCipher;
 import io.wonderland.alice.crypto.CipherParameters;
 import io.wonderland.alice.exception.DataLengthException;
 
+//todo: implement
 public final class ECBBlockCipher implements BlockCipher {
 
   private final BlockCipher blockCipher;

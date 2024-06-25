@@ -12,13 +12,12 @@ import java.security.Provider;
 public final class AliceProvider extends Provider {
 
   private static final String NAME = "Alice";
-  private static final double VERSION = 0.1;
+  private static final String VERSION = "0.1";
   private static final String INFO = "Alice cryptographic service provider.";
   private static AliceProvider instance;
 
   public AliceProvider() {
     super(NAME, VERSION, INFO);
-
     put("Cipher.Caesar", "io.wonderland.alice.jca.cipher.Caesar");
     put("Cipher.OTP", "io.wonderland.alice.jca.cipher.OTP");
     put("Cipher.Vigenere", "io.wonderland.alice.jca.cipher.Vigenere");
