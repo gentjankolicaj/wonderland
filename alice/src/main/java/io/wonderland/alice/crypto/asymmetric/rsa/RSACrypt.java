@@ -178,6 +178,7 @@ public class RSACrypt implements AsymmetricCipher {
     return x;
   }
 
+  //todo: to check docs and re impl
   private int getBlockSize() {
     if (privateKey != null) {
       int len = privateKey.getModulus().bitLength();
@@ -186,7 +187,7 @@ public class RSACrypt implements AsymmetricCipher {
       int len = publicKey.getModulus().bitLength();
       return len;
     } else {
-      throw new IllegalStateException("Can't determine block size because cipher keys are null.");
+      return 0;
     }
   }
 
