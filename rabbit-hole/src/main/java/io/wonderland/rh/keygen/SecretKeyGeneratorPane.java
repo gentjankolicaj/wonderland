@@ -65,7 +65,7 @@ public class SecretKeyGeneratorPane extends BorderPane {
     this.keyTF.setEditable(false);
   }
 
-  public void updateText() {
+  public void updateTextField() {
     final HBox container = new HBox();
     HBox.setHgrow(keyTF, Priority.ALWAYS);
     container.getChildren().addAll(keyLbl, copyKeyEncodingLbl, keyTF);
@@ -130,7 +130,7 @@ public class SecretKeyGeneratorPane extends BorderPane {
           }
         } else {
           //update pane with encoded
-          this.updateText();
+          this.updateTextField();
         }
       }
       return null;
