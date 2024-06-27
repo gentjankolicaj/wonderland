@@ -103,7 +103,6 @@ public class KeyStoreKeyPane extends TitledPane {
     protected ChangeListener<Boolean> checkboxListener() {
       return (observable, oldValue, newValue) -> {
         if (Boolean.TRUE.equals(newValue)) {
-          log.info("Checkbox clicked");
           Either<SecretKey, KeyPair> tmp = getEither();
           if (Objects.isNull(tmp)) {
             ConfirmationDialog cd = new ConfirmationDialog("Encrypted key",
