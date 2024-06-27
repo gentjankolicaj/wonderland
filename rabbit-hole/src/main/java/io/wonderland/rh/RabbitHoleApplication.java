@@ -22,6 +22,7 @@ public class RabbitHoleApplication extends Application {
   public static void main(String[] args) {
     addSecurityProviders();
     launch(args);
+
   }
 
   private static void addSecurityProviders() {
@@ -30,7 +31,6 @@ public class RabbitHoleApplication extends Application {
     Security.addProvider(new OpenSSLProvider());
     Security.addProvider(new AmazonCorrettoCryptoProvider());
     Security.addProvider(new AliceProvider());
-
   }
 
   @Override

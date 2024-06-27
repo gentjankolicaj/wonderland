@@ -28,6 +28,7 @@ module rabbit.hole {
   requires jsr305;
   requires com.google.common;
   requires io.netty.common;
+  requires java.management;
 
   exports io.wonderland.rh;
   exports io.wonderland.rh.misc;
