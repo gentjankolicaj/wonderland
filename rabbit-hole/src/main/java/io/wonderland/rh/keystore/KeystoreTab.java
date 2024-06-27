@@ -6,7 +6,6 @@ public class KeystoreTab extends AbstractTab {
 
   public KeystoreTab(String title) {
     super(title);
-    KeystorePane keystorePane = new KeystorePane();
-    this.setContent(keystorePane);
+    this.setContent(new KeystorePane());
   }
 }

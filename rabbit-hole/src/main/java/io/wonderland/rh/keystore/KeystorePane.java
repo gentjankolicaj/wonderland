@@ -28,10 +28,7 @@ public class KeystorePane extends BorderPane {
   public static final String OPEN = "Open...";
   private final HBox controlContainer = new HBox();
   private final Label keystorePathLbl = new Label(OPEN);
-  private final KSKeyPane ksKeyPane = new KSKeyPane("Keys");
-  private final KSCertPane ksCertPane = new KSCertPane("Certificates");
-  private final VBox dataContainer = createContainer(ksKeyPane, ksCertPane);
-
+  private final VBox dataContainer = new VBox();
 
   public KeystorePane() {
     build();
@@ -55,7 +52,6 @@ public class KeystorePane extends BorderPane {
     vBox.getChildren().addAll(ksKeyPane, ksCertPane);
     return vBox;
   }
-
 
   private class KeystorePathEvent implements EventHandler<Event> {
 
@@ -100,8 +96,14 @@ public class KeystorePane extends BorderPane {
 
     private void updateKeyAndCertPanes(KeyStore keyStore) {
       if (Objects.nonNull(keyStore)) {
-        setCenter(
-            createContainer(new KSKeyPane("Keys", keyStore), new KSCertPane("Certs", keyStore)));
+        try {
+          KSKeyPane ksKeyPane = new KSKeyPane("Keys", keyStore);
+          KSCertPane ksCertPane = new KSCertPane("Certs", keyStore);
+          setCenter(createContainer(ksKeyPane, ksCertPane));
+        } catch (Exception e) {
+          log.error("", e);
+          setCenter(new BorderPane());
+        }
       }
     }
 
