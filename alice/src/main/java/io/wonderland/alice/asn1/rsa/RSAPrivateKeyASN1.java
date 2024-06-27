@@ -252,7 +252,7 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 			primeExponentP = new BerInteger();
 			vByteCount += primeExponentP.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
       throw new IOException("Tag does not match mandatory sequence component.");
     }
 		
@@ -260,7 +260,7 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
 			primeExponentQ = new BerInteger();
 			vByteCount += primeExponentQ.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
       throw new IOException("Tag does not match mandatory sequence component.");
     }
 		
@@ -383,7 +383,7 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
     }
     if (primeExponentP != null) {
 			sb.append("primeExponentP: ").append(primeExponentP);
-		} else {
+    } else {
       sb.append("primeExponentP: <empty-required-field>");
     }
 
@@ -393,7 +393,7 @@ public class RSAPrivateKeyASN1 implements BerType, Serializable {
     }
     if (primeExponentQ != null) {
 			sb.append("primeExponentQ: ").append(primeExponentQ);
-		} else {
+    } else {
       sb.append("primeExponentQ: <empty-required-field>");
     }
 		

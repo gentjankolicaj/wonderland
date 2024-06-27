@@ -5,17 +5,18 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.wonderland.alice.crypto.ProductCipher;
+import io.wonderland.alice.crypto.ProductCipherImpl;
 import io.wonderland.alice.crypto.key.GenericSecretKey;
 import io.wonderland.alice.crypto.key.secretkey.AffineKey;
 import io.wonderland.alice.crypto.key.secretkey.CaesarKey;
+import io.wonderland.alice.crypto.key.secretkey.OTPKey;
+import io.wonderland.alice.exception.CipherException;
 import io.wonderland.alice.jca.AliceProvider;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Map;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -34,18 +35,19 @@ class ProductCipherImplTest {
     Key caesarKey = new CaesarKey(5);
 
     Cipher otpCipher = Cipher.getInstance("OTP");
-    byte[] key = "1qazxsw23edc4rfv5tgb6yhnmju78ik,.l/';".getBytes();
-    Key optKey = new GenericSecretKey(key);
+    Key optKey = new OTPKey(200, 1, 2, 3, 3, 4, 4, 5);
 
     Cipher affineCipher = Cipher.getInstance("Affine");
     Key affineKey = new AffineKey(2, 3, 5);
 
     ProductCipher productCipher = new ProductCipherImpl();
     assertThatCode(() -> productCipher.init(true, Map.entry(caesarCipher, caesarKey),
-        Map.entry(otpCipher, optKey),
-        Map.entry(affineCipher, affineKey))).doesNotThrowAnyException();
-    assertThatThrownBy(() -> productCipher.init(true, null)).isInstanceOf(
-        IllegalArgumentException.class);
+        Map.entry(otpCipher, optKey), Map.entry(affineCipher, affineKey)))
+        .doesNotThrowAnyException();
+
+    assertThatThrownBy(() -> productCipher.init(true, null))
+        .isInstanceOf(IllegalArgumentException.class);
+
     assertThat(productCipher.getCiphers()).hasSize(3)
         .contains(caesarCipher, otpCipher, affineCipher);
   }
@@ -59,7 +61,8 @@ class ProductCipherImplTest {
     assertThatCode(() -> {
       productCipher.update(input);
       productCipher.update(input);
-    }).doesNotThrowAnyException();
+    })
+        .doesNotThrowAnyException();
 
     assertThat(productCipher.update(input)).hasSize(input.length * 3);
 
@@ -69,12 +72,11 @@ class ProductCipherImplTest {
     buffer = ArrayUtils.addAll(buffer, input);
     buffer = ArrayUtils.addAll(buffer, input);
     assertThat(productCipher.update(input)).contains(buffer);
-
   }
 
   @Test
   void doFinal()
-      throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException {
+      throws NoSuchPaddingException, NoSuchAlgorithmException, CipherException {
     Cipher caesarCipher = Cipher.getInstance("Caesar");
     Key caesarKey = new CaesarKey(5);
 

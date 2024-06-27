@@ -1,6 +1,6 @@
 package io.wonderland.alice.crypto.padding;
 
-import io.wonderland.alice.exception.PaddingException;
+import io.wonderland.alice.exception.GenericPaddingException;
 import java.security.SecureRandom;
 
 public final class BytePadding implements BlockPadding<Byte> {
@@ -34,7 +34,7 @@ public final class BytePadding implements BlockPadding<Byte> {
   }
 
   @Override
-  public int padCount(byte[] in) throws PaddingException {
+  public int padCount(byte[] in) throws GenericPaddingException {
     int len = in.length;
     while (len > 0) {
       if (in[len - 1] != b) {

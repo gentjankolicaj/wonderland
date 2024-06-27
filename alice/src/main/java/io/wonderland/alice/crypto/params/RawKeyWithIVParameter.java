@@ -1,12 +1,12 @@
 package io.wonderland.alice.crypto.params;
 
 
-import io.wonderland.alice.crypto.CipherParameters;
+import io.wonderland.alice.crypto.CipherParameter;
 import java.util.Objects;
 import lombok.Getter;
 
 @Getter
-public class RawKeyWithIVParameter implements CipherParameters {
+public class RawKeyWithIVParameter implements CipherParameter {
 
   private final byte[] key;
   private final byte[] iv;

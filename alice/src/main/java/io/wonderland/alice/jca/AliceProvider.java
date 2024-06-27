@@ -18,16 +18,16 @@ public final class AliceProvider extends Provider {
 
   public AliceProvider() {
     super(NAME, VERSION, INFO);
-    put("Cipher.Caesar", "io.wonderland.alice.jca.cipher.Caesar");
-    put("Cipher.OTP", "io.wonderland.alice.jca.cipher.OTP");
-    put("Cipher.Vigenere", "io.wonderland.alice.jca.cipher.Vigenere");
-    put("Cipher.Vernam", "io.wonderland.alice.jca.cipher.Vernam");
-    put("Cipher.Affine", "io.wonderland.alice.jca.cipher.Affine");
-    put("Cipher.Railfence", "io.wonderland.alice.jca.cipher.Railfence");
-    put("Cipher.Monoalphabet", "io.wonderland.alice.jca.cipher.Monoalphabet");
-    put("Cipher.Permutation", "io.wonderland.alice.jca.cipher.Permutation");
-    put("Cipher.Null", "io.wonderland.alice.jca.cipher.Null");
-    put("Cipher.RSA", "io.wonderland.alice.jca.cipher.RSA");
+    put("Cipher.Caesar", "io.wonderland.alice.jca.symmetric.Caesar");
+    put("Cipher.OTP", "io.wonderland.alice.jca.symmetric.OTP");
+    put("Cipher.Vigenere", "io.wonderland.alice.jca.symmetric.Vigenere");
+    put("Cipher.Vernam", "io.wonderland.alice.jca.symmetric.Vernam");
+    put("Cipher.Affine", "io.wonderland.alice.jca.symmetric.Affine");
+    put("Cipher.Railfence", "io.wonderland.alice.jca.symmetric.Railfence");
+    put("Cipher.Monoalphabet", "io.wonderland.alice.jca.symmetric.Monoalphabet");
+    put("Cipher.Permutation", "io.wonderland.alice.jca.symmetric.permutation.Permutation");
+    put("Cipher.Null", "io.wonderland.alice.jca.symmetric.Null");
+    put("Cipher.RSA", "io.wonderland.alice.jca.asymmetric.rsa.RSA");
     instance = this;
   }
 

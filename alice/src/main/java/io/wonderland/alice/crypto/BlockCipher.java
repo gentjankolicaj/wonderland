@@ -1,9 +1,10 @@
 package io.wonderland.alice.crypto;
 
-import io.wonderland.alice.exception.DataLengthException;
+import io.wonderland.alice.exception.CipherException;
+import io.wonderland.alice.exception.RuntimeCipherException;
 
 /**
- * Block cipher engines are expected to conform to this interface.
+ * Block cipher implementations expected conform to this interface.
  */
 public interface BlockCipher extends ICipher {
 
@@ -14,7 +15,7 @@ public interface BlockCipher extends ICipher {
    * @param params     the key and other data required by the cipher.
    * @throws IllegalArgumentException if the params argument is inappropriate.
    */
-  void init(boolean encryption, CipherParameters params) throws IllegalArgumentException;
+  void init(boolean encryption, CipherParameter params) throws IllegalArgumentException;
 
 
   /**
@@ -32,11 +33,11 @@ public interface BlockCipher extends ICipher {
    * @param out    the array the output data will be copied into.
    * @param outOff the offset into the out array the output will start at.
    * @return the number of bytes processed and produced.
-   * @throws DataLengthException   if there isn't enough data in, or space in out.
+   * @throws CipherException   other exceptions cipher might throw
    * @throws IllegalStateException if the cipher isn't initialized.
    */
   int processBlock(byte[] in, int inOff, byte[] out, int outOff)
-      throws DataLengthException, IllegalStateException;
+      throws RuntimeCipherException, IllegalStateException;
 
   /**
    * Reset the cipher. After resetting, the cipher is in the same state as it was after the last
@@ -44,8 +45,18 @@ public interface BlockCipher extends ICipher {
    */
   void reset();
 
+  /**
+   * Calculate block cipher output size
+   *
+   * @param inputLen
+   * @return
+   */
+  int getOutputSize(int inputLen);
+
   @Override
   default String[] getKeyTypeNames() {
     return new String[0];
   }
+
+
 }

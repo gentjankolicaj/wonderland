@@ -1,10 +1,10 @@
 package io.wonderland.alice.crypto.params;
 
-import io.wonderland.alice.crypto.CipherParameters;
+import io.wonderland.alice.crypto.CipherParameter;
 import lombok.Getter;
 
 @Getter
-public class IVParameter implements CipherParameters {
+public class IVParameter implements CipherParameter {
 
   private final byte[] iv;
 

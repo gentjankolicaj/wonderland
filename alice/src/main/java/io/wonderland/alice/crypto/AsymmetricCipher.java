@@ -1,9 +1,9 @@
 package io.wonderland.alice.crypto;
 
-import io.wonderland.alice.exception.CipherException;
+import io.wonderland.alice.exception.RuntimeCipherException;
 
 /**
- * the interface PK ciphers conform to.
+ * Asymmetric (Public Key) ciphers implementations are expected conform to this interface.
  */
 public interface AsymmetricCipher extends ICipher {
 
@@ -14,7 +14,7 @@ public interface AsymmetricCipher extends ICipher {
    *                      decryption.
    * @param param         the key and other data required by the cipher.
    */
-  void init(boolean forEncryption, CipherParameters param);
+  void init(boolean forEncryption, CipherParameter param);
 
 
   /**
@@ -40,29 +40,12 @@ public interface AsymmetricCipher extends ICipher {
    * @param inOff offset into the in array where the data starts
    * @param len   the length of the block to be processed.
    * @return the resulting byte array of the encryption/decryption process.
-   * @throws CipherException the input data is too large for the cipher.
+   * @throws RuntimeCipherException   other exceptions cipher might throw
+   * @throws IllegalStateException if the cipher isn't initialized.
    */
-  byte[] processBlock(byte[] in, int inOff, int len) throws CipherException, IllegalStateException;
+  byte[] processBlock(byte[] in, int inOff, int len)
+      throws RuntimeCipherException, IllegalStateException;
 
-  /**
-   * Update buffer block with plaintext.
-   *
-   * @param input
-   * @param inputOffset
-   * @param inputLen
-   */
-  void update(byte[] input, int inputOffset, int inputLen);
-
-  /**
-   * Update buffer block with plaintext
-   *
-   * @param input
-   * @param inputOffset
-   * @param inputLen
-   * @param output
-   * @param outputOffset
-   */
-  void update(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset);
 
   /**
    * reset the cipher. This leaves it in the same state it was at after the last init (if there was

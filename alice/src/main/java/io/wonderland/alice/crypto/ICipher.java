@@ -34,4 +34,5 @@ public interface ICipher {
     String keyTypeNames = String.join("", getKeyTypeNames());
     return String.format(INVALID_KEY_TYPE_PARAMETER, getAlgorithmName(), keyTypeNames);
   }
+
 }

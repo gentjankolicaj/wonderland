@@ -1,9 +1,10 @@
 package io.wonderland.alice.crypto;
 
-import io.wonderland.alice.exception.DataLengthException;
+import io.wonderland.alice.exception.CipherException;
+import io.wonderland.alice.exception.RuntimeCipherException;
 
 /**
- * the interface stream ciphers conform to.
+ * Stream ciphers implementations are expected conform to this interface.
  */
 public interface StreamCipher extends ICipher {
 
@@ -14,7 +15,7 @@ public interface StreamCipher extends ICipher {
    * @param params     the key and other data required by the cipher.
    * @throws IllegalArgumentException if the params argument is inappropriate.
    */
-  void init(boolean encryption, CipherParameters params)
+  void init(boolean encryption, CipherParameter params)
       throws IllegalArgumentException;
 
 
@@ -24,7 +25,7 @@ public interface StreamCipher extends ICipher {
    * @param in the byte to be processed.
    * @return the result of processing the input byte.
    */
-  byte processByte(byte in);
+  byte processByte(byte in) throws RuntimeCipherException, IllegalStateException;
 
   /**
    * process a block of bytes from in putting the result into out.
@@ -35,10 +36,11 @@ public interface StreamCipher extends ICipher {
    * @param out    the output buffer the processed bytes go into.
    * @param outOff the offset into the output byte array the processed data starts at.
    * @return the number of bytes produced - should always be len.
-   * @throws DataLengthException if the output buffer is too small.
+   * @throws CipherException   other exceptions cipher might throw
+   * @throws IllegalStateException if the cipher isn't initialized.
    */
   int processBytes(byte[] in, int inOff, int len, byte[] out, int outOff)
-      throws DataLengthException;
+      throws RuntimeCipherException, IllegalStateException;
 
   /**
    * reset the cipher. This leaves it in the same state it was at after the last init (if there was

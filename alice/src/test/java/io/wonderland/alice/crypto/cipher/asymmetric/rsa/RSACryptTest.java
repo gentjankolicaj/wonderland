@@ -6,11 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.wonderland.alice.crypto.Algorithms;
 import io.wonderland.alice.crypto.AsymmetricCipher;
+import io.wonderland.alice.crypto.asymmetric.rsa.RSACrypt;
 import io.wonderland.alice.crypto.key.keypair.AliceRSAPrivateKey;
 import io.wonderland.alice.crypto.key.keypair.AliceRSAPublicKey;
 import io.wonderland.alice.crypto.key.secretkey.CaesarKey;
 import io.wonderland.alice.crypto.key.secretkey.OTPKey;
-import io.wonderland.alice.crypto.padding.RSAPadding;
 import io.wonderland.alice.crypto.params.KeyParameter;
 import io.wonderland.alice.crypto.params.KeyWithIVParameter;
 import io.wonderland.alice.crypto.params.ParameterList;
@@ -25,16 +25,14 @@ class RSACryptTest {
 
   @Test
   void constructor() {
-    RSAPadding rsaPadding = new RSAPadding();
-    RSACrypt crypt = new RSACrypt(rsaPadding);
+    RSACrypt crypt = new RSACrypt();
     assertThat(crypt).isNotNull();
-    assertThat(crypt.getRsaPadding()).isEqualTo(rsaPadding);
   }
 
 
   @Test
   void init() {
-    AsymmetricCipher cipher = new RSACrypt(new RSAPadding());
+    AsymmetricCipher cipher = new RSACrypt();
 
     KeyParameter<Key> keyParam = new KeyParameter<>(new CaesarKey(12));
     assertThatThrownBy(() -> cipher.init(true, keyParam))
@@ -91,7 +89,7 @@ class RSACryptTest {
     BigInteger dq = d.mod(q.subtract(BigInteger.ONE));
     BigInteger qInv = q.modInverse(p);
 
-    AsymmetricCipher cipher = new RSACrypt(new RSAPadding());
+    AsymmetricCipher cipher = new RSACrypt();
 
     KeyParameter<AliceRSAPublicKey> publicKeyParam = new KeyParameter<>(
         new AliceRSAPublicKey(e, n));
@@ -115,7 +113,7 @@ class RSACryptTest {
 
   @Test
   void getAlgorithmName() {
-    AsymmetricCipher cipher = new RSACrypt(new RSAPadding());
+    AsymmetricCipher cipher = new RSACrypt();
     assertThat(cipher.getAlgorithmName()).isEqualTo(Algorithms.RSA.getName());
   }
 

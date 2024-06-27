@@ -1,14 +1,18 @@
 package io.wonderland.alice.crypto.mode;
 
 import io.wonderland.alice.crypto.BlockCipher;
-import io.wonderland.alice.crypto.CipherParameters;
-import io.wonderland.alice.exception.DataLengthException;
+import io.wonderland.alice.crypto.CipherParameter;
+import io.wonderland.alice.exception.RuntimeCipherException;
+import lombok.RequiredArgsConstructor;
 
 //todo: implement
+@RequiredArgsConstructor
 public class CTRBlockCipher implements BlockCipher {
 
+  private final BlockCipher cipher;
+
   @Override
-  public void init(boolean encryption, CipherParameters params) throws IllegalArgumentException {
+  public void init(boolean encryption, CipherParameter param) throws IllegalArgumentException {
 
   }
 
@@ -24,7 +28,13 @@ public class CTRBlockCipher implements BlockCipher {
 
   @Override
   public int processBlock(byte[] in, int inOff, byte[] out, int outOff)
-      throws DataLengthException, IllegalStateException {
+      throws RuntimeCipherException, IllegalStateException {
+    return 0;
+  }
+
+
+  @Override
+  public int getOutputSize(int inputLen) {
     return 0;
   }
 
@@ -32,4 +42,6 @@ public class CTRBlockCipher implements BlockCipher {
   public void reset() {
 
   }
+
+
 }

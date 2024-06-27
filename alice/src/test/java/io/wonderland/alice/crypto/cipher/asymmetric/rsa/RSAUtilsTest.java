@@ -2,6 +2,7 @@ package io.wonderland.alice.crypto.cipher.asymmetric.rsa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.wonderland.alice.crypto.asymmetric.rsa.RSAUtils;
 import java.math.BigInteger;
 import org.junit.jupiter.api.Test;
 

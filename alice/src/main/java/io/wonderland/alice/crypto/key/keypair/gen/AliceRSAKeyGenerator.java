@@ -2,7 +2,7 @@ package io.wonderland.alice.crypto.key.keypair.gen;
 
 
 import io.wonderland.alice.crypto.AsymmetricKeyGenerator;
-import io.wonderland.alice.crypto.cipher.asymmetric.rsa.RSAUtils;
+import io.wonderland.alice.crypto.asymmetric.rsa.RSAUtils;
 import io.wonderland.alice.crypto.key.keypair.AliceRSAPrivateKey;
 import io.wonderland.alice.crypto.key.keypair.AliceRSAPublicKey;
 import java.security.KeyPair;

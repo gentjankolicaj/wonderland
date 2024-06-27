@@ -1,12 +1,12 @@
 package io.wonderland.alice.crypto.padding;
 
-import io.wonderland.alice.exception.PaddingException;
+import io.wonderland.alice.exception.GenericPaddingException;
 import java.security.SecureRandom;
 
 /**
  * Block padding is supposed to conform to this interface
  */
-public interface BlockPadding<T> {
+public interface BlockPadding<T> extends Padding {
 
   /**
    * Initialise the padder.
@@ -36,12 +36,11 @@ public interface BlockPadding<T> {
   /**
    * return the number of pad bytes present in the block.
    *
-   * @throws PaddingException if the padding is badly formed or invalid.
+   * @throws GenericPaddingException if the padding is badly formed or invalid.
    */
-  int padCount(byte[] in) throws PaddingException;
+  int padCount(byte[] in) throws GenericPaddingException;
 
 
   T getPad();
-
 
 }

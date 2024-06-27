@@ -1,18 +1,20 @@
 package io.wonderland.alice.crypto.mode;
 
 import io.wonderland.alice.crypto.BlockCipher;
-import io.wonderland.alice.crypto.CipherParameters;
-import io.wonderland.alice.exception.DataLengthException;
+import io.wonderland.alice.crypto.CipherParameter;
+import io.wonderland.alice.exception.RuntimeCipherException;
+import lombok.RequiredArgsConstructor;
 
 //todo: to implement
+@RequiredArgsConstructor
 public class CBCBlockCipher implements BlockCipher {
 
 
-  private BlockCipher blockCipher;
+  private final BlockCipher blockCipher;
 
 
   @Override
-  public void init(boolean encryption, CipherParameters params) throws IllegalArgumentException {
+  public void init(boolean encryption, CipherParameter param) throws IllegalArgumentException {
 
   }
 
@@ -28,7 +30,13 @@ public class CBCBlockCipher implements BlockCipher {
 
   @Override
   public int processBlock(byte[] in, int inOff, byte[] out, int outOff)
-      throws DataLengthException, IllegalStateException {
+      throws RuntimeCipherException, IllegalStateException {
+    return 0;
+  }
+
+
+  @Override
+  public int getOutputSize(int inputLen) {
     return 0;
   }
 
@@ -36,4 +44,5 @@ public class CBCBlockCipher implements BlockCipher {
   public void reset() {
 
   }
+
 }

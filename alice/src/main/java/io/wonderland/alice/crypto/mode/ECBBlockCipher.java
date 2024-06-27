@@ -1,22 +1,20 @@
 package io.wonderland.alice.crypto.mode;
 
 import io.wonderland.alice.crypto.BlockCipher;
-import io.wonderland.alice.crypto.CipherParameters;
-import io.wonderland.alice.exception.DataLengthException;
+import io.wonderland.alice.crypto.CipherParameter;
+import io.wonderland.alice.exception.RuntimeCipherException;
+import lombok.RequiredArgsConstructor;
 
 //todo: implement
+
+@RequiredArgsConstructor
 public final class ECBBlockCipher implements BlockCipher {
 
   private final BlockCipher blockCipher;
-  private final int bitBlockSize;
 
-  public ECBBlockCipher(BlockCipher blockCipher, int bitBlockSize) {
-    this.blockCipher = blockCipher;
-    this.bitBlockSize = bitBlockSize;
-  }
 
   @Override
-  public void init(boolean encryption, CipherParameters params) throws IllegalArgumentException {
+  public void init(boolean encryption, CipherParameter params) throws IllegalArgumentException {
 
   }
 
@@ -32,7 +30,12 @@ public final class ECBBlockCipher implements BlockCipher {
 
   @Override
   public int processBlock(byte[] in, int inOff, byte[] out, int outOff)
-      throws DataLengthException, IllegalStateException {
+      throws RuntimeCipherException, IllegalStateException {
+    return 0;
+  }
+
+  @Override
+  public int getOutputSize(int inputLen) {
     return 0;
   }
 
@@ -40,4 +43,6 @@ public final class ECBBlockCipher implements BlockCipher {
   public void reset() {
     this.blockCipher.reset();
   }
+
+
 }

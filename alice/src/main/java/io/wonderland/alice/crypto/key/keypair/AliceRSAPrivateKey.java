@@ -2,7 +2,7 @@ package io.wonderland.alice.crypto.key.keypair;
 
 
 import io.wonderland.alice.crypto.Algorithms;
-import io.wonderland.alice.crypto.cipher.asymmetric.rsa.RSAUtils;
+import io.wonderland.alice.crypto.asymmetric.rsa.RSAUtils;
 import io.wonderland.alice.crypto.key.codec.RSAKeyPairASN1Codec;
 import io.wonderland.alice.exception.KeyException;
 import java.math.BigInteger;
