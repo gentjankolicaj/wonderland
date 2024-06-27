@@ -1,7 +1,6 @@
 package io.wonderland.rh.keygen;
 
 import static io.wonderland.rh.GlobalConstants.BORDER_PANE_INSETS;
-import static io.wonderland.rh.GlobalConstants.OCTET_STREAM;
 
 import io.atlassian.fugue.Either;
 import io.atlassian.fugue.Pair;
@@ -45,7 +44,6 @@ public class SecretKeyGeneratorPane extends BorderPane {
   private final TypeObserver<SecretKey> secretKeyObserver = new TypeObserver<>();
   private final Label keyLbl = GuiUtils.getTitle("Secret key");
   private final Label copyKeyEncodingLbl = new Label();
-  private final Label copyKeyBytesLbl = new Label();
   private final TextField keyTF = new TextField();
   private final KeyGenerator keyGenerator;
   private final KeygenObservable keygenObservable;
@@ -65,10 +63,6 @@ public class SecretKeyGeneratorPane extends BorderPane {
     this.copyKeyEncodingLbl.setTooltip(new Tooltip("Copy key encoding"));
     this.copyKeyEncodingLbl.setGraphic(
         GuiUtils.getIconClasspath("/icons/copy-encoding/icons8-copy-24.png"));
-    this.copyKeyBytesLbl.setOnMouseReleased(new CopyKeyBytesEventHandler());
-    this.copyKeyBytesLbl.setTooltip(new Tooltip("Copy key bytes"));
-    this.copyKeyBytesLbl.setGraphic(
-        GuiUtils.getIconClasspath("/icons/copy-binary/icons8-binary-24.png"));
   }
 
   public void updateSecretKey(String encoded) {
@@ -76,7 +70,7 @@ public class SecretKeyGeneratorPane extends BorderPane {
     this.keyTF.setText(encoded);
     this.keyTF.setEditable(false);
     HBox.setHgrow(keyTF, Priority.ALWAYS);
-    container.getChildren().addAll(keyLbl, copyKeyEncodingLbl, copyKeyBytesLbl, keyTF);
+    container.getChildren().addAll(keyLbl, copyKeyEncodingLbl, keyTF);
     container.setSpacing(GlobalConstants.SPACING);
     BorderPane.setMargin(container, BORDER_PANE_INSETS);
     this.setCenter(container);
@@ -97,7 +91,7 @@ public class SecretKeyGeneratorPane extends BorderPane {
 
   public void updateSecretKeyBarcode(Node barcode) {
     final HBox skContainer = new HBox();
-    skContainer.getChildren().addAll(keyLbl, copyKeyEncodingLbl, copyKeyBytesLbl);
+    skContainer.getChildren().addAll(keyLbl, copyKeyEncodingLbl);
     skContainer.setSpacing(GlobalConstants.SPACING);
     VBox.setVgrow(barcode, Priority.ALWAYS);
 
@@ -156,20 +150,6 @@ public class SecretKeyGeneratorPane extends BorderPane {
     }
   }
 
-  private class CopyKeyBytesEventHandler implements EventHandler<Event> {
-
-    @Override
-    public void handle(Event event) {
-      try {
-        ClipboardContent content = new ClipboardContent();
-        content.put(OCTET_STREAM, secretKey.getEncoded());
-        Clipboard.getSystemClipboard().setContent(content);
-      } catch (Exception e) {
-        ExceptionDialog ed = new ExceptionDialog(e);
-        ed.showAndWait();
-      }
-    }
-  }
 
 }
 

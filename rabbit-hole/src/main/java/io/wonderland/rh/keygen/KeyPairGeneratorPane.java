@@ -1,7 +1,6 @@
 package io.wonderland.rh.keygen;
 
 import static io.wonderland.rh.GlobalConstants.BORDER_PANE_INSETS;
-import static io.wonderland.rh.GlobalConstants.OCTET_STREAM;
 
 import io.atlassian.fugue.Either;
 import io.atlassian.fugue.Pair;
@@ -44,9 +43,7 @@ public class KeyPairGeneratorPane extends BorderPane {
   private final Label pkLbl = GuiUtils.getTitle(GlobalConstants.PUBLIC_KEY);
   private final Label skLbl = GuiUtils.getTitle(GlobalConstants.PRIVATE_KEY);
   private final Label copyPKEncodingLbl = new Label();
-  private final Label copyPKBytesLbl = new Label();
   private final Label copySKEncodingLbl = new Label();
-  private final Label copySKBytesLbl = new Label();
   private final TextField pkTF = new TextField();
   private final TextField skTF = new TextField();
   private final KeyPairGenerator keyPairGenerator;
@@ -72,15 +69,9 @@ public class KeyPairGeneratorPane extends BorderPane {
     this.copyPKEncodingLbl.setGraphic(
         GuiUtils.getIconClasspath("/icons/copy-encoding/icons8-copy-24.png"));
     this.copyPKEncodingLbl.setTooltip(new Tooltip("Copy public key encoding"));
-    this.copyPKBytesLbl.setGraphic(
-        GuiUtils.getIconClasspath("/icons/copy-binary/icons8-binary-24.png"));
-    this.copyPKBytesLbl.setTooltip(new Tooltip("Copy public key bytes"));
     this.copySKEncodingLbl.setGraphic(
         GuiUtils.getIconClasspath("/icons/copy-encoding/icons8-copy-24.png"));
     this.copySKEncodingLbl.setTooltip(new Tooltip("Copy private key encoding"));
-    this.copySKBytesLbl.setGraphic(
-        GuiUtils.getIconClasspath("/icons/copy-binary/icons8-binary-24.png"));
-    this.copySKBytesLbl.setTooltip(new Tooltip("Copy private key bytes"));
   }
 
   private void setEventHandlers() {
@@ -89,16 +80,6 @@ public class KeyPairGeneratorPane extends BorderPane {
         ClipboardContent content = new ClipboardContent();
         content.put(DataFormat.PLAIN_TEXT,
             CodecUtils.encodeBase10(keyPair.getPublic().getEncoded(), ' '));
-        Clipboard.getSystemClipboard().setContent(content);
-      } catch (Exception e) {
-        ExceptionDialog ed = new ExceptionDialog(e);
-        ed.showAndWait();
-      }
-    });
-    this.copyPKBytesLbl.setOnMouseReleased(event -> {
-      try {
-        ClipboardContent content = new ClipboardContent();
-        content.put(OCTET_STREAM, keyPair.getPublic().getEncoded());
         Clipboard.getSystemClipboard().setContent(content);
       } catch (Exception e) {
         ExceptionDialog ed = new ExceptionDialog(e);
@@ -118,17 +99,6 @@ public class KeyPairGeneratorPane extends BorderPane {
       }
     });
 
-    this.copySKBytesLbl.setOnMouseReleased(event -> {
-      try {
-        ClipboardContent content = new ClipboardContent();
-        content.put(OCTET_STREAM, keyPair.getPublic().getEncoded());
-        Clipboard.getSystemClipboard().setContent(content);
-      } catch (Exception e) {
-        ExceptionDialog ed = new ExceptionDialog(e);
-        ed.showAndWait();
-      }
-    });
-
   }
 
   public void updateKeyPairBarcode(Pair<Node, Node> pair) {
@@ -138,7 +108,7 @@ public class KeyPairGeneratorPane extends BorderPane {
 
       //public key labels
       HBox pkContainer = new HBox();
-      pkContainer.getChildren().addAll(pkLbl, copyPKEncodingLbl, copyPKBytesLbl);
+      pkContainer.getChildren().addAll(pkLbl, copyPKEncodingLbl);
       pkContainer.setSpacing(GlobalConstants.SPACING);
 
       //get public key barcode
@@ -154,7 +124,7 @@ public class KeyPairGeneratorPane extends BorderPane {
     try {
       //private key labels
       HBox skContainer = new HBox();
-      skContainer.getChildren().addAll(skLbl, copySKEncodingLbl, copySKBytesLbl);
+      skContainer.getChildren().addAll(skLbl, copySKEncodingLbl);
       skContainer.setSpacing(GlobalConstants.SPACING);
 
       //get private key barcode
@@ -179,12 +149,12 @@ public class KeyPairGeneratorPane extends BorderPane {
 
     HBox pkContainer = new HBox();
     HBox.setHgrow(pkTF, Priority.ALWAYS);
-    pkContainer.getChildren().addAll(pkLbl, copyPKEncodingLbl, copyPKBytesLbl, pkTF);
+    pkContainer.getChildren().addAll(pkLbl, copyPKEncodingLbl, pkTF);
     pkContainer.setSpacing(GlobalConstants.SPACING);
 
     HBox skContainer = new HBox();
     HBox.setHgrow(skTF, Priority.ALWAYS);
-    skContainer.getChildren().addAll(skLbl, copySKEncodingLbl, copySKBytesLbl, skTF);
+    skContainer.getChildren().addAll(skLbl, copySKEncodingLbl, skTF);
     skContainer.setSpacing(GlobalConstants.SPACING);
 
     VBox keyPairContainer = new VBox();
