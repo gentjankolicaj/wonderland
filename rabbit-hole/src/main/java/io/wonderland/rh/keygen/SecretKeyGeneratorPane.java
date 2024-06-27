@@ -12,7 +12,6 @@ import io.wonderland.rh.base.fx.CodecDropdownItem;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.observer.KeygenObservable;
 import io.wonderland.rh.base.observer.TypeObserver;
-import io.wonderland.rh.utils.CodecUtils;
 import io.wonderland.rh.utils.GuiUtils;
 import java.util.Objects;
 import java.util.function.Function;
@@ -63,12 +62,11 @@ public class SecretKeyGeneratorPane extends BorderPane {
     this.copyKeyEncodingLbl.setTooltip(new Tooltip("Copy key encoding"));
     this.copyKeyEncodingLbl.setGraphic(
         GuiUtils.getIconClasspath("/icons/copy-encoding/icons8-copy-24.png"));
+    this.keyTF.setEditable(false);
   }
 
-  public void updateSecretKey(String encoded) {
+  public void updateText() {
     final HBox container = new HBox();
-    this.keyTF.setText(encoded);
-    this.keyTF.setEditable(false);
     HBox.setHgrow(keyTF, Priority.ALWAYS);
     container.getChildren().addAll(keyLbl, copyKeyEncodingLbl, keyTF);
     container.setSpacing(GlobalConstants.SPACING);
@@ -89,7 +87,7 @@ public class SecretKeyGeneratorPane extends BorderPane {
     codecDropdownItem.getFunc().apply(codecAlg);
   }
 
-  public void updateSecretKeyBarcode(Node barcode) {
+  public void updateBarcode(Node barcode) {
     final HBox skContainer = new HBox();
     skContainer.getChildren().addAll(keyLbl, copyKeyEncodingLbl);
     skContainer.setSpacing(GlobalConstants.SPACING);
@@ -97,8 +95,8 @@ public class SecretKeyGeneratorPane extends BorderPane {
 
     VBox parentContainer = new VBox(skContainer, barcode);
     parentContainer.setSpacing(GlobalConstants.SPACING);
-    setCenter(parentContainer);
     BorderPane.setMargin(parentContainer, BORDER_PANE_INSETS);
+    setCenter(parentContainer);
   }
 
 
@@ -115,19 +113,24 @@ public class SecretKeyGeneratorPane extends BorderPane {
         //encode secret bytes according to current codec
         String encoded = codecAlg.encode().apply(contextKey.getEncoded());
 
+        //update text field that contains key encoded info in both cases (barcode & text)
+        //so can be used by clipboard
+        getKeyTF().setText(encoded);
+
+        //update ui
         if (codecAlg instanceof Barcode) {
           Barcode barcode = (Barcode) codecAlg;
           try {
             Either<Node, Pair<Node, Node>> either = barcode.createKeyVisual(this,
                 Either.left(encoded));
-            this.updateSecretKeyBarcode(either.left().get());
+            this.updateBarcode(either.left().get());
           } catch (Exception e) {
             ExceptionDialog ed = new ExceptionDialog(e);
             ed.showAndWait();
           }
         } else {
           //update pane with encoded
-          this.updateSecretKey(encoded);
+          this.updateText();
         }
       }
       return null;
@@ -136,12 +139,11 @@ public class SecretKeyGeneratorPane extends BorderPane {
 
 
   private class CopyKeyEncodingEventHandler implements EventHandler<Event> {
-
     @Override
     public void handle(Event event) {
       try {
         ClipboardContent content = new ClipboardContent();
-        content.put(DataFormat.PLAIN_TEXT, CodecUtils.encodeBase10(secretKey.getEncoded(), ' '));
+        content.put(DataFormat.PLAIN_TEXT, getKeyTF().getText());
         Clipboard.getSystemClipboard().setContent(content);
       } catch (Exception e) {
         ExceptionDialog ed = new ExceptionDialog(e);

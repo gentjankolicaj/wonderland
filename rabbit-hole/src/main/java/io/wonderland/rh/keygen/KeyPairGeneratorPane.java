@@ -12,7 +12,6 @@ import io.wonderland.rh.base.fx.CodecDropdownItem;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.observer.KeygenObservable;
 import io.wonderland.rh.base.observer.TypeObserver;
-import io.wonderland.rh.utils.CodecUtils;
 import io.wonderland.rh.utils.GuiUtils;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -72,14 +71,15 @@ public class KeyPairGeneratorPane extends BorderPane {
     this.copySKEncodingLbl.setGraphic(
         GuiUtils.getIconClasspath("/icons/copy-encoding/icons8-copy-24.png"));
     this.copySKEncodingLbl.setTooltip(new Tooltip("Copy private key encoding"));
+    this.pkTF.setEditable(false);
+    this.skTF.setEditable(false);
   }
 
   private void setEventHandlers() {
     this.copyPKEncodingLbl.setOnMouseReleased(event -> {
       try {
         ClipboardContent content = new ClipboardContent();
-        content.put(DataFormat.PLAIN_TEXT,
-            CodecUtils.encodeBase10(keyPair.getPublic().getEncoded(), ' '));
+        content.put(DataFormat.PLAIN_TEXT, getPkTF().getText());
         Clipboard.getSystemClipboard().setContent(content);
       } catch (Exception e) {
         ExceptionDialog ed = new ExceptionDialog(e);
@@ -90,18 +90,16 @@ public class KeyPairGeneratorPane extends BorderPane {
     this.copySKEncodingLbl.setOnMouseReleased(event -> {
       try {
         ClipboardContent content = new ClipboardContent();
-        content.put(DataFormat.PLAIN_TEXT,
-            CodecUtils.encodeBase10(keyPair.getPrivate().getEncoded(), ' '));
+        content.put(DataFormat.PLAIN_TEXT, getSkTF().getText());
         Clipboard.getSystemClipboard().setContent(content);
       } catch (Exception e) {
         ExceptionDialog ed = new ExceptionDialog(e);
         ed.showAndWait();
       }
     });
-
   }
 
-  public void updateKeyPairBarcode(Pair<Node, Node> pair) {
+  public void updateBarcode(Pair<Node, Node> pair) {
     HBox keyPairContainer = new HBox();
     keyPairContainer.setSpacing(GlobalConstants.SPACING);
     try {
@@ -141,12 +139,7 @@ public class KeyPairGeneratorPane extends BorderPane {
     BorderPane.setMargin(keyPairContainer, BORDER_PANE_INSETS);
   }
 
-  private void updateKeyPair(String pkEncoded, String skEncoded) {
-    pkTF.setText(pkEncoded);
-    pkTF.setEditable(false);
-    skTF.setText(skEncoded);
-    skTF.setEditable(false);
-
+  private void updateTextFields() {
     HBox pkContainer = new HBox();
     HBox.setHgrow(pkTF, Priority.ALWAYS);
     pkContainer.getChildren().addAll(pkLbl, copyPKEncodingLbl, pkTF);
@@ -193,19 +186,24 @@ public class KeyPairGeneratorPane extends BorderPane {
         String pkEncoded = codecAlg.encode().apply(contextKeyPair.getPublic().getEncoded());
         String skEncoded = codecAlg.encode().apply(contextKeyPair.getPrivate().getEncoded());
 
+        //update text field that contains key encoded info in both cases (barcode & text)
+        //so can be used by clipboard
+        pkTF.setText(pkEncoded);
+        skTF.setText(skEncoded);
+
         if (codecAlg instanceof Barcode) {
           Barcode barcode = (Barcode) codecAlg;
           try {
             Either<Node, Pair<Node, Node>> either = barcode.createKeyVisual(this,
                 Either.right(new Pair<>(pkEncoded, skEncoded)));
-            this.updateKeyPairBarcode(either.right().get());
+            this.updateBarcode(either.right().get());
           } catch (Exception e) {
             ExceptionDialog ed = new ExceptionDialog(e);
             ed.showAndWait();
           }
         } else {
           //update pane with encoded
-          this.updateKeyPair(pkEncoded, skEncoded);
+          this.updateTextFields();
         }
       }
       return null;

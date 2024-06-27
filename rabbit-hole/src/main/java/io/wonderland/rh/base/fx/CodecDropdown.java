@@ -136,7 +136,7 @@ public class CodecDropdown extends HBox {
       //for each dropdown element change, get codec algorithm and apply ciphertext encoding
       if (Objects.nonNull(newValue) && Objects.nonNull(newValue.getCodecAlg())) {
         CodecAlg<byte[], String, String, byte[]> codecAlg = newValue.getCodecAlg();
-        log.info(CODEC_ALG_SELECTED, codecAlg.getName());
+        log.debug(CODEC_ALG_SELECTED, codecAlg.getName());
         newValue.getFunc().apply(codecAlg);
       }
     };
