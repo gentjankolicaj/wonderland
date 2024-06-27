@@ -21,14 +21,17 @@
 
 ### What is alice for ?
 
-- Cryptographic Service Provider module
-- Contains implementations about: ciphers, keygen, hash
+* Cryptographic Service Provider module
+* Conforming to JAVA JCA , contains implementations about: ciphers,keys, encoders.
+* Work in progress, not production ready !!!.
 
 ### What is crypto for ?
 
 - Cryptographic module
-- High level wrapper/util implementations around protocols & libs
-- Work In Progress
+
+* High level wrapper/util implementations around already JAVA CSP.
+
+- Work in progress
 
 ### What is base for ?
 
@@ -60,17 +63,19 @@
 
 - Cryptanalysis module
 - Contains implementations around cryptanalysis.
+- Work in progress
 
 ### What is rabbit-hole for ?
 
-- Javafx gui application using modules like: alice, base, crypto, garden, red-queen etc.
+- Javafx gui application using wonderland modules.
 
 <table>
-<thead>Integrated cryptographic security providers :</thead>
+<thead>Integrated cryptographic service providers :</thead>
 <tr><td>Bouncy Castle</td></tr>
 <tr><td>Sun</td></tr>
 <tr><td>SunJCE</td></tr>
 <tr><td>Conscrypt</td></tr>
+<tr><td>AmazonCorretoCryptoProvider</td></tr>
 <tr><td>Alice</td></tr>
 </table>
 
@@ -79,8 +84,19 @@
   <br>
   ![](img/analysis_lf.png)
 
-## License
+## Licenses
 
-[GNU General Public License v3.0](https://github.com/gentjankolicaj/wonderland/blob/master/LICENSE)
+Note: while wonderland project comes in below licenses,
 
-[Custom License 2](https://github.com/gentjankolicaj/wonderland/blob/master/LICENSE_2)
+- [GNU General Public License v3.0](https://github.com/gentjankolicaj/wonderland/blob/master/LICENSE)
+- [Custom License 2](https://github.com/gentjankolicaj/wonderland/blob/master/LICENSE_2)
+
+portions/parts/lines of this project include software dependencies licensed under different
+licenses.
+External cryptographic service providers have their licenses accordingly.
+Please see licenses for below cryptographic service providers:
+
+- https://github.com/bcgit/bc-java
+- https://github.com/corretto/amazon-corretto-crypto-provider
+- https://github.com/openjdk/jdk
+- https://github.com/google/conscrypt
