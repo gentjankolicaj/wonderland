@@ -2,6 +2,7 @@ package io.wonderland.rh.key;
 
 import io.wonderland.rh.GlobalConstants;
 import io.wonderland.rh.base.fx.ExceptionDialog;
+import io.wonderland.rh.base.fx.base.BaseBorderPane;
 import io.wonderland.rh.base.observer.EitherKeyObserver;
 import io.wonderland.rh.exception.KeystoreException;
 import io.wonderland.rh.keystore.KeyStoreType;
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class KeyStorePane extends BorderPane {
+public class KeyStorePane extends BaseBorderPane {
 
   public static final String OPEN = "Open...";
   private final HBox controlContainer = new HBox();

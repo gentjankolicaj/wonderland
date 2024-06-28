@@ -6,6 +6,7 @@ import io.wonderland.rh.base.fx.CodecDropdown;
 import io.wonderland.rh.base.fx.CodecTextArea;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.fx.TextPane;
+import io.wonderland.rh.base.fx.base.BaseBorderPane;
 import io.wonderland.rh.base.observer.TypeObserver;
 import io.wonderland.rh.utils.GuiUtils;
 import java.nio.charset.Charset;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class HashPane extends BorderPane {
+public class HashPane extends BaseBorderPane {
 
   private final VBox miscBox = new VBox();
   private final CharsetTextArea messageTextArea = new CharsetTextArea();

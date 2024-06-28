@@ -174,7 +174,7 @@ public class KeygenTab extends BaseTab {
     return new MonoTreeItem<>(keygenName, arg -> {
       try {
         Either<KeyGenerator, KeyPairGenerator> keygen = getSelectedKeygen(cspName, keygenName);
-        new KeygenPane(keygen, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+        new KeygenPane(keygen, GlobalConstants.SCENE_WIDTH, GlobalConstants.SCENE_HEIGHT);
       } catch (Exception ex) {
         log.error(ex.getMessage());
       }

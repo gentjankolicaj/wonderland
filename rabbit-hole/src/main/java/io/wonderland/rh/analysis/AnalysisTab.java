@@ -130,8 +130,8 @@ public class AnalysisTab extends AbstractTab {
         //create new window from item pane
         Method method = nodeItem.getNode().getClass()
             .getMethod("newInstance", Double.class, Double.class);
-        method.invoke(nodeItem.getNode(), GlobalConstants.WINDOW_WIDTH,
-            GlobalConstants.WINDOW_HEIGHT);
+        method.invoke(nodeItem.getNode(), GlobalConstants.SCENE_WIDTH,
+            GlobalConstants.SCENE_HEIGHT);
       } catch (Exception e) {
         ExceptionDialog ed = new ExceptionDialog(e);
         ed.showAndWait();

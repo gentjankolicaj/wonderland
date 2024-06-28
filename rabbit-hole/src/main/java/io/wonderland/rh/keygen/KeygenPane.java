@@ -3,6 +3,7 @@ package io.wonderland.rh.keygen;
 
 import io.atlassian.fugue.Either;
 import io.wonderland.rh.base.fx.ExceptionDialog;
+import io.wonderland.rh.base.fx.base.BaseBorderPane;
 import io.wonderland.rh.base.observer.EitherKeyObserver;
 import io.wonderland.rh.base.observer.KeygenObservable;
 import io.wonderland.rh.export.KeyBox;
@@ -33,7 +34,7 @@ import javax.crypto.KeyGenerator;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class KeygenPane extends BorderPane {
+public class KeygenPane extends BaseBorderPane {
 
   private final KeygenObservable keygenObservable = new KeygenObservable();
   private final VBox miscBox = new VBox();

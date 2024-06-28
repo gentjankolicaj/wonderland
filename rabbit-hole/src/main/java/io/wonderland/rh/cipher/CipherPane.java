@@ -1,5 +1,6 @@
 package io.wonderland.rh.cipher;
 
+import io.wonderland.rh.base.fx.base.BaseVBox;
 import io.wonderland.rh.base.observer.KeygenObserver;
 import io.wonderland.rh.exception.ServiceException;
 import io.wonderland.rh.key.KeySourcePane;
@@ -17,7 +18,7 @@ import javax.crypto.NoSuchPaddingException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CipherPane extends VBox {
+public class CipherPane extends BaseVBox {
 
   static final String CIPHER_KEY_PANE = "Cipher key";
   static final String CIPHER_MESSAGE_PANE = "Cipher message";

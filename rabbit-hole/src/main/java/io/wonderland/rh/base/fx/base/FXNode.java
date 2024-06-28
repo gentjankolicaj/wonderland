@@ -15,7 +15,6 @@ public class FXNode implements FXNodeMBean {
 
   private final Node node;
 
-
   @Override
   public String getId() {
     return node.getId();
@@ -52,8 +51,7 @@ public class FXNode implements FXNodeMBean {
    * @param mBeanServer
    * @throws JMException
    */
-  public void registerBean(MBeanServer mBeanServer)
-      throws JMException {
+  public void registerBean(MBeanServer mBeanServer) throws JMException {
     if (node instanceof Parent) {
       Parent parent = (Parent) node;
       List<FXNode> children = parent.getChildrenUnmodifiable().stream().map(FXNode::new).collect(

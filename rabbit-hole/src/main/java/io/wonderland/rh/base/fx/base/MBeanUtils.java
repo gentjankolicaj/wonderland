@@ -23,7 +23,7 @@ public class MBeanUtils {
         JMXBase.DOMAIN + ":type=" + fxNode.getClass().getSimpleName() + ",name=" + name);
   }
 
-  public static ObjectName createName(ParentMBean mBean) throws MalformedObjectNameException {
+  public static ObjectName createName(FXParentMBean mBean) throws MalformedObjectNameException {
     String name = mBean.getClass().getSimpleName() + "-" + BEAN_COUNTER;
     BEAN_COUNTER++;
     return new ObjectName(JMXBase.DOMAIN + ":type=" + name);

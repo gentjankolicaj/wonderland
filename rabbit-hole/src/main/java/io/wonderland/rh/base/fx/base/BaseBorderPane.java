@@ -11,4 +11,5 @@ public class BaseBorderPane extends BorderPane implements BaseBorderPaneMBean {
     return getChildren().stream().map(FXNode::new).collect(Collectors.toList());
   }
 
+
 }

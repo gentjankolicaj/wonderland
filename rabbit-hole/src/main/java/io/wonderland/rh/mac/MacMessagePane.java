@@ -9,6 +9,7 @@ import io.wonderland.rh.base.fx.CodecDropdown;
 import io.wonderland.rh.base.fx.CodecTextArea;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.fx.TextPane;
+import io.wonderland.rh.base.fx.base.BaseTitledPane;
 import io.wonderland.rh.base.observer.EitherKeyObserver;
 import io.wonderland.rh.base.observer.TypeObserver;
 import java.nio.charset.Charset;
@@ -20,7 +21,6 @@ import java.util.Optional;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class MacMessagePane extends TitledPane {
+public class MacMessagePane extends BaseTitledPane {
 
   private final BorderPane container = new BorderPane();
   private final VBox controlBox = new VBox();

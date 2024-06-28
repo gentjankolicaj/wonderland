@@ -1,5 +1,6 @@
 package io.wonderland.rh.mac;
 
+import io.wonderland.rh.base.fx.base.BaseVBox;
 import io.wonderland.rh.base.observer.EitherKeyObserver;
 import io.wonderland.rh.key.KeySourcePane;
 import io.wonderland.rh.utils.GuiUtils;
@@ -16,7 +17,7 @@ import javax.crypto.Mac;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MacPane extends VBox {
+public class MacPane extends BaseVBox {
 
   private final VBox infoBox = new VBox();
   private final EitherKeyObserver eitherKeyObserver = new EitherKeyObserver();

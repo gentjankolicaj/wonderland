@@ -118,7 +118,7 @@ public class MacTab extends BaseTab {
   private MonoTreeItem<String> getCustomTreeItem(String cspName, String macName) {
     return new MonoTreeItem<>(macName, arg -> {
       try {
-        new MacPane(cspName, macName, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+        new MacPane(cspName, macName, GlobalConstants.SCENE_WIDTH, GlobalConstants.SCENE_HEIGHT);
       } catch (Exception ex) {
         log.error(ex.getMessage());
       }

@@ -1,5 +1,5 @@
 package io.wonderland.rh.base.fx.base;
 
-public interface BaseTabMBean extends ParentMBean {
+public interface BaseTabMBean extends FXParentMBean {
 
 }

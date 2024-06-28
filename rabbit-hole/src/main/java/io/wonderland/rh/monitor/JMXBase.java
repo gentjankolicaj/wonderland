@@ -1,8 +1,8 @@
 package io.wonderland.rh.monitor;
 
 import io.wonderland.rh.base.fx.base.FXNode;
+import io.wonderland.rh.base.fx.base.FXParentMBean;
 import io.wonderland.rh.base.fx.base.MBeanUtils;
-import io.wonderland.rh.base.fx.base.ParentMBean;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.List;
@@ -28,14 +28,14 @@ public final class JMXBase {
     try {
       MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
-      //dynamic mbeans
+      //management beans
       for (Object mBean : MBEANS) {
-        if (mBean instanceof ParentMBean) {
-          ParentMBean parentMBean = (ParentMBean) mBean;
-          mBeanServer.registerMBean(parentMBean, MBeanUtils.createName(parentMBean));
+        if (mBean instanceof FXParentMBean) {
+          FXParentMBean FXParentMBean = (FXParentMBean) mBean;
+          mBeanServer.registerMBean(FXParentMBean, MBeanUtils.createName(FXParentMBean));
 
           //recursive register of children
-          List<FXNode> children = parentMBean.getChildrenFXNode();
+          List<FXNode> children = FXParentMBean.getChildrenFXNode();
           for (FXNode fxNode : children) {
             fxNode.registerBean(mBeanServer);
           }
@@ -59,7 +59,7 @@ public final class JMXBase {
   }
 
 
-  public static void addBeans(Object... beans) {
+  public static void addParentBean(Object... beans) {
     if (ArrayUtils.isEmpty(beans)) {
       throw new IllegalArgumentException("Can't register empty beans");
     }

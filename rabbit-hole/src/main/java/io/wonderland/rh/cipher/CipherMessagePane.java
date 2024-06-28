@@ -8,6 +8,7 @@ import io.wonderland.rh.base.fx.CharsetDropdown;
 import io.wonderland.rh.base.fx.CodecDropdown;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.fx.TextPane;
+import io.wonderland.rh.base.fx.base.BaseTitledPane;
 import io.wonderland.rh.base.observer.KeygenObserver;
 import io.wonderland.rh.cipher.mediator.CipherMediator;
 import io.wonderland.rh.cipher.mediator.Ciphertext;
@@ -25,7 +26,6 @@ import java.util.function.Function;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Slf4j
-public class CipherMessagePane extends TitledPane {
+public class CipherMessagePane extends BaseTitledPane {
 
   private final VBox controlBox = new VBox();
   private final HBox textBox = new HBox();

@@ -5,8 +5,8 @@ import io.wonderland.rh.base.fx.BiTreeItem;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.fx.NodeItem;
 import io.wonderland.rh.base.fx.TreeViewCellImpl;
-import io.wonderland.rh.base.fx.base.AbstractTab;
 import io.wonderland.rh.base.fx.base.BasePane;
+import io.wonderland.rh.base.fx.base.BaseTab;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class MiscTab extends AbstractTab {
+public class MiscTab extends BaseTab {
 
   private static final List<NodeItem<BasePane<?, ?, ?>>> MISC_ITEMS = getMiscItems();
   private final BorderPane container = new BorderPane();
@@ -116,8 +116,8 @@ public class MiscTab extends AbstractTab {
         //create new window from item pane
         Method method = nodeItem.getNode().getClass()
             .getMethod("newInstance", Double.class, Double.class);
-        method.invoke(nodeItem.getNode(), GlobalConstants.WINDOW_WIDTH,
-            GlobalConstants.WINDOW_HEIGHT);
+        method.invoke(nodeItem.getNode(), GlobalConstants.SCENE_WIDTH,
+            GlobalConstants.SCENE_HEIGHT);
       } catch (Exception e) {
         ExceptionDialog ed = new ExceptionDialog(e);
         ed.showAndWait();

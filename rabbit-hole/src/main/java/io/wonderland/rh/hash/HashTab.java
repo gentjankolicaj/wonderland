@@ -118,8 +118,8 @@ public class HashTab extends BaseTab {
   private MonoTreeItem<String> getCustomTreeItem(String cspName, String digestName) {
     return new MonoTreeItem<>(digestName, arg -> {
       try {
-        new HashPane(cspName, digestName, GlobalConstants.WINDOW_WIDTH,
-            GlobalConstants.WINDOW_HEIGHT);
+        new HashPane(cspName, digestName, GlobalConstants.SCENE_WIDTH,
+            GlobalConstants.SCENE_HEIGHT);
       } catch (Exception ex) {
         log.error(ex.getMessage());
       }

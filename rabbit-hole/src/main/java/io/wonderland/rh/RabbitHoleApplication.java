@@ -47,14 +47,13 @@ public class RabbitHoleApplication extends Application {
     parentPane.setTop(menuBar);
     parentPane.setCenter(tabPane);
     parentPane.setLeft(dock);
-    Scene scene = new Scene(parentPane, GlobalConstants.WINDOW_WIDTH,
-        GlobalConstants.WINDOW_HEIGHT);
+    Scene scene = new Scene(parentPane, GlobalConstants.SCENE_WIDTH, GlobalConstants.SCENE_HEIGHT);
     stage.setScene(scene);
     stage.setTitle("Rabbit hole");
     stage.show();
 
     //Add jmx beans
-    JMXBase.addBeans(parentPane);
+    JMXBase.addParentBean(parentPane);
   }
 
 }

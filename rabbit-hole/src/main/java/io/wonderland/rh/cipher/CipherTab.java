@@ -118,8 +118,8 @@ public class CipherTab extends BaseTab {
   private MonoTreeItem<String> getCustomTreeItem(String cspName, String cipherName) {
     return new MonoTreeItem<>(cipherName, arg -> {
       try {
-        new CipherPane(cspName, cipherName, GlobalConstants.WINDOW_WIDTH,
-            GlobalConstants.WINDOW_HEIGHT);
+        new CipherPane(cspName, cipherName, GlobalConstants.SCENE_WIDTH,
+            GlobalConstants.SCENE_HEIGHT);
       } catch (Exception ex) {
         log.error(ex.getMessage());
       }

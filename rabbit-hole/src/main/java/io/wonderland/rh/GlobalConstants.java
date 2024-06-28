@@ -5,7 +5,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateFactory;
 import javafx.geometry.Insets;
-import javafx.scene.input.DataFormat;
 import javafx.stage.Screen;
 
 public class GlobalConstants {
@@ -16,9 +15,8 @@ public class GlobalConstants {
   public static final String PUBLIC_KEY = "Public key";
   public static final Insets DEFAULT_INSETS = new Insets(10, 10, 10, 10);
   public static final Insets BORDER_PANE_INSETS = new Insets(5, 5, 5, 5);
-  public static final DataFormat OCTET_STREAM = new DataFormat("application/octet-stream");
-  public static final double WINDOW_WIDTH = getReportedScreenWidth() * 0.7;
-  public static final double WINDOW_HEIGHT = getReportedScreenHeight() * 0.9;
+  public static final double SCENE_WIDTH = getReportedScreenWidth() * 0.7;
+  public static final double SCENE_HEIGHT = getReportedScreenHeight() * 0.9;
   public static final int SPACING = 10;
   public static final int DIALOG_SPACING = 5;
   public static final int[] KEY_EXPORT_DIALOG_SIZE = new int[]{350, 250};
