@@ -1,17 +1,14 @@
 package io.wonderland.rh.base.fx;
 
-import javafx.scene.control.Tab;
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class ServiceTab extends Tab {
+public abstract class ServiceTab extends AbstractTab {
 
-  protected String title;
   protected String[] serviceTypes;
 
   protected ServiceTab(String title, String... serviceTypes) {
-    this.title = title;
+    super(title);
     this.serviceTypes = serviceTypes;
-    this.setText(title);
   }
 
   protected boolean isValidServiceName(String name) {
