@@ -1,12 +1,12 @@
 package io.wonderland.rh.misc;
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.fx.AbstractTab;
-import io.wonderland.rh.base.fx.BasePane;
 import io.wonderland.rh.base.fx.BiTreeItem;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.fx.NodeItem;
 import io.wonderland.rh.base.fx.TreeViewCellImpl;
+import io.wonderland.rh.base.fx.base.AbstractTab;
+import io.wonderland.rh.base.fx.base.BasePane;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.wonderland.rh.base.fx;
+package io.wonderland.rh.base.fx.base;
 
 import io.wonderland.rh.exception.BuildException;
 import javafx.scene.layout.Pane;

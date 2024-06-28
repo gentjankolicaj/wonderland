@@ -2,6 +2,7 @@ package io.wonderland.rh.base.fx;
 
 import io.wonderland.rh.GlobalConstants;
 import io.wonderland.rh.analysis.AnalysisTab;
+import io.wonderland.rh.base.fx.base.BaseVBox;
 import io.wonderland.rh.cipher.CipherTab;
 import io.wonderland.rh.hash.HashTab;
 import io.wonderland.rh.keygen.KeygenTab;
@@ -10,9 +11,8 @@ import io.wonderland.rh.mac.MacTab;
 import io.wonderland.rh.misc.MiscTab;
 import io.wonderland.rh.utils.GuiUtils;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.VBox;
 
-public class Dock extends VBox {
+public class Dock extends BaseVBox {
 
 
   public Dock(TabPane tabPane) {

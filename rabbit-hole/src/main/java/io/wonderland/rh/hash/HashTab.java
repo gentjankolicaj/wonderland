@@ -3,8 +3,8 @@ package io.wonderland.rh.hash;
 import io.wonderland.rh.GlobalConstants;
 import io.wonderland.rh.base.fx.CSPTreeItem;
 import io.wonderland.rh.base.fx.MonoTreeItem;
-import io.wonderland.rh.base.fx.ServiceTab;
 import io.wonderland.rh.base.fx.TreeViewCellImpl;
+import io.wonderland.rh.base.fx.base.BaseTab;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
 @Slf4j
-public class HashTab extends ServiceTab {
+public class HashTab extends BaseTab {
 
   private final BorderPane container = new BorderPane();
 

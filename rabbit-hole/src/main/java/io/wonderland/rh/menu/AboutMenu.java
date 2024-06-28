@@ -3,9 +3,9 @@ package io.wonderland.rh.menu;
 import static io.wonderland.rh.GlobalConstants.MANAGE_CONN_WINDOW_SIZE;
 
 import io.wonderland.rh.GlobalConstants;
-import io.wonderland.rh.base.fx.BaseMenu;
-import io.wonderland.rh.base.fx.BaseMenuItem;
-import io.wonderland.rh.base.fx.BaseStage;
+import io.wonderland.rh.base.fx.base.BaseMenu;
+import io.wonderland.rh.base.fx.base.BaseMenuItem;
+import io.wonderland.rh.base.fx.base.BaseStage;
 import io.wonderland.rh.utils.GuiUtils;
 import java.util.function.Consumer;
 import javafx.event.ActionEvent;

@@ -1,6 +1,6 @@
 package io.wonderland.rh.keystore;
 
-import io.wonderland.rh.base.fx.AbstractTab;
+import io.wonderland.rh.base.fx.base.AbstractTab;
 
 public class KeystoreTab extends AbstractTab {
 

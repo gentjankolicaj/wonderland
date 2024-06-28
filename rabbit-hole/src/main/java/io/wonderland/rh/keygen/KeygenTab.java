@@ -5,8 +5,8 @@ import io.wonderland.rh.GlobalConstants;
 import io.wonderland.rh.base.fx.AbstractTreeItem;
 import io.wonderland.rh.base.fx.CSPTreeItem;
 import io.wonderland.rh.base.fx.MonoTreeItem;
-import io.wonderland.rh.base.fx.ServiceTab;
 import io.wonderland.rh.base.fx.TreeViewCellImpl;
+import io.wonderland.rh.base.fx.base.BaseTab;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -32,7 +32,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
-public class KeygenTab extends ServiceTab {
+public class KeygenTab extends BaseTab {
 
   private final BorderPane container = new BorderPane();
 

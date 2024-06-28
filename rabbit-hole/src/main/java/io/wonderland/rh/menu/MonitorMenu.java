@@ -1,7 +1,7 @@
 package io.wonderland.rh.menu;
 
-import io.wonderland.rh.base.fx.BaseMenu;
-import io.wonderland.rh.base.fx.BaseMenuItem;
+import io.wonderland.rh.base.fx.base.BaseMenu;
+import io.wonderland.rh.base.fx.base.BaseMenuItem;
 import io.wonderland.rh.monitor.JConsoleBase;
 import io.wonderland.rh.monitor.JMXBase;
 import java.util.function.Consumer;

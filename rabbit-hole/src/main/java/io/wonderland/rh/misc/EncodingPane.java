@@ -1,12 +1,12 @@
 package io.wonderland.rh.misc;
 
-import io.wonderland.rh.base.fx.BasePane;
 import io.wonderland.rh.base.fx.CharsetDropdown;
 import io.wonderland.rh.base.fx.CharsetTextArea;
 import io.wonderland.rh.base.fx.CodecDropdown;
 import io.wonderland.rh.base.fx.CodecTextArea;
 import io.wonderland.rh.base.fx.ExceptionDialog;
 import io.wonderland.rh.base.fx.TextPane;
+import io.wonderland.rh.base.fx.base.BasePane;
 import io.wonderland.rh.base.observer.TypeObserver;
 import io.wonderland.rh.utils.GuiUtils;
 import java.nio.charset.Charset;

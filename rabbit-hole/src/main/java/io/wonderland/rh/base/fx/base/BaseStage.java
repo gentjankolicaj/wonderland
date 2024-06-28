@@ -1,4 +1,4 @@
-package io.wonderland.rh.base.fx;
+package io.wonderland.rh.base.fx.base;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;

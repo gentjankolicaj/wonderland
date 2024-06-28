@@ -1,4 +1,4 @@
-package io.wonderland.rh.base.fx;
+package io.wonderland.rh.base.fx.base;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;

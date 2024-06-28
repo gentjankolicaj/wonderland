@@ -1,12 +1,13 @@
-package io.wonderland.rh.base.fx;
+package io.wonderland.rh.base.fx.base;
 
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class ServiceTab extends AbstractTab {
+public class BaseTab extends AbstractTab implements BaseTabMBean {
 
   protected String[] serviceTypes;
 
-  protected ServiceTab(String title, String... serviceTypes) {
+  protected BaseTab(String title, String... serviceTypes) {
     super(title);
     this.serviceTypes = serviceTypes;
   }
@@ -21,6 +22,11 @@ public abstract class ServiceTab extends AbstractTab {
 
   protected String parseCspName(String rawName) {
     return rawName.substring(0, rawName.indexOf("-"));
+  }
+
+  @Override
+  public List<FXNode> getChildrenFXNode() {
+    return List.of(new FXNode(getContent()));
   }
 
 }

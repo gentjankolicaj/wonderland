@@ -4,7 +4,10 @@ package io.wonderland.rh;
 import com.amazon.corretto.crypto.provider.AmazonCorrettoCryptoProvider;
 import io.wonderland.alice.jca.AliceProvider;
 import io.wonderland.rh.base.fx.Dock;
+import io.wonderland.rh.base.fx.base.BaseBorderPane;
+import io.wonderland.rh.base.fx.base.BaseTabPane;
 import io.wonderland.rh.menu.MenuBarUtil;
+import io.wonderland.rh.monitor.JMXBase;
 import java.security.Security;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -36,8 +39,8 @@ public class RabbitHoleApplication extends Application {
   @Override
   public void start(Stage stage) {
     MenuBar menuBar = MenuBarUtil.getMenuBar();
-    BorderPane parentPane = new BorderPane();
-    TabPane tabPane = new TabPane();
+    BorderPane parentPane = new BaseBorderPane();
+    TabPane tabPane = new BaseTabPane();
     Dock dock = new Dock(tabPane);
     BorderPane.setMargin(dock, GlobalConstants.DEFAULT_INSETS);
     BorderPane.setMargin(tabPane, GlobalConstants.BORDER_PANE_INSETS);
@@ -49,6 +52,9 @@ public class RabbitHoleApplication extends Application {
     stage.setScene(scene);
     stage.setTitle("Rabbit hole");
     stage.show();
+
+    //Add jmx beans
+    JMXBase.addBeans(parentPane);
   }
 
 }
