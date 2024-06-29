@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 
 public class MonitorMenu extends BaseMenu {
 
+  public static boolean monitoring = false;
   public MonitorMenu() {
     super("Monitor", new JConsoleItem());
   }
@@ -22,8 +23,11 @@ public class MonitorMenu extends BaseMenu {
 
     static Consumer<ActionEvent> getActionConsumer() {
       return actionEvent -> {
-        JMXBase.start();
-        JConsoleBase.start(1, ProcessHandle.current().pid());
+        if (!monitoring) {
+          JMXBase.start();
+          JConsoleBase.start(1, ProcessHandle.current().pid());
+          monitoring = true;
+        }
       };
     }
   }
