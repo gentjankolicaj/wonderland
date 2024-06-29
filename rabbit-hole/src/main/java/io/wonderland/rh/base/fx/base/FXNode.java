@@ -1,19 +1,24 @@
 package io.wonderland.rh.base.fx.base;
 
-import java.util.List;
-import java.util.stream.Collectors;
+
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javax.management.JMException;
-import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public class FXNode implements FXNodeMBean {
 
+  public static final String DOMAIN = "io.wonderland.rh";
   private final Node node;
+  private final ObjectName objectName;
+
+  public FXNode(Node node) throws JMException {
+    this.node = node;
+    this.objectName = createName(node.getClass().getSimpleName(), toString());
+  }
+
 
   @Override
   public String getId() {
@@ -45,23 +50,26 @@ public class FXNode implements FXNodeMBean {
     this.node.setLayoutY(layoutY);
   }
 
-  /**
-   * Recursive registering of child nodes
-   *
-   * @param mBeanServer
-   * @throws JMException
-   */
-  public void registerBean(MBeanServer mBeanServer) throws JMException {
-    if (node instanceof Parent) {
-      Parent parent = (Parent) node;
-      List<FXNode> children = parent.getChildrenUnmodifiable().stream().map(FXNode::new).collect(
-          Collectors.toList());
-      for (FXNode child : children) {
-        child.registerBean(mBeanServer);
-      }
-    } else {
-      mBeanServer.registerMBean(this, MBeanUtils.createName(this));
+  public static FXNode create(Node node) {
+    try {
+      return new FXNode(node);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
+  }
+
+  public static ObjectName createName(String type, String name)
+      throws MalformedObjectNameException {
+    return new ObjectName(DOMAIN + ":type=" + type + ",name=" + name);
+  }
+
+  @Override
+  public String toString() {
+    //Identity Hash Code: Every object in Java has a unique identifier called its identity hash code.
+    // You can obtain this hash code using the System.identityHashCode(Object obj) method.
+    // While not a memory address, it provides a unique identifier for an object during its lifetime.
+    return "" + System.identityHashCode(node);
   }
 
 }

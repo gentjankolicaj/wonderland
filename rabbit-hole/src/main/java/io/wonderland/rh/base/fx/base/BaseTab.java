@@ -1,9 +1,8 @@
 package io.wonderland.rh.base.fx.base;
 
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
-public class BaseTab extends AbstractTab implements BaseTabMBean {
+public class BaseTab extends AbstractTab {
 
   protected String[] serviceTypes;
 
@@ -24,9 +23,5 @@ public class BaseTab extends AbstractTab implements BaseTabMBean {
     return rawName.substring(0, rawName.indexOf("-"));
   }
 
-  @Override
-  public List<FXNode> getChildrenFXNode() {
-    return List.of(new FXNode(getContent()));
-  }
 
 }

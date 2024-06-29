@@ -52,8 +52,8 @@ public class RabbitHoleApplication extends Application {
     stage.setTitle("Rabbit hole");
     stage.show();
 
-    //Add jmx beans
-    JMXBase.addParentBean(parentPane);
+    //Add javafx parent node to be used by jmx search
+    JMXBase.addParentNode(parentPane);
   }
 
 }

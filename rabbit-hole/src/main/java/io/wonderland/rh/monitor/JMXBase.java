@@ -1,70 +1,155 @@
 package io.wonderland.rh.monitor;
 
 import io.wonderland.rh.base.fx.base.FXNode;
-import io.wonderland.rh.base.fx.base.FXParentMBean;
-import io.wonderland.rh.base.fx.base.MBeanUtils;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javax.management.JMException;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
+import javax.management.ObjectInstance;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.collections4.CollectionUtils;
+
 
 @Slf4j
 public final class JMXBase {
 
-  public static final String DOMAIN = "io.wonderland.rh";
-
-  private static final List<Object> MBEANS = new CopyOnWriteArrayList<>();
+  public static final int REFRESH_DELAY = 1000;
+  private static final Set<Node> NODES = Collections.synchronizedSet(new HashSet<>());
+  private static MBeanServer mBeanServer;
 
   private JMXBase() {
   }
 
 
   public static void start() {
+    if (mBeanServer == null) {
+      mBeanServer = ManagementFactory.getPlatformMBeanServer();
+    }
     try {
-      MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-
       //management beans
-      for (Object mBean : MBEANS) {
-        if (mBean instanceof FXParentMBean) {
-          FXParentMBean FXParentMBean = (FXParentMBean) mBean;
-          mBeanServer.registerMBean(FXParentMBean, MBeanUtils.createName(FXParentMBean));
-
-          //recursive register of children
-          List<FXNode> children = FXParentMBean.getChildrenFXNode();
-          for (FXNode fxNode : children) {
-            fxNode.registerBean(mBeanServer);
-          }
-        } else if (mBean instanceof FXNode) {
-          FXNode fxNode = (FXNode) mBean;
-          fxNode.registerBean(mBeanServer);
-        } else {
-          mBeanServer.registerMBean(mBean, createObjectName(mBean.getClass().getSimpleName()));
-        }
+      for (Node node : NODES) {
+        FXNode fxNode = new FXNode(node);
+        mBeanServer.registerMBean(fxNode, fxNode.getObjectName());
       }
     } catch (Exception e) {
       log.error("", e);
     }
-
-  }
-
-  private static ObjectName createObjectName(String name)
-      throws MalformedObjectNameException {
-    return new ObjectName(DOMAIN + ":type=" + name);
-
   }
 
 
-  public static void addParentBean(Object... beans) {
-    if (ArrayUtils.isEmpty(beans)) {
-      throw new IllegalArgumentException("Can't register empty beans");
+  private static void updateMBeans() throws JMException {
+    //This retrieves all registered MBeans.
+    // The null parameters mean that no specific query is applied, so it returns all MBeans.
+    if (mBeanServer != null) {
+      Set<ObjectInstance> allBeans = mBeanServer.queryMBeans(null, null);
+      if (CollectionUtils.isNotEmpty(allBeans)) {
+        //create new mbeans
+        List<FXNode> fxNodes = NODES.stream().map(FXNode::create).collect(Collectors.toList());
+
+        // remove all my domain beans , only my beans not all because there are management beans as well
+        List<ObjectInstance> myBeans = allBeans.stream()
+            .filter(e -> e.getObjectName().getDomain().equals(FXNode.DOMAIN)).collect(
+                Collectors.toList());
+
+        //debugging
+        //log.info("All MBeans {}, rabbit-hole MBeans {}",allBeans.size(),myBeans.size());
+
+        List<ObjectInstance> deadBeans = new ArrayList<>();
+        List<FXNode> aliveBeans = new ArrayList<>();
+        for (ObjectInstance oi : myBeans) {
+          boolean found = false;
+          for (FXNode fxNode : fxNodes) {
+            if (fxNode.getObjectName().compareTo(oi.getObjectName()) == 0) {
+              found = true;
+              aliveBeans.add(fxNode);
+              break;
+            }
+          }
+          if (!found) {
+            deadBeans.add(oi);
+          }
+        }
+
+        //remove my dead beans
+        deadBeans.forEach(bean -> {
+          try {
+            mBeanServer.unregisterMBean(bean.getObjectName());
+          } catch (JMException e) {
+            throw new RuntimeException(e);
+          }
+        });
+
+        //remove duplicate beans
+        fxNodes.removeAll(aliveBeans);
+
+        //add new beans
+        fxNodes.forEach(node -> {
+          try {
+            mBeanServer.registerMBean(node, node.getObjectName());
+          } catch (JMException e) {
+            throw new RuntimeException(e);
+          }
+        });
+
+      } else {
+        for (Node node : NODES) {
+          FXNode fxNode = new FXNode(node);
+          mBeanServer.registerMBean(fxNode, fxNode.getObjectName());
+        }
+      }
     }
-    Collections.addAll(MBEANS, beans);
   }
 
+
+  public static void addParentNode(Node node) {
+    if (Objects.isNull(node)) {
+      throw new IllegalArgumentException("Can't register empty node");
+    }
+    NODES.add(node);
+    startMonitorThread(node);
+  }
+
+  // Add a listener to the children of the VBox
+  private static void startMonitorThread(Node node) {
+    CompletableFuture.runAsync(() -> {
+      while (true) {
+        try {
+          updateNodes(node);
+          updateMBeans();
+          Thread.sleep(REFRESH_DELAY);
+        } catch (Exception e) {
+          log.error("", e);
+          break;
+        }
+      }
+    });
+
+  }
+
+  private static void updateNodes(Node root) {
+    //clear set
+    NODES.clear();
+    //re-populate set
+    findDescendants(root, NODES);
+  }
+
+  private static void findDescendants(Node parent, Set<Node> nodes) {
+    nodes.add(parent);
+    if (parent instanceof Parent) {
+      Parent pane = (Parent) parent;
+      for (Node node : pane.getChildrenUnmodifiable()) {
+        findDescendants(node, nodes);
+      }
+    }
+  }
 
 }
