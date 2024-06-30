@@ -140,11 +140,13 @@ public class BarcodePane extends BasePane<Void, VBox, Void> {
         String message = StringUtils.isEmpty(messageTextArea.getText()) ? StringUtils.EMPTY
             : messageTextArea.getText();
         Charset charset = charsetDropdown.getSelectedDropdownElement().getInput();
-        codePointObserver.update(message.getBytes(charset));
+        if (StringUtils.isNotEmpty(message)) {
+          codePointObserver.update(message.getBytes(charset));
 
-        //update codepoint text area
-        codecDropdown.applyFunc();
-        log.info("Barcode: message='{}'", message.getBytes(charset));
+          //update codepoint text area
+          codecDropdown.applyFunc();
+          log.info("Barcode: message='{}'", message.getBytes(charset));
+        }
       } catch (Exception e) {
         ExceptionDialog ed = new ExceptionDialog(e);
         ed.showAndWait();
