@@ -7,11 +7,12 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
+import lombok.Getter;
 
+@Getter
 public class DockElement extends Button {
 
-  private final TabPane tabPane;
-
+  protected final TabPane tabPane;
 
   public DockElement(TabPane tabPane, ImageView icon, Supplier<? extends Tab> supplier) {
     this.tabPane = tabPane;
@@ -33,4 +34,5 @@ public class DockElement extends Button {
       this.setTooltip(new Tooltip(tab.getText()));
     }
   }
+
 }

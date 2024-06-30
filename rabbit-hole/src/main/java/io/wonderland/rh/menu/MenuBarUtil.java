@@ -13,7 +13,7 @@ public class MenuBarUtil {
   public static MenuBar getMenuBar() {
     MenuBar menuBar = new MenuBar();
     menuBar.getMenus()
-        .addAll(new ServersMenu(), new MonitorMenu(),
+        .addAll(new ServersMenu(), new JMXMenu(),
             new AboutMenu(), new IconMenu("Icons", "https://icons8.com"));
     return menuBar;
   }

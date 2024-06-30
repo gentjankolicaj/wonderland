@@ -1,4 +1,5 @@
-module rabbit.hole {
+//opened all module because I needed reflection access to build jmx beans
+open module rabbit.hole {
   requires javafx.controls;
   requires javafx.swing;
   requires org.controlsfx.controls;
@@ -35,8 +36,5 @@ module rabbit.hole {
   exports io.wonderland.rh.exception;
   exports io.wonderland.rh.analysis;
   exports io.wonderland.rh.analysis.ciphertext;
-
-  //open package so can be scanned by jackson to read json files
-  opens io.wonderland.rh.menu;
 
 }

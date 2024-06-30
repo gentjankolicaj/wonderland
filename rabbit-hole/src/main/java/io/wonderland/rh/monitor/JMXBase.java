@@ -1,6 +1,6 @@
 package io.wonderland.rh.monitor;
 
-import io.wonderland.rh.base.fx.base.FXNode;
+import io.wonderland.rh.base.fx.base.NodeDynamicMBean;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +37,8 @@ public final class JMXBase {
     try {
       //management beans
       for (Node node : NODES) {
-        FXNode fxNode = new FXNode(node);
-        mBeanServer.registerMBean(fxNode, fxNode.getObjectName());
+        NodeDynamicMBean NodeDynamicMBean = new NodeDynamicMBean(node);
+        mBeanServer.registerMBean(NodeDynamicMBean, NodeDynamicMBean.getObjectName());
       }
     } catch (Exception e) {
       log.error("", e);
@@ -46,28 +46,29 @@ public final class JMXBase {
   }
 
 
-  private static void updateMBeans() throws JMException {
+  private static void updateMBeans() throws JMException, IllegalAccessException {
     //This retrieves all registered MBeans.
     // The null parameters mean that no specific query is applied, so it returns all MBeans.
     if (mBeanServer != null) {
       Set<ObjectInstance> allBeans = mBeanServer.queryMBeans(null, null);
       if (CollectionUtils.isNotEmpty(allBeans)) {
         //create new mbeans
-        List<FXNode> fxNodes = NODES.stream().map(FXNode::create).collect(Collectors.toList());
+        List<NodeDynamicMBean> fxNodes = NODES.stream().map(NodeDynamicMBean::create)
+            .collect(Collectors.toList());
 
         // remove all my domain beans , only my beans not all because there are management beans as well
         List<ObjectInstance> myBeans = allBeans.stream()
-            .filter(e -> e.getObjectName().getDomain().equals(FXNode.DOMAIN)).collect(
+            .filter(e -> e.getObjectName().getDomain().equals(NodeDynamicMBean.DOMAIN)).collect(
                 Collectors.toList());
 
         //debugging
         //log.info("All MBeans {}, rabbit-hole MBeans {}",allBeans.size(),myBeans.size());
 
         List<ObjectInstance> deadBeans = new ArrayList<>();
-        List<FXNode> aliveBeans = new ArrayList<>();
+        List<NodeDynamicMBean> aliveBeans = new ArrayList<>();
         for (ObjectInstance oi : myBeans) {
           boolean found = false;
-          for (FXNode fxNode : fxNodes) {
+          for (NodeDynamicMBean fxNode : fxNodes) {
             if (fxNode.getObjectName().compareTo(oi.getObjectName()) == 0) {
               found = true;
               aliveBeans.add(fxNode);
@@ -102,7 +103,7 @@ public final class JMXBase {
 
       } else {
         for (Node node : NODES) {
-          FXNode fxNode = new FXNode(node);
+          NodeDynamicMBean fxNode = new NodeDynamicMBean(node);
           mBeanServer.registerMBean(fxNode, fxNode.getObjectName());
         }
       }

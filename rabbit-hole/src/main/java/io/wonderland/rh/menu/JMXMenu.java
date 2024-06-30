@@ -7,11 +7,12 @@ import io.wonderland.rh.monitor.JMXBase;
 import java.util.function.Consumer;
 import javafx.event.ActionEvent;
 
-public class MonitorMenu extends BaseMenu {
+public class JMXMenu extends BaseMenu {
 
   public static boolean monitoring = false;
-  public MonitorMenu() {
-    super("Monitor", new JConsoleItem());
+
+  public JMXMenu() {
+    super("Jmx", new JConsoleItem());
   }
 
 
