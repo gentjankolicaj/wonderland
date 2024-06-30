@@ -82,7 +82,7 @@
 - Screenshots of rabbit-hole app :
   ![](img/cipher_0.png)
   <br>
-  ![](img/analysis_lf.png)
+  ![](img/keygen_1.png)
 
 ## Licenses
 
