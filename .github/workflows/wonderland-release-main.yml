@@ -7,10 +7,10 @@ on:
  workflow_dispatch:
  
       
-# A workflow is made of 1-n jobs that can run requentially
+# A workflow is made of 1-n jobs that can run sequentially
 jobs:
   # This workflow contains on single job called 'build'
-  release-main-branch:
+  release-main:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -34,7 +34,7 @@ jobs:
           mvn -B package -DskipTests=true --file pom.xml
           mkdir release-artifacts
           cp alice/target/*jar release-artifacts
-          cp crypt/target/*jar release-artifacts
+          cp crypto/target/*jar release-artifacts
           cp garden/target/*jar release-artifacts
           cp rabbit-hole/target/*jar release-artifacts
           cp red-queen/target/*jar release-artifacts
