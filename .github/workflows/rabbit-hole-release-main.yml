@@ -1,0 +1,66 @@
+# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+
+name: rabbit-hole release main branch
+
+on:
+  workflow_dispatch:
+
+
+# A workflow is made of 1-n jobs that can run sequentially
+jobs:
+  # This workflow contains on single job called 'build'
+  release-main:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      actions: write
+
+    steps:
+      - name: Step 1 - Checkout wonderland repository so job can access it
+        uses: actions/checkout@v4
+
+      - name: Step 2 - Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+      - name: Step 3 - Maven package
+        run: |
+          mvn -B package -DskipTests=true --file pom.xml
+          mkdir rabbit-hole-artifacts
+          cp rabbit-hole/target/*jar rabbit-hole-artifacts
+          zip -r rabbit-hole-artifacts.zip rabbit-hole-artifacts
+
+      - name: Step 4 - Setup maven cache
+        uses: actions/cache@v4.0.2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Step 5 - Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.sha }}
+          release_name: ${{ github.ref_name }}-${{ github.sha }}
+          draft: false
+          prerelease: false
+
+      - name: Step 6 - Upload release artifacts
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./rabbit-hole-artifacts.zip
+          asset_name: rabbit-hole-artifacts.zip
+          asset_content_type: application/zip
