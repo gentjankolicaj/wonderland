@@ -5,21 +5,17 @@ name: Wonderland build
 
 on:
  workflow_dispatch:
-
-# Added permissions
-permissions:
-  contents: write
-  packages: write
-  actions: write
+ 
       
 # A workflow is made of 1-n jobs that can run requentially
 jobs:
   # This workflow contains on single job called 'build'
-  build:
+  release-jars:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+      actions: write
 
     steps:
       - name: Step 1 - Checkout wonderland repository so job can access it
@@ -59,7 +55,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload release artifacts
+      - name: Step 6 - Upload release artifacts
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
