@@ -4,9 +4,7 @@
 name: Wonderland build
 
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+ workflow_dispatch:
       
 # A workflow is made of 1-n jobs that can run requentially
 jobs:
