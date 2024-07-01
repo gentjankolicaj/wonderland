@@ -33,7 +33,7 @@ jobs:
           mkdir release-artifacts
           cp alice/target/*jar release-artifacts
           cp rabbit-hole/target/*jar release-artifacts
-          zip -r release-artifacts.zip mydir
+          zip -r release-artifacts.zip release-artifacts
         
       - name: Step 4 - Setup maven cache
         uses: actions/cache@v4.0.2
