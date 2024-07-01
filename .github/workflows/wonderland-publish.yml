@@ -29,6 +29,13 @@ jobs:
 
       - name: Step 3 - Build with maven
         run: mvn -B package -DskipTests=true --file pom.xml
+
+      - name: Step 4 - Setup maven cache
+        uses: actions/cache@v4.0.2
+        with:
+          path: ~/.m2
+          key: ${{runner.os}}-m2-${{hashFiles(**/pom.xml')}}
+          restore-keys: ${{runner.os}}-m2
         
       - name: Step 4 - List dir
         run: ls -alh
