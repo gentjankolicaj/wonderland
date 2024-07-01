@@ -10,7 +10,7 @@ on:
 # A workflow is made of 1-n jobs that can run sequentially
 jobs:
   # This workflow contains on single job called 'build'
-  release-main:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
