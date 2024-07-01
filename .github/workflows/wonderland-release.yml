@@ -55,7 +55,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ github.sha }}
-          release_name: ${{ github.ref_name }}-${{ github.sha }}
+          release_name: wonderland-${{ github.sha }}
           draft: false
           prerelease: false
 
