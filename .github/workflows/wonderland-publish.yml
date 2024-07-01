@@ -29,7 +29,7 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Step 3 - Build with maven
+      - name: Step 3 - Maven package
         run: |
           mvn -B package -DskipTests=true --file pom.xml
           mkdir release-artifacts
