@@ -30,9 +30,10 @@ jobs:
       - name: Step 3 - Build with maven
         run: |
           mvn -B package -DskipTests=true --file pom.xml
-          mkdir staging
-          cp alice/target/*jar staging
-          cp rabbit-hole/target/*jar staging
+          mkdir release-artifacts
+          cp alice/target/*jar release-artifacts
+          cp rabbit-hole/target/*jar release-artifacts
+          zip -r release-artifacts.zip mydir
         
       - name: Step 4 - Setup maven cache
         uses: actions/cache@v4.0.2
@@ -41,8 +42,24 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
         
-      - name: Step 5 - Persist workflow as artifacts
-        uses: actions/upload-artifact@v4.3.3
+      - name: Step 5 - Create release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: github-action-artifacts
-          path: staging
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload release artifacts
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./release-artifacts.zip
+          asset_name: release-artifacts.zip
+          asset_content_type: application/zip
