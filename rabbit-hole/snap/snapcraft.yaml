@@ -1,0 +1,67 @@
+name: rabbit-hole
+version: '0.0.1'
+summary: a cryptography application
+description: |
+  rabbit-hole is an application integrating different cryptographic libraries.
+  Some features include:
+  - Ciphers (encrypt & decrypt)
+  - Hash (hashing)
+  - MAC (generation)
+  - Key / KeyPair (generation & export)
+  - KeyStore (loading & reading)
+  - Code points & Codecs with different bases
+  - Barcode (generation)
+
+grade: devel
+confinement: strict
+base: core22
+architectures:
+  - build-on: [ amd64 ]
+    build-for: [ amd64 ]
+
+
+# Ignore useless library warnings
+lint:
+  ignore:
+    - library:
+        - usr/lib/jvm/java-*/lib/*.so
+
+
+title: rabbit-hole
+website: https://github.com/gentjankolicaj/wonderland
+issues: https://github.com/gentjankolicaj/wonderland/issues
+license: GPL-3.0
+
+# Enable faster LZO compression
+compression: lzo
+
+apps:
+  rabbit-hole:
+    command: bin/rabbit-hole-app
+    plugs:
+      - home
+      - network
+      - desktop
+parts:
+  rabbit-hole:
+    plugin: maven
+    source: https://github.com/gentjankolicaj/wonderland.git
+    source-branch: master
+    source-type: git
+    build-packages:
+      - openjdk-17-jdk
+      - maven
+    override-build: |
+      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+      export PATH=$JAVA_HOME/bin:$PATH
+      mvn clean package -DskipTests=true -f ../pom.xml
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      mkdir -p $SNAPCRAFT_PART_INSTALL/lib
+      cp ./target/*shaded.jar $SNAPCRAFT_PART_INSTALL/lib/app.jar
+      echo '#!/bin/sh' > $SNAPCRAFT_PART_INSTALL/bin/app
+      echo 'exec $SNAP/usr/lib/jvm/java-17-openjdk-amd64/bin/java -jar $SNAP/lib/app.jar' >> $SNAPCRAFT_PART_INSTALL/bin/app
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/app
+      mvn clean -f ../pom.xml
+
+    stage-packages:
+      - openjdk-17-jre
