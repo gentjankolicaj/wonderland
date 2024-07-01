@@ -5,6 +5,12 @@ name: Wonderland build
 
 on:
  workflow_dispatch:
+
+# Added permissions
+permissions:
+  contents: write
+  packages: write
+  actions: write
       
 # A workflow is made of 1-n jobs that can run requentially
 jobs:
