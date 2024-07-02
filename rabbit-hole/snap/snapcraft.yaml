@@ -1,6 +1,6 @@
 name: rabbit-hole
 version: '0.0.1'
-summary: a cryptography application
+summary: Cryptography application
 description: |
   rabbit-hole is an application integrating different cryptographic libraries.
   Some features include:
@@ -12,19 +12,10 @@ description: |
   - Code points & Codecs with different bases
   - Barcode (generation)
 
-grade: devel
-confinement: strict
-base: core22
-architectures:
-  - build-on: [ amd64 ]
-    build-for: [ amd64 ]
 
-
-# Ignore useless library warnings
-lint:
-  ignore:
-    - library:
-        - usr/lib/jvm/java-*/lib/*.so
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+base: core22 # the base snap is the execution environment for this snap
 
 
 title: rabbit-hole
@@ -35,33 +26,38 @@ license: GPL-3.0
 # Enable faster LZO compression
 compression: lzo
 
+parts:
+  artifact-setup:
+    plugin: dump
+    source: .
+    organize:
+      download_artifacts.sh: download_artifacts.sh
+    build-packages:
+      - unzip
+      - curl
+    override-build: |
+      sh ./download_artifacts.sh
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      echo '#!/bin/sh' > $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
+      echo 'exec $SNAP/usr/lib/jvm/java-17-openjdk-amd64/bin/java -jar $SNAP/*shaded.jar' >> $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
+  jre:
+    after: [ artifact-setup ]
+    plugin: nil
+    stage-packages:
+      - openjdk-17-jdk
+
 apps:
   rabbit-hole:
-    command: bin/rabbit-hole-app
+    command: $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
+    environment:
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-amd64
+      PATH: $JAVA_HOME/bin:$PATH
     plugs:
-      - home
-      - network
       - desktop
-parts:
-  rabbit-hole:
-    plugin: maven
-    source: https://github.com/gentjankolicaj/wonderland.git
-    source-branch: master
-    source-type: git
-    build-packages:
-      - openjdk-17-jdk
-      - maven
-    override-build: |
-      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-      export PATH=$JAVA_HOME/bin:$PATH
-      mvn clean package -DskipTests=true -f ../pom.xml
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      mkdir -p $SNAPCRAFT_PART_INSTALL/lib
-      cp ./target/*shaded.jar $SNAPCRAFT_PART_INSTALL/lib/app.jar
-      echo '#!/bin/sh' > $SNAPCRAFT_PART_INSTALL/bin/app
-      echo 'exec $SNAP/usr/lib/jvm/java-17-openjdk-amd64/bin/java -jar $SNAP/lib/app.jar' >> $SNAPCRAFT_PART_INSTALL/bin/app
-      chmod +x $SNAPCRAFT_PART_INSTALL/bin/app
-      mvn clean -f ../pom.xml
-
-    stage-packages:
-      - openjdk-17-jre
+      - desktop-legacy
+      - gsettings
+      - network
+      - opengl
+      - wayland
+      - x11
