@@ -1,0 +1,10 @@
+#!/bin/sh
+case "$@" in
+  *log=console*)
+    LOG=
+    ;;
+  *)
+    LOG="-Drh.log=file"
+    ;;
+esac
+java ${LOG} -Djava.util.prefs.userRoot=\"$SNAP_USER_DATA\" -jar $SNAP/jar/*shaded.jar

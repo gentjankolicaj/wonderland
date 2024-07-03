@@ -1,63 +1,102 @@
 name: rabbit-hole
 version: '0.0.1'
-summary: Cryptography application
+summary: A cryptography application
 description: |
-  rabbit-hole is an application integrating different cryptographic libraries.
-  Some features include:
-  - Ciphers (encrypt & decrypt)
-  - Hash (hashing)
-  - MAC (generation)
-  - Key / KeyPair (generation & export)
-  - KeyStore (loading & reading)
+  rabbit-hole is a cross-platform desktop application integrating different CSP in java.
+  Some functions of this application are :
+  - Cipher gui for encrypt & decrypt.
+  - Hash gui for hashing
+  - MAC gui for generation & mac.
+  - Key / KeyPair gui's for key generation & exports.
+  - KeyStore for keystore loading & reading.
   - Code points & Codecs with different bases
-  - Barcode (generation)
+  - Barcode gui for barcode generation
 
 
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 base: core22 # the base snap is the execution environment for this snap
 
-
 title: rabbit-hole
 website: https://github.com/gentjankolicaj/wonderland
 issues: https://github.com/gentjankolicaj/wonderland/issues
-license: GPL-3.0
 
-# Enable faster LZO compression
-compression: lzo
+lint:
+  ignore:
+    - library:
+        - usr/lib/jvm/java-*/lib/*.so
 
 parts:
   artifact-setup:
     plugin: dump
-    source: .
-    organize:
-      download_artifacts.sh: download_artifacts.sh
+    source: local/
+
     build-packages:
       - unzip
       - curl
+      - ca-certificates
+      - ca-certificates-java
+
     override-build: |
+      craftctl default
       sh ./download_artifacts.sh
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      echo '#!/bin/sh' > $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
-      echo 'exec $SNAP/usr/lib/jvm/java-17-openjdk-amd64/bin/java -jar $SNAP/*shaded.jar' >> $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
-      chmod +x $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
-  jre:
-    after: [ artifact-setup ]
-    plugin: nil
+      echo $CRAFT_PART_INSTALL/bin/
+      mkdir -p $CRAFT_PART_INSTALL/jar
+      cp ./*shaded.jar $CRAFT_PART_INSTALL/jar
+      echo 'Finished copying app jar'
+      chmod +x ./rabbit-hole.launcher
+      echo 'rabbit-hole.launcher set x permission'
+
     stage-packages:
-      - openjdk-17-jdk
+      - ca-certificates
+      - ca-certificates-java
+      - openjdk-17-jre
+
+    stage:
+      - -usr/lib/*/libGL.so.*
+      - -usr/lib/*/libGLX.so.*
+      - -usr/lib/*/libGLX_mesa.so.*
+      - -usr/lib/*/libGLdispatch.so.*
+      - -usr/lib/*/libXtst.so.*
+      - -usr/lib/*/libasound.so.*
+      - -usr/lib/*/libgif.so.*
+      - -usr/lib/*/libicuio.so.*
+      - -usr/lib/*/libicutest.so.*
+      - -usr/lib/*/libicui18n.so.*
+      - -usr/lib/*/liblcms2.so.*
+      - -usr/lib/*/libsmime3.so*
+      - -usr/lib/*/libssl3.so*
+      - -usr/lib/*/libXxf86vm.so.*
+      - -usr/lib/*/libicutu.so.*
+      - -usr/lib/*/libnss3.so*
+      - -usr/lib/*/libxcb-dri2.so.*
+      - -usr/lib/*/libxcb-glx.so.*
+      - -usr/lib/*/libxcb-present.so.*
+      - -usr/lib/*/libxcb-randr.so.*
+      - -usr/lib/*/libxcb-sync.so.*
+      - -usr/lib/*/libxcb-xfixes.so.*
+      - -usr/lib/*/libxshmfence.so.*
 
 apps:
   rabbit-hole:
-    command: $SNAPCRAFT_PART_INSTALL/bin/rabbit-hole-launch
+    extensions:
+      [ gnome ]
+    command: rabbit-hole.launcher
     environment:
-      JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-amd64
-      PATH: $JAVA_HOME/bin:$PATH
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$SNAP_ARCH
+      PATH: $JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH
     plugs:
+      - home
+      - network
+      - network-bind
+      - network-observe
+      - system-observe
+      - microstack-support
+      - personal-files
+      - autopilot-introspection
       - desktop
       - desktop-legacy
       - gsettings
-      - network
       - opengl
       - wayland
       - x11

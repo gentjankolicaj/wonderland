@@ -20,12 +20,14 @@ echo "Downloaded release artifact : $ASSET_NAME"
 
 unzip artifacts.zip
 
+echo "$(pwd)"
+
 echo "Release artifacts unzipped,dir content : $(ls -alh)"
 
 cp ./artifacts/*shaded.jar ./
 
-echo "Deleting ziped file : $(rm ./artifacts.zip)"
+echo "Deleting zipped file : $(rm ./artifacts.zip)"
 
-echo "Deleting unziped directory: $(rm -rf ./artifacts)"
+echo "Deleting unzipped directory: $(rm -rf ./artifacts)"
 
-echo "Dir content : $(ls -alh)"
+echo "$(pwd) , dir content : $(ls -alh)"
