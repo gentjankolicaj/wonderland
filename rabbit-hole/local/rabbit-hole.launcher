@@ -7,4 +7,8 @@ case "$@" in
     LOG="-Drh.log=file"
     ;;
 esac
-java ${LOG} -Djava.util.prefs.userRoot=\"$SNAP_USER_DATA\" -jar $SNAP/jar/*shaded.jar
+export FONTCONFIG_PATH=$SNAP/etc/fonts
+export FONTCONFIG_FILE=$FONTCONFIG_PATH/fonts.conf
+export LIBGL_ALWAYS_SOFTWARE=1
+
+java ${LOG} -Dprism.verbose=true -Djava.util.prefs.userRoot=\"$SNAP_USER_DATA\" -jar $SNAP/jar/*shaded.jar
