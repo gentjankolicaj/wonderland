@@ -66,8 +66,9 @@
 - Work in progress
 
 ### What is rabbit-hole for ?
-
 - Javafx gui application using wonderland modules.
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/rabbit-hole)
 
 <table>
 <thead>Integrated cryptographic service providers :</thead>

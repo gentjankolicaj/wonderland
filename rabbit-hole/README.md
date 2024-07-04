@@ -2,6 +2,8 @@
 
 * Javafx gui application using modules like: alice, base, crypto, garden, red-queen etc.
 
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/rabbit-hole)
+
 <table>
 <thead>Integrated cryptographic security providers :</thead>
 <tr><td>Bouncy Castle</td></tr>
