@@ -1,6 +1,6 @@
 # cipher ui
 
-- This manual describes how use cipher ui.
+- This manual describes how to use cipher ui.
 
 <ol>
 <li>
@@ -23,7 +23,7 @@
 <thead>At 'Cipher key' select keysource type : </thead>
 <tr><td>generator</td><td>Generates keys based on chosen algorithm</td></tr>
 <tr><td>keystore</td><td>Loads keys from keystore</td></tr>
-<tr><td>keystore</td><td>Reads keys from text input</td></tr>
+<tr><td>text</td><td>Reads keys from text input</td></tr>
 </table>
 </li>
 <br>

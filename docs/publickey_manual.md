@@ -1,6 +1,6 @@
 # public-key ui
 
-- This manual describes how use public-key ui.
+- This manual describes how to use public-key ui.
 
 <ol>
 <li>

@@ -1,6 +1,6 @@
 # hash ui
 
-- This manual describes how use hash ui.
+- This manual describes how to use hash ui.
 
 <ol>
 <li>

@@ -1,6 +1,6 @@
 # secret-key ui
 
-- This manual describes how use secret-key ui.
+- This manual describes how to use secret-key ui.
 
 <ol>
 <li>
