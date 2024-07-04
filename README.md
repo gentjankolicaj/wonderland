@@ -67,6 +67,7 @@
 
 ### What is rabbit-hole for ?
 - Javafx gui application using wonderland modules.
+- [Application manual](/docs/rh_manual.md)
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/rabbit-hole)
 
@@ -81,9 +82,9 @@
 </table>
 
 - Screenshots of rabbit-hole app :
-  ![](img/cipher_0.png)
+  ![](docs/img/cipher_0.png)
   <br>
-  ![](img/keygen_1.png)
+  ![](docs/img/keygen_1.png)
 
 ## Licenses
 

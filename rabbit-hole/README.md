@@ -1,6 +1,7 @@
 ### What is rabbit-hole for ? ###
 
-* Javafx gui application using modules like: alice, base, crypto, garden, red-queen etc.
+* Javafx gui application using wonderland modules.
+* [Application manual](../docs/rh_manual.md)
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/rabbit-hole)
 
@@ -15,47 +16,42 @@
 
 #### Cipher :
 
-![](../img/cipher_0.png)
-
-![](../img/cipher_1.png)
-
-![](../img/cipher_2.png)
+![](../docs/img/cipher_0.png)
+![](../docs/img/cipher_1.png)
+![](../docs/img/cipher_2.png)
 <br>
 
 #### Hash :
 
-![](../img/hash_0.png)
+![](../docs/img/hash_0.png)
 <br>
 
 #### Keygen :
 
-![](../img/keygen_0.png)
-
-![](../img/keygen_1.png)
+![](../docs/img/keygen_0.png)
+![](../docs/img/keygen_1.png)
 <br>
 
 #### MAC (Message Authentication Code) :
 
-![](../img/mac_0.png)
+![](../docs/img/mac_0.png)
 <br>
 
 #### Keystore :
 
-![](../img/keystore_0.png)
-
-![](../img/keystore_1.png)
+![](../docs/img/keystore_0.png)
+![](../docs/img/keystore_1.png)
 <br>
 
 #### Analysis :
 
-![](../img/analysis_cf.png)
-
-![](../img/analysis_lf.png)
+![](../docs/img/analysis_cf.png)
+![](../docs/img/analysis_lf.png)
 <br>
 
 #### Misc :
 
-![](../img/misc_0.png)
-![](../img/misc_1.png)
+![](../docs/img/misc_0.png)
+![](../docs/img/misc_1.png)
 
 
