@@ -1,10 +1,8 @@
-package io.wonderland.crypto;
+package io.wonderland.crypto.store;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.wonderland.crypto.store.KeyStoreType;
-import io.wonderland.crypto.store.KeyStoreUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
@@ -15,9 +13,10 @@ import java.security.Security;
 import java.security.cert.Certificate;
 import java.util.Objects;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class BCKeyStoreUtilsTest {
+class BCKeyStoreTest {
 
   static final String CSP = "BC";
 
@@ -25,13 +24,20 @@ class BCKeyStoreUtilsTest {
     Security.addProvider(new BouncyCastleProvider());
   }
 
+  private ProviderKeyStore bcKeyStore;
+
+  @BeforeEach
+  void before() {
+    bcKeyStore = new ProviderKeyStore(CSP);
+  }
+
   @Test
   void getPrivateKey() throws GeneralSecurityException, IOException {
     Path pkcs12KeystorePath = Path.of(
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.p12"))
             .getPath());
-    PrivateKey privateKey = KeyStoreUtils.getPrivateKey(CSP, pkcs12KeystorePath,
-        KeyStoreType.PKCS12, "p4ssword", "bc");
+    PrivateKey privateKey = bcKeyStore.getPrivateKey(pkcs12KeystorePath, KeyStoreType.PKCS12,
+        "p4ssword", "bc");
     assertThat(privateKey).isNotNull();
     assertThat(privateKey.getEncoded()).isNotNull();
     assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
@@ -43,7 +49,7 @@ class BCKeyStoreUtilsTest {
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.p12"))
             .getPath());
 
-    PublicKey publicKey = KeyStoreUtils.getPublicKey(CSP, pkcs12KeystorePath, KeyStoreType.PKCS12,
+    PublicKey publicKey = bcKeyStore.getPublicKey(pkcs12KeystorePath, KeyStoreType.PKCS12,
         "p4ssword", "bc");
     assertThat(publicKey).isNotNull();
     assertThat(publicKey.getEncoded()).isNotNull();
@@ -56,8 +62,8 @@ class BCKeyStoreUtilsTest {
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.p12"))
             .getPath());
 
-    KeyPair keyPair = KeyStoreUtils.getKeyPair(CSP, pkcs12KeystorePath, KeyStoreType.PKCS12,
-        "p4ssword", "bc");
+    KeyPair keyPair = bcKeyStore.getKeyPair(pkcs12KeystorePath, KeyStoreType.PKCS12, "p4ssword",
+        "bc");
     assertThat(keyPair).isNotNull();
     assertThat(keyPair.getPrivate()).isNotNull();
     assertThat(keyPair.getPrivate().getEncoded()).isNotNull();
@@ -74,13 +80,13 @@ class BCKeyStoreUtilsTest {
             .getPath());
 
     //positive test
-    Certificate cert = KeyStoreUtils.getCertificate(CSP, pkcs12KeystorePath, KeyStoreType.PKCS12,
+    Certificate cert = bcKeyStore.getCertificate(pkcs12KeystorePath, KeyStoreType.PKCS12,
         "p4ssword", "bc");
     assertThat(cert).isNotNull();
 
     //negative test
-    Certificate noneCert = KeyStoreUtils.getCertificate(CSP, pkcs12KeystorePath,
-        KeyStoreType.PKCS12, "p4ssword", "");
+    Certificate noneCert = bcKeyStore.getCertificate(pkcs12KeystorePath, KeyStoreType.PKCS12,
+        "p4ssword", "");
     assertThat(noneCert).isNull();
   }
 
@@ -91,11 +97,10 @@ class BCKeyStoreUtilsTest {
             .getPath());
 
     //test pkcs12 keystore
-    assertThatThrownBy(
-        () -> KeyStoreUtils.loadKeyStore(CSP, pkcs12KeystorePath, KeyStoreType.PKCS12, "1"))
+    assertThatThrownBy(() -> bcKeyStore.loadKeyStore(pkcs12KeystorePath, KeyStoreType.PKCS12, "1"))
         .isInstanceOf(IOException.class);
-    assertThat(KeyStoreUtils.loadKeyStore(CSP, pkcs12KeystorePath, KeyStoreType.PKCS12,
-        "p4ssword")).isNotNull();
+    assertThat(
+        bcKeyStore.loadKeyStore(pkcs12KeystorePath, KeyStoreType.PKCS12, "p4ssword")).isNotNull();
 
   }
 

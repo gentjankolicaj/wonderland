@@ -1,6 +1,6 @@
 package io.wonderland.crypto.bc;
 
-import io.wonderland.crypto.Constants;
+import io.wonderland.crypto.CSP;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class BCX509CertificateManager {
 
   private static void init() {
     try {
-      x509CertificateFactory = CertificateFactory.getInstance("X.509", Constants.BC_CSP);
+      x509CertificateFactory = CertificateFactory.getInstance("X.509", CSP.BC);
     } catch (Exception e) {
       log.error("Error on BC init().", e);
       System.exit(1);

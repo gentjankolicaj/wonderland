@@ -1,8 +1,10 @@
 package io.wonderland.crypto;
 
+import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
+import java.util.Objects;
 import javax.crypto.Cipher;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +16,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 @Slf4j
 @Getter
-public class AsymmetricCrypto {
+public class AsymmetricCrypto implements Crypto {
 
   /**
    * cryptographic security provider
@@ -37,8 +39,10 @@ public class AsymmetricCrypto {
       throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.encryptCipher = createCipher(transformation, Cipher.ENCRYPT_MODE, encryptKey);
-    this.decryptCipher = createCipher(transformation, Cipher.DECRYPT_MODE, decryptKey);
+    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        encryptKey);
+    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        decryptKey);
   }
 
   /**
@@ -54,17 +58,37 @@ public class AsymmetricCrypto {
       throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.encryptCipher = createCipher(transformation, Cipher.ENCRYPT_MODE, keyPair.getPrivate());
-    this.decryptCipher = createCipher(transformation, Cipher.DECRYPT_MODE, keyPair.getPublic());
+    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        keyPair.getPrivate());
+    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        keyPair.getPublic());
   }
 
-  private Cipher createCipher(String transformation, int opmode, Key key)
-      throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(opmode, key);
-    return cipher;
+  @Override
+  public byte[] encryptUpdate(byte[] input) throws CryptoException {
+    try {
+      if (ArrayUtils.isEmpty(input)) {
+        throw new IllegalArgumentException("Input can't be empty.");
+      }
+      return this.encryptCipher.update(input);
+    } catch (Exception e) {
+      throw new AsymmetricCryptoException(e);
+    }
   }
 
+  @Override
+  public int encryptBuffer(ByteBuffer input, ByteBuffer output) throws CryptoException {
+    try {
+      if (Objects.isNull(input) || Objects.isNull(output)) {
+        throw new IllegalArgumentException("Buffer arguments can't be null");
+      }
+      return this.encryptCipher.update(input, output);
+    } catch (Exception e) {
+      throw new AsymmetricCryptoException(e);
+    }
+  }
+
+  @Override
   public byte[] encrypt(byte[] input) throws CryptoException {
     try {
       if (ArrayUtils.isEmpty(input)) {
@@ -72,7 +96,40 @@ public class AsymmetricCrypto {
       }
       return this.encryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new CryptoException(e);
+      throw new AsymmetricCryptoException(e);
+    }
+  }
+
+  @Override
+  public byte[] encrypt() throws CryptoException {
+    try {
+      return this.encryptCipher.doFinal();
+    } catch (Exception e) {
+      throw new AsymmetricCryptoException(e);
+    }
+  }
+
+  @Override
+  public byte[] decryptUpdate(byte[] input) throws CryptoException {
+    try {
+      if (ArrayUtils.isEmpty(input)) {
+        throw new IllegalArgumentException("Input can't be empty.");
+      }
+      return this.decryptCipher.update(input);
+    } catch (Exception e) {
+      throw new AsymmetricCryptoException(e);
+    }
+  }
+
+  @Override
+  public int decryptBuffer(ByteBuffer input, ByteBuffer output) throws CryptoException {
+    try {
+      if (Objects.isNull(input) || Objects.isNull(output)) {
+        throw new IllegalArgumentException("Buffer arguments can't be null");
+      }
+      return this.decryptCipher.update(input, output);
+    } catch (Exception e) {
+      throw new AsymmetricCryptoException(e);
     }
   }
 
@@ -83,7 +140,15 @@ public class AsymmetricCrypto {
       }
       return this.decryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new CryptoException(e);
+      throw new AsymmetricCryptoException(e);
+    }
+  }
+
+  public byte[] decrypt() throws CryptoException {
+    try {
+      return this.decryptCipher.doFinal();
+    } catch (Exception e) {
+      throw new AsymmetricCryptoException(e);
     }
   }
 

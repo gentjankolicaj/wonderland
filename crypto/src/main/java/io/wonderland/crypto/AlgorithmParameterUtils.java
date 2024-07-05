@@ -20,8 +20,7 @@ public class AlgorithmParameterUtils {
 
 
   public static IvParameterSpec generateIvParameterSpec(String secureRandomAlgorithm,
-      int vectorLength)
-      throws GeneralSecurityException {
+      int vectorLength) throws GeneralSecurityException {
     if (StringUtils.isEmpty(secureRandomAlgorithm)) {
       throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
     }
@@ -41,7 +40,7 @@ public class AlgorithmParameterUtils {
     if (StringUtils.isEmpty(algorithm)) {
       throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
     }
-    return AlgorithmParameterGenerator.getInstance(algorithm, Constants.BC_CSP);
+    return AlgorithmParameterGenerator.getInstance(algorithm, CSP.BC);
   }
 
   /**
@@ -55,7 +54,7 @@ public class AlgorithmParameterUtils {
       throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
     }
     AlgorithmParameterGenerator generator = AlgorithmParameterGenerator.getInstance(algorithm,
-        Constants.BC_CSP);
+        CSP.BC);
     generator.init(keySize);
     return generator;
   }

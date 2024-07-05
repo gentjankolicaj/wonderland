@@ -34,44 +34,97 @@ class AsymmetricCryptoTest {
   }
 
   @Test
-  void cipherWithKeys() throws GeneralSecurityException {
+  void cipherWithKey() throws GeneralSecurityException {
     KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 2048);
 
-    String input = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
+    String input0 = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
+    String input1 = "12344455";
+    String input2 = "1234445523456";
+    byte[] allInput = new byte[input0.length() + input1.length() + input2.length()];
+    System.arraycopy(input0.getBytes(), 0, allInput, 0, input0.length());
+    System.arraycopy(input1.getBytes(), 0, allInput, input0.length(), input1.length());
+    System.arraycopy(input2.getBytes(), 0, allInput, input0.length() + input1.length(),
+        input2.length());
 
     //positive test, encrypt with public-key & decrypt with private-key
     AsymmetricCrypto asymmetricCrypto0 = new AsymmetricCrypto(CSP, "RSA", keyPair.getPublic(),
         keyPair.getPrivate());
-    byte[] encrypted0 = asymmetricCrypto0.encrypt(input.getBytes());
+    byte[] encrypted0 = asymmetricCrypto0.encrypt(input0.getBytes());
     byte[] decrypted0 = asymmetricCrypto0.decrypt(encrypted0);
-    assertThat(decrypted0).containsExactly(input.getBytes());
-    log.debug("encrypted0 : {}", new String(encrypted0));
-    log.debug("decrypted0 : {}", new String(decrypted0));
+    assertThat(decrypted0).containsExactly(input0.getBytes());
 
-    //positive test, encrypt with private-key & decrypt with public-key
+    //encrypt
+    asymmetricCrypto0.encryptUpdate(input0.getBytes());
+    asymmetricCrypto0.encryptUpdate(input1.getBytes());
+    asymmetricCrypto0.encryptUpdate(input2.getBytes());
+    byte[] encrypted1 = asymmetricCrypto0.encrypt();
+
+    //decrypt
+    asymmetricCrypto0.decryptUpdate(encrypted1);
+    byte[] decrypted1 = asymmetricCrypto0.decrypt();
+    assertThat(decrypted1).containsExactly(allInput);
+
+    //=============================================================
+    //second test, encrypt with private-key & decrypt with public-key
     AsymmetricCrypto asymmetricCrypto1 = new AsymmetricCrypto(CSP, "RSA", keyPair.getPrivate(),
         keyPair.getPublic());
-    byte[] encrypted1 = asymmetricCrypto1.encrypt(input.getBytes());
-    byte[] decrypted1 = asymmetricCrypto1.decrypt(encrypted1);
-    assertThat(decrypted1).containsExactly(input.getBytes());
-    log.debug("encrypted1 : {}", new String(encrypted1));
-    log.debug("decrypted1 : {}", new String(decrypted1));
+    byte[] encrypted2 = asymmetricCrypto1.encrypt(input0.getBytes());
+    byte[] decrypted2 = asymmetricCrypto1.decrypt(encrypted2);
+    assertThat(decrypted2).containsExactly(input0.getBytes());
 
+    //encrypt
+    asymmetricCrypto1.encryptUpdate(input0.getBytes());
+    asymmetricCrypto1.encryptUpdate(input1.getBytes());
+    asymmetricCrypto1.encryptUpdate(input2.getBytes());
+    byte[] encrypted3 = asymmetricCrypto1.encrypt();
+
+    //decrypt
+    asymmetricCrypto1.decryptUpdate(encrypted3);
+    byte[] decrypted3 = asymmetricCrypto1.decrypt();
+    assertThat(decrypted3).containsExactly(allInput);
   }
 
   @Test
   void cipherWithKeyPair() throws GeneralSecurityException {
     KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 2048);
 
-    String input = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
+    String input0 = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
+    String input1 = "12344455";
+    String input2 = "1234445523456";
+    byte[] allInput = new byte[input0.length() + input1.length() + input2.length()];
+    System.arraycopy(input0.getBytes(), 0, allInput, 0, input0.length());
+    System.arraycopy(input1.getBytes(), 0, allInput, input0.length(), input1.length());
+    System.arraycopy(input2.getBytes(), 0, allInput, input0.length() + input1.length(),
+        input2.length());
 
-    //positive test with key-pair, encrypt with private-key & decrypt with public-key
-    AsymmetricCrypto asymmetricCrypto2 = new AsymmetricCrypto(CSP, "RSA", keyPair);
-    byte[] encrypted2 = asymmetricCrypto2.encrypt(input.getBytes());
-    byte[] decrypted2 = asymmetricCrypto2.decrypt(encrypted2);
-    assertThat(decrypted2).containsExactly(input.getBytes());
-    log.debug("encrypted2 : {}", new String(encrypted2));
-    log.debug("decrypted2 : {}", new String(decrypted2));
+    //positive test, encrypt with public-key & decrypt with private-key
+    AsymmetricCrypto asymmetricCrypto0 = new AsymmetricCrypto(CSP, "RSA", keyPair);
+    byte[] encrypted0 = asymmetricCrypto0.encrypt(input0.getBytes());
+    byte[] decrypted0 = asymmetricCrypto0.decrypt(encrypted0);
+    assertThat(decrypted0).containsExactly(input0.getBytes());
+
+    //encrypt
+    asymmetricCrypto0.encryptUpdate(input0.getBytes());
+    asymmetricCrypto0.encryptUpdate(input1.getBytes());
+    asymmetricCrypto0.encryptUpdate(input2.getBytes());
+    byte[] encrypted1 = asymmetricCrypto0.encrypt();
+
+    //decrypt
+    asymmetricCrypto0.decryptUpdate(encrypted1);
+    byte[] decrypted1 = asymmetricCrypto0.decrypt();
+    assertThat(decrypted1).containsExactly(allInput);
+  }
+
+  @Test
+  void cipherFields() throws GeneralSecurityException {
+    KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 2048);
+
+    //positive test, encrypt with public-key & decrypt with private-key
+    AsymmetricCrypto asymmetricCrypto = new AsymmetricCrypto(CSP, "RSA", keyPair);
+    assertThat(asymmetricCrypto.getProvider()).isEqualTo(CSP);
+    assertThat(asymmetricCrypto.getTransformation()).isEqualTo("RSA");
+    assertThat(asymmetricCrypto.getEncryptCipher()).isNotNull();
+    assertThat(asymmetricCrypto.getDecryptCipher()).isNotNull();
   }
 
 

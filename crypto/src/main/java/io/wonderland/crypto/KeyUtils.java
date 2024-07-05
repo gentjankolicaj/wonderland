@@ -65,7 +65,7 @@ public class KeyUtils {
 
   private static void init() {
     try {
-      x509CertificateFactory = CertificateFactory.getInstance("X.509", Constants.BC_CSP);
+      x509CertificateFactory = CertificateFactory.getInstance("X.509", CSP.BC);
       jcaPEMKeyConverter = new JcaPEMKeyConverter();
     } catch (Exception e) {
       log.error("Error on BC init().", e);
@@ -172,7 +172,17 @@ public class KeyUtils {
     if (StringUtils.isEmpty(algorithm)) {
       throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
     }
-    KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm, Constants.BC_CSP);
+    KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm, CSP.BC);
+    return keyGenerator.generateKey();
+  }
+
+  public static SecretKey generateSecretKey(String algorithm, int keySize)
+      throws GeneralSecurityException {
+    if (StringUtils.isEmpty(algorithm)) {
+      throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
+    }
+    KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm, CSP.BC);
+    keyGenerator.init(keySize);
     return keyGenerator.generateKey();
   }
 
@@ -180,7 +190,7 @@ public class KeyUtils {
     if (StringUtils.isEmpty(algorithm)) {
       throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
     }
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, Constants.BC_CSP);
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, CSP.BC);
     return keyPairGenerator.generateKeyPair();
   }
 
@@ -192,7 +202,7 @@ public class KeyUtils {
     if (keySize <= 0) {
       throw new IllegalArgumentException("Key size can't be smaller than 0");
     }
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, Constants.BC_CSP);
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, CSP.BC);
     keyPairGenerator.initialize(keySize);
     return keyPairGenerator.generateKeyPair();
   }
@@ -206,7 +216,7 @@ public class KeyUtils {
     if (Objects.isNull(algorithmParameterSpec)) {
       throw new IllegalArgumentException("Algorithm parameter spec can't be null.");
     }
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, Constants.BC_CSP);
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, CSP.BC);
     keyPairGenerator.initialize(algorithmParameterSpec);
     return keyPairGenerator.generateKeyPair();
   }
@@ -221,7 +231,7 @@ public class KeyUtils {
     if (Objects.isNull(algorithmParameterSpec)) {
       throw new IllegalArgumentException("Algorithm parameter spec can't be null.");
     }
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, Constants.BC_CSP);
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, CSP.BC);
     keyPairGenerator.initialize(algorithmParameterSpec, secureRandom);
     return keyPairGenerator.generateKeyPair();
   }
@@ -245,7 +255,7 @@ public class KeyUtils {
    */
   public static PrivateKey createPrivateKey(String algorithm, KeySpec keySpec)
       throws GeneralSecurityException {
-    KeyFactory keyFactory = KeyFactory.getInstance(algorithm, Constants.BC_CSP);
+    KeyFactory keyFactory = KeyFactory.getInstance(algorithm, CSP.BC);
     return keyFactory.generatePrivate(keySpec);
   }
 
@@ -258,7 +268,7 @@ public class KeyUtils {
    */
   public static PublicKey createPublicKey(String algorithm, KeySpec keySpec)
       throws GeneralSecurityException {
-    KeyFactory keyFactory = KeyFactory.getInstance(algorithm, Constants.BC_CSP);
+    KeyFactory keyFactory = KeyFactory.getInstance(algorithm, CSP.BC);
     return keyFactory.generatePublic(keySpec);
   }
 
@@ -313,7 +323,7 @@ public class KeyUtils {
    */
   public static byte[] sign(String algorithm, PrivateKey privateKey, byte[] input)
       throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, Constants.BC_CSP);
+    Signature signature = Signature.getInstance(algorithm, CSP.BC);
     signature.initSign(privateKey);
     signature.update(input);
     return signature.sign();
@@ -332,7 +342,7 @@ public class KeyUtils {
   public static byte[] sign(String algorithm, PrivateKey privateKey,
       AlgorithmParameterSpec algorithmParameterSpec,
       byte[] input) throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, Constants.BC_CSP);
+    Signature signature = Signature.getInstance(algorithm, CSP.BC);
     signature.setParameter(algorithmParameterSpec);
     signature.initSign(privateKey);
     signature.update(input);
@@ -352,7 +362,7 @@ public class KeyUtils {
   public static boolean verifySign(String algorithm, PublicKey publicKey, byte[] input,
       byte[] signedInput)
       throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, Constants.BC_CSP);
+    Signature signature = Signature.getInstance(algorithm, CSP.BC);
     signature.initVerify(publicKey);
     signature.update(input);
     return signature.verify(signedInput);
@@ -371,7 +381,7 @@ public class KeyUtils {
   public static boolean verifySign(String algorithm, Certificate certificate, byte[] input,
       byte[] signedInput)
       throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, Constants.BC_CSP);
+    Signature signature = Signature.getInstance(algorithm, CSP.BC);
     signature.initVerify(certificate);
     signature.update(input);
     return signature.verify(signedInput);
@@ -391,7 +401,7 @@ public class KeyUtils {
   public static boolean verifySign(String algorithm, PublicKey publicKey,
       AlgorithmParameterSpec algorithmParameterSpec,
       byte[] input, byte[] signedInput) throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, Constants.BC_CSP);
+    Signature signature = Signature.getInstance(algorithm, CSP.BC);
     signature.setParameter(algorithmParameterSpec);
     signature.initVerify(publicKey);
     signature.update(input);
@@ -410,7 +420,7 @@ public class KeyUtils {
   public static byte[] generateSecret(String keyAgreementAlgorithm, PrivateKey aPrivateKey,
       PublicKey bPublicKey)
       throws GeneralSecurityException {
-    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, Constants.BC_CSP);
+    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, CSP.BC);
     agreement.init(aPrivateKey);
     agreement.doPhase(bPublicKey, true);
     byte[] secretBuffer = agreement.generateSecret();
@@ -428,7 +438,7 @@ public class KeyUtils {
    */
   public static SecretKey generateSecretKey(String keyAgreementAlgorithm, String secretKeyAlgorithm,
       PrivateKey aPrivateKey, PublicKey bPublicKey) throws GeneralSecurityException {
-    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, Constants.BC_CSP);
+    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, CSP.BC);
     agreement.init(aPrivateKey);
     agreement.doPhase(bPublicKey, true);
     return agreement.generateSecret(secretKeyAlgorithm);
@@ -448,7 +458,7 @@ public class KeyUtils {
   public static SecretKey generateSecretKey(String keyAgreementAlgorithm, String secretKeyAlgorithm,
       PrivateKey aPrivateKey, PublicKey bPublicKey, byte[] keyMaterial)
       throws GeneralSecurityException {
-    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, Constants.BC_CSP);
+    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, CSP.BC);
     agreement.init(aPrivateKey, new UserKeyingMaterialSpec(keyMaterial));
     agreement.doPhase(bPublicKey, true);
     return agreement.generateSecret(secretKeyAlgorithm);
@@ -469,7 +479,7 @@ public class KeyUtils {
   public static SecretKey generateSecretKey(String keyAgreementAlgorithm, String secretKeyAlgorithm,
       PrivateKey aPrivateKey, PublicKey bPublicKey, AlgorithmParameterSpec algorithmParameterSpec)
       throws GeneralSecurityException {
-    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, Constants.BC_CSP);
+    KeyAgreement agreement = KeyAgreement.getInstance(keyAgreementAlgorithm, CSP.BC);
     agreement.init(aPrivateKey, algorithmParameterSpec);
     agreement.doPhase(bPublicKey, true);
     return agreement.generateSecret(secretKeyAlgorithm);
@@ -486,7 +496,7 @@ public class KeyUtils {
    */
   public static byte[] wrapKey(String transformation, PublicKey publicKey, Key key)
       throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance(transformation, Constants.BC_CSP);
+    Cipher cipher = Cipher.getInstance(transformation, CSP.BC);
     cipher.init(Cipher.WRAP_MODE, publicKey);
     return cipher.wrap(key);
   }
@@ -504,7 +514,7 @@ public class KeyUtils {
    */
   public static Key unwrapKey(String transformation, PrivateKey privateKey, byte[] wrappedKey,
       String wrappedKeyAlgorithm, int wrappedKeyType) throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance(transformation, Constants.BC_CSP);
+    Cipher cipher = Cipher.getInstance(transformation, CSP.BC);
     cipher.init(Cipher.UNWRAP_MODE, privateKey);
     return cipher.unwrap(wrappedKey, wrappedKeyAlgorithm, wrappedKeyType);
   }

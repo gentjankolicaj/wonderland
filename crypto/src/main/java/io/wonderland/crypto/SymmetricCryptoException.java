@@ -3,6 +3,6 @@ package io.wonderland.crypto;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class CryptoException extends RuntimeException {
+public final class SymmetricCryptoException extends CryptoException {
 
 }

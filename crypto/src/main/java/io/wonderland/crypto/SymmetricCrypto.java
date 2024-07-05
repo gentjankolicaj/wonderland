@@ -1,8 +1,10 @@
 package io.wonderland.crypto;
 
+import java.nio.ByteBuffer;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.Objects;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import lombok.Getter;
@@ -15,7 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 @Slf4j
 @Getter
-public class SymmetricCrypto {
+public class SymmetricCrypto implements Crypto {
 
   /**
    * cryptographic security provider
@@ -41,8 +43,10 @@ public class SymmetricCrypto {
       throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.encryptCipher = createCipher(transformation, Cipher.ENCRYPT_MODE, secretSecretKey);
-    this.decryptCipher = createCipher(transformation, Cipher.DECRYPT_MODE, secretSecretKey);
+    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        secretSecretKey);
+    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        secretSecretKey);
   }
 
   /**
@@ -53,19 +57,18 @@ public class SymmetricCrypto {
    * @param provider               cryptographic service provider CSP
    * @param transformation         cipher transformation
    * @param secretSecretKey        symmetric secretSecretKey
-   * @param algorithmParameterSpec algorithm parameter specs at cipher init
+   * @param algParamSpec algorithm parameter specs at cipher init
    * @throws GeneralSecurityException wrapper exception
    */
   public SymmetricCrypto(String provider, String transformation, SecretKey secretSecretKey,
-      AlgorithmParameterSpec algorithmParameterSpec)
-      throws GeneralSecurityException {
+      AlgorithmParameterSpec algParamSpec) throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.algorithmParameterSpec = algorithmParameterSpec;
-    this.encryptCipher = createCipher(transformation, Cipher.ENCRYPT_MODE, secretSecretKey,
-        algorithmParameterSpec);
-    this.decryptCipher = createCipher(transformation, Cipher.DECRYPT_MODE, secretSecretKey,
-        algorithmParameterSpec);
+    this.algorithmParameterSpec = algParamSpec;
+    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        secretSecretKey, algParamSpec);
+    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        secretSecretKey, algParamSpec);
   }
 
   /**
@@ -76,47 +79,48 @@ public class SymmetricCrypto {
    * @param provider            cryptographic service provider CSP
    * @param transformation      cipher transformation
    * @param secretSecretKey     symmetric secretSecretKey
-   * @param algorithmParameters algorithm parameters at cipher init
+   * @param algParams algorithm parameters at cipher init
    * @throws GeneralSecurityException wrapper exception
    */
   public SymmetricCrypto(String provider, String transformation, SecretKey secretSecretKey,
-      AlgorithmParameters algorithmParameters)
-      throws GeneralSecurityException {
+      AlgorithmParameters algParams) throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.algorithmParameters = algorithmParameters;
-    this.encryptCipher = createCipher(transformation, Cipher.ENCRYPT_MODE, secretSecretKey,
-        algorithmParameters);
-    this.decryptCipher = createCipher(transformation, Cipher.DECRYPT_MODE, secretSecretKey,
-        algorithmParameters);
+    this.algorithmParameters = algParams;
+    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        secretSecretKey,
+        algParams);
+    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        secretSecretKey,
+        algParams);
   }
 
 
-  private Cipher createCipher(String transformation, int opmode, SecretKey secretSecretKey)
-      throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(opmode, secretSecretKey);
-    return cipher;
+  @Override
+  public byte[] encryptUpdate(byte[] input) throws CryptoException {
+    try {
+      if (ArrayUtils.isEmpty(input)) {
+        throw new IllegalArgumentException("Input can't be empty.");
+      }
+      return this.encryptCipher.update(input);
+    } catch (Exception e) {
+      throw new SymmetricCryptoException(e);
+    }
   }
 
-  private Cipher createCipher(String transformation, int opmode, SecretKey secretSecretKey,
-      AlgorithmParameterSpec algorithmParameterSpec)
-      throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(opmode, secretSecretKey, algorithmParameterSpec);
-    return cipher;
-
+  @Override
+  public int encryptBuffer(ByteBuffer input, ByteBuffer output) throws CryptoException {
+    try {
+      if (Objects.isNull(input) || Objects.isNull(output)) {
+        throw new IllegalArgumentException("Buffer arguments can't be null");
+      }
+      return this.encryptCipher.update(input, output);
+    } catch (Exception e) {
+      throw new SymmetricCryptoException(e);
+    }
   }
 
-  private Cipher createCipher(String transformation, int opmode, SecretKey secretSecretKey,
-      AlgorithmParameters algorithmParameters)
-      throws GeneralSecurityException {
-    Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(opmode, secretSecretKey, algorithmParameters);
-    return cipher;
-
-  }
-
+  @Override
   public byte[] encrypt(byte[] input) throws CryptoException {
     try {
       if (ArrayUtils.isEmpty(input)) {
@@ -124,7 +128,40 @@ public class SymmetricCrypto {
       }
       return this.encryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new CryptoException(e);
+      throw new SymmetricCryptoException(e);
+    }
+  }
+
+  @Override
+  public byte[] encrypt() throws CryptoException {
+    try {
+      return this.encryptCipher.doFinal();
+    } catch (Exception e) {
+      throw new SymmetricCryptoException(e);
+    }
+  }
+
+  @Override
+  public byte[] decryptUpdate(byte[] input) throws CryptoException {
+    try {
+      if (ArrayUtils.isEmpty(input)) {
+        throw new IllegalArgumentException("Input can't be empty.");
+      }
+      return this.decryptCipher.update(input);
+    } catch (Exception e) {
+      throw new SymmetricCryptoException(e);
+    }
+  }
+
+  @Override
+  public int decryptBuffer(ByteBuffer input, ByteBuffer output) throws CryptoException {
+    try {
+      if (Objects.isNull(input) || Objects.isNull(output)) {
+        throw new IllegalArgumentException("Buffer arguments can't be null");
+      }
+      return this.decryptCipher.update(input, output);
+    } catch (Exception e) {
+      throw new SymmetricCryptoException(e);
     }
   }
 
@@ -135,7 +172,15 @@ public class SymmetricCrypto {
       }
       return this.decryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new CryptoException(e);
+      throw new SymmetricCryptoException(e);
+    }
+  }
+
+  public byte[] decrypt() throws CryptoException {
+    try {
+      return this.decryptCipher.doFinal();
+    } catch (Exception e) {
+      throw new SymmetricCryptoException(e);
     }
   }
 
