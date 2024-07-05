@@ -14,8 +14,6 @@ import java.security.Provider;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.Signature;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -25,19 +23,12 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.PBEParametersGenerator;
-import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
-import org.bouncycastle.crypto.generators.SCrypt;
-import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.jcajce.spec.UserKeyingMaterialSpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMKeyPair;
@@ -46,8 +37,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.util.Arrays;
 
 @Slf4j
-public class KeyUtils {
-
+public class KeyPairUtils {
 
   public static final String ALGORITHM_CAN_T_BE_EMPTY = "Algorithm can't be empty.";
 
@@ -60,7 +50,7 @@ public class KeyUtils {
   }
 
 
-  private KeyUtils() {
+  private KeyPairUtils() {
   }
 
   private static void init() {
@@ -168,24 +158,6 @@ public class KeyUtils {
   }
 
 
-  public static SecretKey generateSecretKey(String algorithm) throws GeneralSecurityException {
-    if (StringUtils.isEmpty(algorithm)) {
-      throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
-    }
-    KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm, CSP.BC);
-    return keyGenerator.generateKey();
-  }
-
-  public static SecretKey generateSecretKey(String algorithm, int keySize)
-      throws GeneralSecurityException {
-    if (StringUtils.isEmpty(algorithm)) {
-      throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
-    }
-    KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm, CSP.BC);
-    keyGenerator.init(keySize);
-    return keyGenerator.generateKey();
-  }
-
   public static KeyPair generateKeyPair(String algorithm) throws GeneralSecurityException {
     if (StringUtils.isEmpty(algorithm)) {
       throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
@@ -236,15 +208,6 @@ public class KeyUtils {
     return keyPairGenerator.generateKeyPair();
   }
 
-  public static SecretKeySpec createSecretKeySpec(String algorithm, byte[] keyBytes) {
-    if (StringUtils.isEmpty(algorithm)) {
-      throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
-    }
-    if (ArrayUtils.isEmpty(keyBytes)) {
-      throw new IllegalArgumentException("Key bytes can't be empty.");
-    }
-    return new SecretKeySpec(keyBytes, algorithm);
-  }
 
   /**
    * Return a private key for algorithm built from the details in keySpec.
@@ -270,142 +233,6 @@ public class KeyUtils {
       throws GeneralSecurityException {
     KeyFactory keyFactory = KeyFactory.getInstance(algorithm, CSP.BC);
     return keyFactory.generatePublic(keySpec);
-  }
-
-
-  /**
-   * Calculate a derived key using PBKDF2 based on digest using BC low-level api.
-   *
-   * @param password       password input
-   * @param salt           salt parameter
-   * @param iterationCount iteration count parameter
-   * @param digest         Digest type
-   * @param keySize        key size
-   * @return Password-based key derived 2
-   */
-  public static byte[] generatePKCS5Scheme2(char[] password, byte[] salt, int iterationCount,
-      Digest digest,
-      int keySize) {
-    PBEParametersGenerator generator = new PKCS5S2ParametersGenerator(digest);
-    generator.init(PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(password), salt, iterationCount);
-    return ((KeyParameter) generator.generateDerivedParameters(keySize)).getKey();
-  }
-
-  /**
-   * Calculate a derived key using SCRYPT using BC low-level api.
-   *
-   * @param password                 password input
-   * @param salt                     salt parameter
-   * @param costParameter            N – CPU/Memory cost parameter. Must be larger than 1, a power
-   *                                 of 2 and less than 2^(128 * r / 8).
-   * @param blockSize                the block size, must be >= 1.
-   * @param parallelizationParameter Parallelization parameter. Must be a positive integer less than
-   *                                 or equal to Integer.MAX_VALUE / (128 * r * 8).
-   * @param keyLength                the length of the key to generate.
-   * @return Password-based key derived SCRYPT
-   */
-  public static byte[] generateSCRYPT(char[] password, byte[] salt, int costParameter,
-      int blockSize,
-      int parallelizationParameter, int keyLength) {
-    return SCrypt.generate(PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(password), salt,
-        costParameter, blockSize,
-        parallelizationParameter, keyLength);
-  }
-
-  /**
-   * Signing input with algorithm and private key.
-   *
-   * @param algorithm  signing algorithm
-   * @param privateKey signing key
-   * @param input      input
-   * @return signed input
-   * @throws GeneralSecurityException wrapper exception
-   */
-  public static byte[] sign(String algorithm, PrivateKey privateKey, byte[] input)
-      throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, CSP.BC);
-    signature.initSign(privateKey);
-    signature.update(input);
-    return signature.sign();
-  }
-
-  /**
-   * Signing input with algorithm and private key.
-   *
-   * @param algorithm              signing algorithm
-   * @param privateKey             signing key
-   * @param algorithmParameterSpec algorithm param specs
-   * @param input                  input
-   * @return signed input
-   * @throws GeneralSecurityException wrapper exception
-   */
-  public static byte[] sign(String algorithm, PrivateKey privateKey,
-      AlgorithmParameterSpec algorithmParameterSpec,
-      byte[] input) throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, CSP.BC);
-    signature.setParameter(algorithmParameterSpec);
-    signature.initSign(privateKey);
-    signature.update(input);
-    return signature.sign();
-  }
-
-  /**
-   * Verify signed input by algorithm using public key , input
-   *
-   * @param algorithm   signing algorithm
-   * @param publicKey   corresponding public key of private key used for signing
-   * @param input       unsigned input
-   * @param signedInput signed input
-   * @return verification result (true|false)
-   * @throws GeneralSecurityException wrapper exception
-   */
-  public static boolean verifySign(String algorithm, PublicKey publicKey, byte[] input,
-      byte[] signedInput)
-      throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, CSP.BC);
-    signature.initVerify(publicKey);
-    signature.update(input);
-    return signature.verify(signedInput);
-  }
-
-  /**
-   * Verify signed input by algorithm using certificate, input
-   *
-   * @param algorithm   signing algorithm
-   * @param certificate certificate form private key used to for signing
-   * @param input       unsigned input
-   * @param signedInput signed input
-   * @return verification result (true|false)
-   * @throws GeneralSecurityException wrapper exception
-   */
-  public static boolean verifySign(String algorithm, Certificate certificate, byte[] input,
-      byte[] signedInput)
-      throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, CSP.BC);
-    signature.initVerify(certificate);
-    signature.update(input);
-    return signature.verify(signedInput);
-  }
-
-  /**
-   * Verify signed input by algorithm using public key , input
-   *
-   * @param algorithm              signing algorithm
-   * @param publicKey              corresponding public key of private key used for signing
-   * @param algorithmParameterSpec algorithm param specs
-   * @param input                  unsigned input
-   * @param signedInput            signed input
-   * @return verification result (true|false)
-   * @throws GeneralSecurityException wrapper exception
-   */
-  public static boolean verifySign(String algorithm, PublicKey publicKey,
-      AlgorithmParameterSpec algorithmParameterSpec,
-      byte[] input, byte[] signedInput) throws GeneralSecurityException {
-    Signature signature = Signature.getInstance(algorithm, CSP.BC);
-    signature.setParameter(algorithmParameterSpec);
-    signature.initVerify(publicKey);
-    signature.update(input);
-    return signature.verify(signedInput);
   }
 
 

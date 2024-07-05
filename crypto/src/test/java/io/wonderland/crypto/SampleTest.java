@@ -26,7 +26,7 @@ class SampleTest {
     log.info("Input : {}", input);
 
     //Symmetric key
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
     IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
         16);
     SymmetricCrypto symmetricCrypto = new SymmetricCrypto(BC_CSP, "AES/CBC/CTSPadding", secretKey,
@@ -37,7 +37,7 @@ class SampleTest {
     log.info("AES/CBC/CTSPadding decrypted : {}", new String(symmetricKeyDecrypted));
 
     //Asymmetric key
-    KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 4096);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 4096);
     AsymmetricCrypto asymmetricCrypto = new AsymmetricCrypto(BC_CSP, "RSA", keyPair);
     byte[] asymmetricKeyEncrypted = asymmetricCrypto.encrypt(input.getBytes());
     byte[] asymmetricKeyDecrypted = asymmetricCrypto.decrypt(asymmetricKeyEncrypted);

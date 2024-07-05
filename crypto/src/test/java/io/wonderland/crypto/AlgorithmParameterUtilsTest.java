@@ -30,7 +30,7 @@ class AlgorithmParameterUtilsTest {
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP, "AES/GCM/NoPadding", secretKey,
         algParamsGCM);
@@ -47,7 +47,7 @@ class AlgorithmParameterUtilsTest {
         "CCM");
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP, "AES/CCM/NoPadding", secretKey,
         algorithmParameters);
@@ -65,7 +65,7 @@ class AlgorithmParameterUtilsTest {
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP, "AES/GCM/NoPadding", secretKey,
         algParamsGCM);
@@ -82,7 +82,7 @@ class AlgorithmParameterUtilsTest {
         256);
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP, "AES/GCM/NoPadding", secretKey,
         algParamsGCM);
@@ -98,7 +98,7 @@ class AlgorithmParameterUtilsTest {
   void generateAlgorithmParameterSpec() throws GeneralSecurityException {
     DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec("DH",
         DHParameterSpec.class);
-    KeyPair dhKeyPair = KeyUtils.generateKeyPair("DH", dhParameterSpec);
+    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
     assertThat(dhKeyPair.getPublic()).isNotNull();
@@ -109,7 +109,7 @@ class AlgorithmParameterUtilsTest {
     DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec("DH",
         256,
         DHParameterSpec.class);
-    KeyPair dhKeyPair = KeyUtils.generateKeyPair("DH", dhParameterSpec);
+    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
     assertThat(dhKeyPair.getPublic()).isNotNull();

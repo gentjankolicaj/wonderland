@@ -72,7 +72,7 @@ class MessageDigestUtilsTest {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
 
     //HMAC test
-    SecretKey hmacKey = KeyUtils.generateSecretKey("HmacSHA256");
+    SecretKey hmacKey = SecretKeyUtils.generateSecretKey("HmacSHA256");
     assertThat(
         MessageDigestUtils.computeMac(CSP, "HmacSHA256", hmacKey, input.getBytes())).isNotNull();
     log.debug("Input : {}", input);
@@ -80,7 +80,7 @@ class MessageDigestUtilsTest {
         MessageDigestUtils.computeMac(CSP, "HmacSHA256", hmacKey, input.getBytes()).length);
 
     //AESCMAC test
-    SecretKey cmacKey = KeyUtils.generateSecretKey("AES");
+    SecretKey cmacKey = SecretKeyUtils.generateSecretKey("AES");
     assertThat(
         MessageDigestUtils.computeMac(CSP, "AESCMAC", cmacKey, input.getBytes())).isNotNull();
     log.debug("Input : {}", input);

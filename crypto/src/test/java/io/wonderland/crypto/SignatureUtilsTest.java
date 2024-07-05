@@ -32,7 +32,7 @@ class SignatureUtilsTest {
 
   @Test
   void createSignature() throws GeneralSecurityException {
-    KeyPair dsaKeyPair = KeyUtils.generateKeyPair("DSA", 2048);
+    KeyPair dsaKeyPair = KeyPairUtils.generateKeyPair("DSA", 2048);
     assertThatCode(
         () -> SignatureUtils.createSignature(CSP, "SHA256WithDSA",
             dsaKeyPair.getPrivate())).doesNotThrowAnyException();
@@ -44,7 +44,7 @@ class SignatureUtilsTest {
   @Test
   void sign() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair dsaKeyPair = KeyUtils.generateKeyPair("DSA", 2048);
+    KeyPair dsaKeyPair = KeyPairUtils.generateKeyPair("DSA", 2048);
     assertThatCode(
         () -> SignatureUtils.sign(CSP, "SHA256WithDSA", dsaKeyPair.getPrivate(),
             input.getBytes())).doesNotThrowAnyException();
@@ -56,7 +56,7 @@ class SignatureUtilsTest {
   @Test
   void verifySign() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair dsaKeyPair = KeyUtils.generateKeyPair("DSA", 2048);
+    KeyPair dsaKeyPair = KeyPairUtils.generateKeyPair("DSA", 2048);
     byte[] dsaSignedInput = SignatureUtils.sign(CSP, "SHA256WithDSA", dsaKeyPair.getPrivate(),
         input.getBytes());
     assertThat(
@@ -73,13 +73,13 @@ class SignatureUtilsTest {
         Objects.requireNonNull(
                 Thread.currentThread().getContextClassLoader().getResource("private-key.pem"))
             .getPath());
-    Optional<PrivateKey> optional = KeyUtils.loadPrivateKeyPem(privateKeyPem);
+    Optional<PrivateKey> optional = KeyPairUtils.loadPrivateKeyPem(privateKeyPem);
 
     //load x509cert from resources
     Path certPath = Path.of(
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.cer"))
             .getPath());
-    X509Certificate x509Certificate = KeyUtils.loadX509Certificate(certPath);
+    X509Certificate x509Certificate = KeyPairUtils.loadX509Certificate(certPath);
 
     //sign with a private key
     byte[] rsaSignedInput = SignatureUtils.sign(CSP, "SHA256WithRSA", optional.get(),
@@ -94,7 +94,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignDSTU4145() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair dstu4145KeyPair = KeyUtils.generateKeyPair("DSTU4145",
+    KeyPair dstu4145KeyPair = KeyPairUtils.generateKeyPair("DSTU4145",
         new ECGenParameterSpec("1.2.804.2.1.1.1.1.3.1.1.2.3"));
     byte[] signedInput = SignatureUtils.sign(CSP, "DSTU4145", dstu4145KeyPair.getPrivate(),
         input.getBytes());
@@ -106,7 +106,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignECDSA() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair ecKeyPair = KeyUtils.generateKeyPair("EC", 256);
+    KeyPair ecKeyPair = KeyPairUtils.generateKeyPair("EC", 256);
     byte[] signedInput = SignatureUtils.sign(CSP, "SHA256withECDSA", ecKeyPair.getPrivate(),
         input.getBytes());
     assertThat(
@@ -117,7 +117,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignECDDSA() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair ecKeyPair = KeyUtils.generateKeyPair("EC", 256);
+    KeyPair ecKeyPair = KeyPairUtils.generateKeyPair("EC", 256);
     byte[] signedInput = SignatureUtils.sign(CSP, "SHA256withECDDSA", ecKeyPair.getPrivate(),
         input.getBytes());
     assertThat(
@@ -128,7 +128,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignECP256() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair ecp256KeyPair = KeyUtils.generateKeyPair("EC", new ECGenParameterSpec("P-256"));
+    KeyPair ecp256KeyPair = KeyPairUtils.generateKeyPair("EC", new ECGenParameterSpec("P-256"));
     byte[] signedInput = SignatureUtils.sign(CSP, "SHA256withECDSA", ecp256KeyPair.getPrivate(),
         input.getBytes());
     assertThat(
@@ -140,7 +140,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignED448DSA() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair ed448KeyPair = KeyUtils.generateKeyPair("Ed448");
+    KeyPair ed448KeyPair = KeyPairUtils.generateKeyPair("Ed448");
     byte[] signedInput = SignatureUtils.sign(CSP, "EdDSA", ed448KeyPair.getPrivate(),
         input.getBytes());
     assertThat(
@@ -151,7 +151,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignECGOST3410_2012() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair gostKeyPair = KeyUtils.generateKeyPair("ECGOST3410-2012",
+    KeyPair gostKeyPair = KeyPairUtils.generateKeyPair("ECGOST3410-2012",
         new ECGenParameterSpec("Tc26-Gost-3410-12-512-paramSetA"));
     byte[] signedInput = SignatureUtils.sign(CSP, "ECGOST3410-2012-512", gostKeyPair.getPrivate(),
         input.getBytes());
@@ -164,7 +164,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignRSAPSS() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair rsaKeyPair = KeyUtils.generateKeyPair("RSA", 2048);
+    KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
     byte[] signedInput = SignatureUtils.sign(CSP, "SHA256withRSAandMGF1", rsaKeyPair.getPrivate(),
         input.getBytes());
     assertThat(
@@ -176,7 +176,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignECSM2() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair ecsm2KeyPair = KeyUtils.generateKeyPair("EC", new ECGenParameterSpec("sm2p256v1"));
+    KeyPair ecsm2KeyPair = KeyPairUtils.generateKeyPair("EC", new ECGenParameterSpec("sm2p256v1"));
     SM2ParameterSpec sm2ParameterSpec = new SM2ParameterSpec("Signer@ID_STRING".getBytes());
     byte[] signedInput = SignatureUtils.sign(CSP, "SM3withSM2", ecsm2KeyPair.getPrivate(),
         sm2ParameterSpec,
@@ -190,7 +190,7 @@ class SignatureUtilsTest {
   @Test
   void verifySignWithAlgorithmParameterSpecRSAPSS() throws GeneralSecurityException {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    KeyPair rsaKeyPair = KeyUtils.generateKeyPair("RSA", 2048);
+    KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
     PSSParameterSpec pssParameterSpec = new PSSParameterSpec("SHA-256", "MGF1",
         new MGF1ParameterSpec("SHA-256"),
         32, 1);

@@ -27,7 +27,7 @@ class SymmetricCryptoTest {
     String input1 = "12344455";
     String input2 = "1234445523456";
 
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //positive test case
     SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/ECB/NoPadding", secretKey);
@@ -56,7 +56,7 @@ class SymmetricCryptoTest {
   @Test
   void cbcNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //negative test case
     assertThatThrownBy(() -> new SymmetricCrypto(CSP.BC, "AES/CBC/NoPadding", secretKey))
@@ -75,7 +75,7 @@ class SymmetricCryptoTest {
   @Test
   void ctrNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //negative test case
     assertThatThrownBy(
@@ -95,7 +95,7 @@ class SymmetricCryptoTest {
   @Test
   void cbcCTSPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //negative test case
     assertThatThrownBy(
@@ -115,7 +115,7 @@ class SymmetricCryptoTest {
   @Test
   void chacha7539() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = KeyUtils.generateSecretKey("ChaCha7539");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("ChaCha7539");
 
     //negative test case
     assertThatThrownBy(() -> new SymmetricCrypto(CSP.BC, "ChaCha7539", secretKey)).isInstanceOf(
@@ -136,7 +136,7 @@ class SymmetricCryptoTest {
   void ccmNoPaddingWithADD() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     byte[] aad = "Additional associated data".getBytes();
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //negative test case
     assertThatThrownBy(
@@ -159,7 +159,7 @@ class SymmetricCryptoTest {
   void eaxNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     byte[] aad = "Additional associated data".getBytes();
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //negative test case
     assertThatThrownBy(
@@ -183,7 +183,7 @@ class SymmetricCryptoTest {
   void gcmNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     byte[] aad = "Additional associated data".getBytes();
-    SecretKey secretKey = KeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //negative test case
     assertThatThrownBy(

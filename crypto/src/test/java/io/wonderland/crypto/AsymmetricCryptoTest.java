@@ -22,7 +22,7 @@ class AsymmetricCryptoTest {
 
   @Test
   void invalidArguments() throws GeneralSecurityException {
-    KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
 
     //negative tests
     assertThatThrownBy(() -> new AsymmetricCrypto(CSP, "RSA", null)).isInstanceOf(
@@ -35,7 +35,7 @@ class AsymmetricCryptoTest {
 
   @Test
   void cipherWithKey() throws GeneralSecurityException {
-    KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
 
     String input0 = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     String input1 = "12344455";
@@ -86,7 +86,7 @@ class AsymmetricCryptoTest {
 
   @Test
   void cipherWithKeyPair() throws GeneralSecurityException {
-    KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
 
     String input0 = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     String input1 = "12344455";
@@ -117,7 +117,7 @@ class AsymmetricCryptoTest {
 
   @Test
   void cipherFields() throws GeneralSecurityException {
-    KeyPair keyPair = KeyUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
 
     //positive test, encrypt with public-key & decrypt with private-key
     AsymmetricCrypto asymmetricCrypto = new AsymmetricCrypto(CSP, "RSA", keyPair);
