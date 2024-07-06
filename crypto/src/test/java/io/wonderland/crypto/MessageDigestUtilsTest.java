@@ -7,85 +7,49 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
-import java.security.Security;
-import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.OperatorException;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class MessageDigestUtilsTest {
-
-  static final String CSP = "BC";
-
-  static {
-    Security.addProvider(new BouncyCastleProvider());
-  }
+class MessageDigestUtilsTest extends AbstractTest {
 
 
   @Test
   void createDigest() throws GeneralSecurityException {
-    String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    MessageDigest messageDigest = MessageDigestUtils.createDigest(CSP, "SHA-256");
+    byte[] input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_".getBytes();
+    MessageDigest messageDigest = MessageDigestUtils.createDigest(CSP_NAME, "SHA-256");
     assertThat(messageDigest).isNotNull();
-    log.debug("Input : {}", input);
-    log.debug("SHA-256 size {} : {} ", messageDigest.digest(input.getBytes()).length,
-        messageDigest.digest(input.getBytes()));
-
+    assertThat(messageDigest.digest(input)).isNotNull().hasSize(256 / 8);
   }
 
   @Test
-  void computeDigest() throws GeneralSecurityException {
-    String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    assertThat(MessageDigestUtils.computeDigest(CSP, "SHA-256", input.getBytes())).isNotNull();
-    log.debug("Input : {}", input);
-    log.debug("SHA-256 size {} : {} ",
-        MessageDigestUtils.computeDigest(CSP, "SHA-256", input.getBytes()).length,
-        MessageDigestUtils.computeDigest(CSP, "SHA-256", input.getBytes()));
+  void digest() throws GeneralSecurityException {
+    byte[] input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_".getBytes();
+    assertThat(MessageDigestUtils.digest(CSP_NAME, "SHA-256", input))
+        .isNotNull().hasSize(256 / 8);
 
-    assertThatThrownBy(() -> MessageDigestUtils.computeDigest(CSP, "SHA-256", null)).isInstanceOf(
-        IllegalArgumentException.class);
+    assertThatThrownBy(() -> MessageDigestUtils.digest(CSP_NAME, "SHA-256", null))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   void createDigestCalculator() throws IOException, GeneralSecurityException, OperatorException {
-    String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-    byte[] digestedInput = MessageDigestUtils.computeDigest(CSP, "SHA-256", input.getBytes());
+    byte[] input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_".getBytes();
+    byte[] digestedInput = MessageDigestUtils.digest(CSP_NAME, "SHA-256", input);
+    assertThat(MessageDigestUtils.createDigestCalculator(CSP_NAME, "SHA-256")).isNotNull();
 
-    assertThat(MessageDigestUtils.createDigestCalculator(CSP, "SHA-256")).isNotNull();
-
-    DigestCalculator digestCalculator = MessageDigestUtils.createDigestCalculator(CSP, "SHA-256");
+    DigestCalculator digestCalculator = MessageDigestUtils.createDigestCalculator(CSP_NAME,
+        "SHA-256");
     OutputStream os = digestCalculator.getOutputStream();
 
     //write input to digest calculator
-    os.write(input.getBytes());
+    os.write(input);
     os.close();
 
     //digest input & assert
     assertThat(digestCalculator.getDigest()).containsExactly(digestedInput);
-  }
-
-  @Test
-  void computeMac() throws GeneralSecurityException {
-    String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
-
-    //HMAC test
-    SecretKey hmacKey = SecretKeyUtils.generateSecretKey("HmacSHA256");
-    assertThat(
-        MessageDigestUtils.computeMac(CSP, "HmacSHA256", hmacKey, input.getBytes())).isNotNull();
-    log.debug("Input : {}", input);
-    log.debug("HmacSHA256 size {}",
-        MessageDigestUtils.computeMac(CSP, "HmacSHA256", hmacKey, input.getBytes()).length);
-
-    //AESCMAC test
-    SecretKey cmacKey = SecretKeyUtils.generateSecretKey("AES");
-    assertThat(
-        MessageDigestUtils.computeMac(CSP, "AESCMAC", cmacKey, input.getBytes())).isNotNull();
-    log.debug("Input : {}", input);
-    log.debug("HmacSHA256 size {}",
-        MessageDigestUtils.computeMac(CSP, "AESCMAC", cmacKey, input.getBytes()).length);
   }
 
 

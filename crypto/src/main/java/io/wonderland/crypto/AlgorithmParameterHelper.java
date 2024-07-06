@@ -17,7 +17,7 @@ public class AlgorithmParameterHelper {
   private final String provider;
 
   public AlgorithmParameterHelper() {
-    this.provider = CSP.INSTANCE_CONTEXT.getProvider();
+    this(CSP.INSTANCE_CONTEXT.getProvider());
   }
 
   public AlgorithmParameterHelper(String provider) {

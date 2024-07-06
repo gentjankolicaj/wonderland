@@ -65,7 +65,7 @@ class SymmetricCipherTest extends AbstractTest {
     assertThat(decryptedInput0).containsExactly(input0.getBytes());
 
     //negative test case
-    IvParameterSpec iv = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec iv = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 16);
     assertThatThrownBy(
         () -> new SymmetricCipher(CSP_NAME, "AES/ECB/NoPadding", secretKey, iv))
@@ -93,7 +93,7 @@ class SymmetricCipherTest extends AbstractTest {
         .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 16);
     SymmetricCipher symmetricCrypto0 = new SymmetricCipher(CSP_NAME, "AES/CBC/NoPadding", secretKey,
         ivParameterSpec);
@@ -113,7 +113,7 @@ class SymmetricCipherTest extends AbstractTest {
         GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 16);
     SymmetricCipher symmetricCrypto0 = new SymmetricCipher(CSP_NAME, "AES/CTR/NoPadding", secretKey,
         ivParameterSpec);
@@ -133,7 +133,7 @@ class SymmetricCipherTest extends AbstractTest {
         GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 16);
     SymmetricCipher symmetricCrypto0 = new SymmetricCipher(CSP_NAME, "AES/CBC/CTSPadding",
         secretKey,
@@ -153,7 +153,7 @@ class SymmetricCipherTest extends AbstractTest {
         .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 12);
     SymmetricCipher symmetricCrypto0 = new SymmetricCipher(CSP_NAME, "ChaCha7539",
         secretKey, ivParameterSpec);
@@ -175,7 +175,7 @@ class SymmetricCipherTest extends AbstractTest {
         .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 12);
     AEADParameterSpec spec = new AEADParameterSpec(ivParameterSpec.getIV(), 128, aad);
 
@@ -198,7 +198,7 @@ class SymmetricCipherTest extends AbstractTest {
         .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 12);
     AEADParameterSpec spec = new AEADParameterSpec(ivParameterSpec.getIV(), 128, aad);
 
@@ -222,7 +222,7 @@ class SymmetricCipherTest extends AbstractTest {
         .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 12);
     AEADParameterSpec spec = new AEADParameterSpec(ivParameterSpec.getIV(), 128, aad);
 
@@ -234,7 +234,7 @@ class SymmetricCipherTest extends AbstractTest {
 
 
     //positive test case
-    IvParameterSpec ivParameterSpec1 = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec1 = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG", 12);
     AEADParameterSpec spec1 = new AEADParameterSpec(ivParameterSpec1.getIV(), 128);
 
