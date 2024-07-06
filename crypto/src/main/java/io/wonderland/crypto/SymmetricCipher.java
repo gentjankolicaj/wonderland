@@ -17,7 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 @Slf4j
 @Getter
-public class SymmetricCrypto implements Crypto {
+public class SymmetricCipher implements ICipher {
 
   /**
    * cryptographic security provider
@@ -33,21 +33,55 @@ public class SymmetricCrypto implements Crypto {
   /**
    * Block cipher modes of operation supported only :
    * <br>ECB
+   * Default cryptographic service provider form CSP.INSTANCE_CONTEXT
+   *
+   * @param transformation cipher transformation
+   * @param secretKey      symmetric secretKey
+   * @throws GeneralSecurityException wrapper exception
+   */
+  public SymmetricCipher(String transformation, SecretKey secretKey)
+      throws GeneralSecurityException {
+    this(CSP.INSTANCE_CONTEXT.getProvider(), transformation, secretKey);
+  }
+
+
+  /**
+   * Block cipher modes of operation supported only :
+   * <br>ECB
    *
    * @param provider        cryptographic service provider CSP
    * @param transformation  cipher transformation
-   * @param secretSecretKey symmetric secretSecretKey
+   * @param secretKey symmetric secretKey
    * @throws GeneralSecurityException wrapper exception
    */
-  public SymmetricCrypto(String provider, String transformation, SecretKey secretSecretKey)
+  public SymmetricCipher(String provider, String transformation, SecretKey secretKey)
       throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
-        secretSecretKey);
-    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
-        secretSecretKey);
+    this.encryptCipher = ICipher.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        secretKey);
+    this.decryptCipher = ICipher.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        secretKey);
   }
+
+
+  /**
+   * Block cipher modes of operation supported only :
+   * <br>CBC
+   * <br>CTR
+   * <br>
+   * Default cryptographic service provider form CSP.INSTANCE_CONTEXT
+   *
+   * @param transformation cipher transformation
+   * @param secretKey      symmetric secretKey
+   * @param algParamSpec   algorithm parameter specs at cipher init
+   * @throws GeneralSecurityException wrapper exception
+   */
+  public SymmetricCipher(String transformation, SecretKey secretKey,
+      AlgorithmParameterSpec algParamSpec) throws GeneralSecurityException {
+    this(CSP.INSTANCE_CONTEXT.getProvider(), transformation, secretKey, algParamSpec);
+  }
+
 
   /**
    * Block cipher modes of operation supported only :
@@ -56,20 +90,39 @@ public class SymmetricCrypto implements Crypto {
    *
    * @param provider               cryptographic service provider CSP
    * @param transformation         cipher transformation
-   * @param secretSecretKey        symmetric secretSecretKey
+   * @param secretKey        symmetric secretKey
    * @param algParamSpec algorithm parameter specs at cipher init
    * @throws GeneralSecurityException wrapper exception
    */
-  public SymmetricCrypto(String provider, String transformation, SecretKey secretSecretKey,
+  public SymmetricCipher(String provider, String transformation, SecretKey secretKey,
       AlgorithmParameterSpec algParamSpec) throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
     this.algorithmParameterSpec = algParamSpec;
-    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
-        secretSecretKey, algParamSpec);
-    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
-        secretSecretKey, algParamSpec);
+    this.encryptCipher = ICipher.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        secretKey, algParamSpec);
+    this.decryptCipher = ICipher.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        secretKey, algParamSpec);
   }
+
+
+  /**
+   * Block cipher modes of operation supported only :
+   * <br>CBC
+   * <br>CTR
+   * <br>
+   * Default cryptographic service provider form CSP.INSTANCE_CONTEXT
+   *
+   * @param transformation cipher transformation
+   * @param secretKey      symmetric secretKey
+   * @param algParams      algorithm parameters at cipher init
+   * @throws GeneralSecurityException wrapper exception
+   */
+  public SymmetricCipher(String transformation, SecretKey secretKey,
+      AlgorithmParameters algParams) throws GeneralSecurityException {
+    this(CSP.INSTANCE_CONTEXT.getProvider(), transformation, secretKey, algParams);
+  }
+
 
   /**
    * Block cipher modes of operation supported only :
@@ -78,20 +131,20 @@ public class SymmetricCrypto implements Crypto {
    *
    * @param provider            cryptographic service provider CSP
    * @param transformation      cipher transformation
-   * @param secretSecretKey     symmetric secretSecretKey
+   * @param secretKey     symmetric secretKey
    * @param algParams algorithm parameters at cipher init
    * @throws GeneralSecurityException wrapper exception
    */
-  public SymmetricCrypto(String provider, String transformation, SecretKey secretSecretKey,
+  public SymmetricCipher(String provider, String transformation, SecretKey secretKey,
       AlgorithmParameters algParams) throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
     this.algorithmParameters = algParams;
-    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
-        secretSecretKey,
+    this.encryptCipher = ICipher.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+        secretKey,
         algParams);
-    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
-        secretSecretKey,
+    this.decryptCipher = ICipher.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+        secretKey,
         algParams);
   }
 
@@ -104,7 +157,7 @@ public class SymmetricCrypto implements Crypto {
       }
       return this.encryptCipher.update(input);
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 
@@ -116,7 +169,7 @@ public class SymmetricCrypto implements Crypto {
       }
       return this.encryptCipher.update(input, output);
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 
@@ -128,7 +181,7 @@ public class SymmetricCrypto implements Crypto {
       }
       return this.encryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 
@@ -137,7 +190,7 @@ public class SymmetricCrypto implements Crypto {
     try {
       return this.encryptCipher.doFinal();
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 
@@ -149,7 +202,7 @@ public class SymmetricCrypto implements Crypto {
       }
       return this.decryptCipher.update(input);
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 
@@ -161,7 +214,7 @@ public class SymmetricCrypto implements Crypto {
       }
       return this.decryptCipher.update(input, output);
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 
@@ -172,7 +225,7 @@ public class SymmetricCrypto implements Crypto {
       }
       return this.decryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 
@@ -180,7 +233,7 @@ public class SymmetricCrypto implements Crypto {
     try {
       return this.decryptCipher.doFinal();
     } catch (Exception e) {
-      throw new SymmetricCryptoException(e);
+      throw new SymmetricCipherException(e);
     }
   }
 

@@ -42,7 +42,7 @@ class AlgorithmParameterHelperTest extends AbstractTest {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding"
+    SymmetricCipher symmetricCrypto = new SymmetricCipher(CSP_NAME, "AES/GCM/NoPadding"
         , secretKey, algParamsGCM);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);
@@ -57,7 +57,7 @@ class AlgorithmParameterHelperTest extends AbstractTest {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/CCM/NoPadding"
+    SymmetricCipher symmetricCrypto = new SymmetricCipher(CSP_NAME, "AES/CCM/NoPadding"
         , secretKey, algorithmParameters);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);
@@ -74,7 +74,7 @@ class AlgorithmParameterHelperTest extends AbstractTest {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding"
+    SymmetricCipher symmetricCrypto = new SymmetricCipher(CSP_NAME, "AES/GCM/NoPadding"
         , secretKey, algParamsGCM);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);
@@ -90,7 +90,7 @@ class AlgorithmParameterHelperTest extends AbstractTest {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding"
+    SymmetricCipher symmetricCrypto = new SymmetricCipher(CSP_NAME, "AES/GCM/NoPadding"
         , secretKey, algParamsGCM);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);

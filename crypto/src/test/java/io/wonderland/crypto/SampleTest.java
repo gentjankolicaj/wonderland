@@ -20,10 +20,10 @@ class SampleTest extends AbstractTest {
 
     //Symmetric key
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG",
         16);
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/CBC/CTSPadding", secretKey,
+    SymmetricCipher symmetricCrypto = new SymmetricCipher(CSP_NAME, "AES/CBC/CTSPadding", secretKey,
         ivParameterSpec);
     byte[] symmetricKeyEncrypted = symmetricCrypto.encrypt(input.getBytes());
     byte[] symmetricKeyDecrypted = symmetricCrypto.decrypt(symmetricKeyEncrypted);
@@ -32,9 +32,9 @@ class SampleTest extends AbstractTest {
 
     //Asymmetric key
     KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 4096);
-    AsymmetricCrypto asymmetricCrypto = new AsymmetricCrypto(CSP_NAME, "RSA", keyPair);
-    byte[] asymmetricKeyEncrypted = asymmetricCrypto.encrypt(input.getBytes());
-    byte[] asymmetricKeyDecrypted = asymmetricCrypto.decrypt(asymmetricKeyEncrypted);
+    AsymmetricCipher asymmetricCipher = new AsymmetricCipher(CSP_NAME, "RSA", keyPair);
+    byte[] asymmetricKeyEncrypted = asymmetricCipher.encrypt(input.getBytes());
+    byte[] asymmetricKeyDecrypted = asymmetricCipher.decrypt(asymmetricKeyEncrypted);
     log.info("RSA encrypted : {}", new String(asymmetricKeyEncrypted));
     log.info("RSA decrypted : {}", new String(asymmetricKeyDecrypted));
 

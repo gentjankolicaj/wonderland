@@ -16,7 +16,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 @Slf4j
 @Getter
-public class AsymmetricCrypto implements Crypto {
+public class AsymmetricCipher implements ICipher {
 
   /**
    * cryptographic security provider
@@ -27,6 +27,20 @@ public class AsymmetricCrypto implements Crypto {
   private final Cipher decryptCipher;
 
   /**
+   * Instance is used for encrypt/decrypt with public-private keys.Default cryptographic service
+   * provider form CSP.INSTANCE_CONTEXT
+   *
+   * @param transformation cipher transformation
+   * @param encryptKey     encryption key (public | private key)
+   * @param decryptKey     decryption key (public | private key)
+   * @throws GeneralSecurityException wrapper exception
+   */
+  public AsymmetricCipher(String transformation, Key encryptKey, Key decryptKey)
+      throws GeneralSecurityException {
+    this(CSP.INSTANCE_CONTEXT.getProvider(), transformation, encryptKey, decryptKey);
+  }
+
+  /**
    * Instance is used for encrypt/decrypt with public-private keys.
    *
    * @param provider       cryptographic service provider CSP
@@ -35,14 +49,28 @@ public class AsymmetricCrypto implements Crypto {
    * @param decryptKey     decryption key (public | private key)
    * @throws GeneralSecurityException wrapper exception
    */
-  public AsymmetricCrypto(String provider, String transformation, Key encryptKey, Key decryptKey)
+  public AsymmetricCipher(String provider, String transformation, Key encryptKey, Key decryptKey)
       throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+    this.encryptCipher = ICipher.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
         encryptKey);
-    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+    this.decryptCipher = ICipher.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
         decryptKey);
+  }
+
+
+  /**
+   * Instance is used for encrypt/decrypt with public-private keys. Invoking this constructor sets
+   * up for encrypting with private-key and decrypting with public-key.Default cryptographic service
+   * provider form CSP.INSTANCE_CONTEXT
+   *
+   * @param transformation cipher transformation
+   * @param keyPair        public-private key pair
+   * @throws GeneralSecurityException wrapper exception
+   */
+  public AsymmetricCipher(String transformation, KeyPair keyPair) throws GeneralSecurityException {
+    this(CSP.INSTANCE_CONTEXT.getProvider(), transformation, keyPair);
   }
 
   /**
@@ -54,13 +82,13 @@ public class AsymmetricCrypto implements Crypto {
    * @param keyPair        public-private key pair
    * @throws GeneralSecurityException wrapper exception
    */
-  public AsymmetricCrypto(String provider, String transformation, KeyPair keyPair)
+  public AsymmetricCipher(String provider, String transformation, KeyPair keyPair)
       throws GeneralSecurityException {
     this.provider = provider;
     this.transformation = transformation;
-    this.encryptCipher = Crypto.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
+    this.encryptCipher = ICipher.createCipher(transformation, provider, Cipher.ENCRYPT_MODE,
         keyPair.getPrivate());
-    this.decryptCipher = Crypto.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
+    this.decryptCipher = ICipher.createCipher(transformation, provider, Cipher.DECRYPT_MODE,
         keyPair.getPublic());
   }
 
@@ -72,7 +100,7 @@ public class AsymmetricCrypto implements Crypto {
       }
       return this.encryptCipher.update(input);
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 
@@ -84,7 +112,7 @@ public class AsymmetricCrypto implements Crypto {
       }
       return this.encryptCipher.update(input, output);
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 
@@ -96,7 +124,7 @@ public class AsymmetricCrypto implements Crypto {
       }
       return this.encryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 
@@ -105,7 +133,7 @@ public class AsymmetricCrypto implements Crypto {
     try {
       return this.encryptCipher.doFinal();
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 
@@ -117,7 +145,7 @@ public class AsymmetricCrypto implements Crypto {
       }
       return this.decryptCipher.update(input);
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 
@@ -129,7 +157,7 @@ public class AsymmetricCrypto implements Crypto {
       }
       return this.decryptCipher.update(input, output);
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 
@@ -140,7 +168,7 @@ public class AsymmetricCrypto implements Crypto {
       }
       return this.decryptCipher.doFinal(input);
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 
@@ -148,7 +176,7 @@ public class AsymmetricCrypto implements Crypto {
     try {
       return this.decryptCipher.doFinal();
     } catch (Exception e) {
-      throw new AsymmetricCryptoException(e);
+      throw new AsymmetricCipherException(e);
     }
   }
 

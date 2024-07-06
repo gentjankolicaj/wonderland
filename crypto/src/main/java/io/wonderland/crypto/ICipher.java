@@ -8,7 +8,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
-public interface Crypto {
+public interface ICipher {
 
   static Cipher createCipher(String transformation, String provider, int opmode, Key key)
       throws GeneralSecurityException {
@@ -18,16 +18,15 @@ public interface Crypto {
   }
 
   static Cipher createCipher(String transformation, String provider, int opmode,
-      SecretKey secretKey)
-      throws GeneralSecurityException {
+      SecretKey secretKey) throws GeneralSecurityException {
     Cipher cipher = Cipher.getInstance(transformation, provider);
     cipher.init(opmode, secretKey);
     return cipher;
   }
 
   static Cipher createCipher(String transformation, String provider, int opmode,
-      SecretKey secretKey,
-      AlgorithmParameterSpec algorithmParameterSpec) throws GeneralSecurityException {
+      SecretKey secretKey, AlgorithmParameterSpec algorithmParameterSpec)
+      throws GeneralSecurityException {
     Cipher cipher = Cipher.getInstance(transformation, provider);
     cipher.init(opmode, secretKey, algorithmParameterSpec);
     return cipher;
@@ -35,8 +34,7 @@ public interface Crypto {
   }
 
   static Cipher createCipher(String transformation, String provider, int opmode,
-      SecretKey secretKey,
-      AlgorithmParameters algorithmParameters)
+      SecretKey secretKey, AlgorithmParameters algorithmParameters)
       throws GeneralSecurityException {
     Cipher cipher = Cipher.getInstance(transformation, provider);
     cipher.init(opmode, secretKey, algorithmParameters);
