@@ -9,10 +9,9 @@ public final class CSP {
    * classes.
    */
   public static final String BC = "BC";
-  public static final String Sun = "Sun";
+  public static final String SUN = "SUN";
   public static final String SunJCE = "SunJCE";
 
-  public static final CSPContext STATIC_CONTEXT = new CSPContextImpl(BC);
   public static final CSPContext INSTANCE_CONTEXT = new CSPContextImpl(BC);
 
   private CSP() {

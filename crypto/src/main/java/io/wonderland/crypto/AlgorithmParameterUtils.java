@@ -7,78 +7,74 @@ import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class AlgorithmParameterUtils {
-
-  public static final String ALGORITHM_CAN_T_BE_EMPTY = "Algorithm can't be empty.";
 
 
   private AlgorithmParameterUtils() {
   }
 
 
-  public static IvParameterSpec generateIvParameterSpec(String secureRandomAlgorithm,
-      int vectorLength) throws GeneralSecurityException {
-    if (StringUtils.isEmpty(secureRandomAlgorithm)) {
-      throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
-    }
-    SecureRandom secureRandom = SecureRandom.getInstance(secureRandomAlgorithm);
-    byte[] vector = new byte[vectorLength];
+  /**
+   * @param provider              cryptographic service provider
+   * @param secureRandomAlgorithm random algorithm
+   * @param vectorSize            random vector size
+   * @return
+   * @throws GeneralSecurityException
+   */
+  public static IvParameterSpec generateIvParameterSpec(String provider,
+      String secureRandomAlgorithm, int vectorSize) throws GeneralSecurityException {
+    SecureRandom secureRandom = SecureRandom.getInstance(secureRandomAlgorithm, provider);
+    byte[] vector = new byte[vectorSize];
     secureRandom.nextBytes(vector);
     return new IvParameterSpec(vector);
   }
 
   /**
+   * @param provider cryptographic service provider
    * @param algorithm name
    * @return Algorithm parameter generator
    * @throws GeneralSecurityException exception
    */
-  public static AlgorithmParameterGenerator getAlgorithmParamGen(String algorithm)
+  public static AlgorithmParameterGenerator getAlgorithmParamGen(String provider,String algorithm)
       throws GeneralSecurityException {
-    if (StringUtils.isEmpty(algorithm)) {
-      throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
-    }
-    return AlgorithmParameterGenerator.getInstance(algorithm, CSP.BC);
+    return AlgorithmParameterGenerator.getInstance(algorithm, provider);
   }
 
+
   /**
+   * @param provider cryptographic service provider
    * @param algorithm name
    * @return Algorithm parameter generator
    * @throws GeneralSecurityException exception
    */
-  public static AlgorithmParameterGenerator getAlgorithmParamGen(String algorithm, int keySize)
-      throws GeneralSecurityException {
-    if (StringUtils.isEmpty(algorithm)) {
-      throw new IllegalArgumentException(ALGORITHM_CAN_T_BE_EMPTY);
-    }
+  public static AlgorithmParameterGenerator getAlgorithmParamGen(String provider, String algorithm,
+      int keySize) throws GeneralSecurityException {
     AlgorithmParameterGenerator generator = AlgorithmParameterGenerator.getInstance(algorithm,
-        CSP.BC);
+        provider);
     generator.init(keySize);
     return generator;
   }
 
-  public static AlgorithmParameters generateAlgorithmParameters(String algorithm)
+  public static AlgorithmParameters generateAlgorithmParameters(String provider,String algorithm)
       throws GeneralSecurityException {
-    return getAlgorithmParamGen(algorithm).generateParameters();
+    return getAlgorithmParamGen(provider, algorithm).generateParameters();
   }
 
-  public static AlgorithmParameters generateAlgorithmParameters(String algorithm, int keySize)
-      throws GeneralSecurityException {
-    return getAlgorithmParamGen(algorithm, keySize).generateParameters();
+  public static AlgorithmParameters generateAlgorithmParameters(String provider, String algorithm,
+      int keySize) throws GeneralSecurityException {
+    return getAlgorithmParamGen(provider, algorithm, keySize).generateParameters();
   }
 
-  public static <T extends AlgorithmParameterSpec> T generateAlgorithmParameterSpec(
-      String algorithm,
-      Class<T> paramSpec) throws GeneralSecurityException {
-    return generateAlgorithmParameters(algorithm).getParameterSpec(paramSpec);
+  public static <T extends AlgorithmParameterSpec> T generateAlgorithmParameterSpec(String provider
+      , String algorithm, Class<T> paramSpec) throws GeneralSecurityException {
+    return generateAlgorithmParameters(provider, algorithm).getParameterSpec(paramSpec);
   }
 
-  public static <T extends AlgorithmParameterSpec> T generateAlgorithmParameterSpec(
-      String algorithm, int keySize,
-      Class<T> paramSpec) throws GeneralSecurityException {
-    return generateAlgorithmParameters(algorithm, keySize).getParameterSpec(paramSpec);
+  public static <T extends AlgorithmParameterSpec> T generateAlgorithmParameterSpec(String provider,
+      String algorithm, int keySize, Class<T> paramSpec) throws GeneralSecurityException {
+    return generateAlgorithmParameters(provider, algorithm, keySize).getParameterSpec(paramSpec);
   }
 
 

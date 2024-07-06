@@ -3,22 +3,15 @@ package io.wonderland.crypto;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.Security;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.com.google.common.io.BaseEncoding;
 
 @Slf4j
-class SampleTest {
+class SampleTest extends AbstractTest {
 
-  static final String BC_CSP = "BC";
-
-  static {
-    Security.addProvider(new BouncyCastleProvider());
-  }
 
   @Test
   void sample() throws GeneralSecurityException {
@@ -27,9 +20,10 @@ class SampleTest {
 
     //Symmetric key
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG",
         16);
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(BC_CSP, "AES/CBC/CTSPadding", secretKey,
+    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/CBC/CTSPadding", secretKey,
         ivParameterSpec);
     byte[] symmetricKeyEncrypted = symmetricCrypto.encrypt(input.getBytes());
     byte[] symmetricKeyDecrypted = symmetricCrypto.decrypt(symmetricKeyEncrypted);
@@ -38,7 +32,7 @@ class SampleTest {
 
     //Asymmetric key
     KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 4096);
-    AsymmetricCrypto asymmetricCrypto = new AsymmetricCrypto(BC_CSP, "RSA", keyPair);
+    AsymmetricCrypto asymmetricCrypto = new AsymmetricCrypto(CSP_NAME, "RSA", keyPair);
     byte[] asymmetricKeyEncrypted = asymmetricCrypto.encrypt(input.getBytes());
     byte[] asymmetricKeyDecrypted = asymmetricCrypto.decrypt(asymmetricKeyEncrypted);
     log.info("RSA encrypted : {}", new String(asymmetricKeyEncrypted));

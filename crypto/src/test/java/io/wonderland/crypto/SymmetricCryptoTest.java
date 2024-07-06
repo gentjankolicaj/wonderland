@@ -4,21 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.security.GeneralSecurityException;
-import java.security.Security;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jcajce.spec.AEADParameterSpec;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class SymmetricCryptoTest {
+class SymmetricCryptoTest extends AbstractTest {
 
-
-  static {
-    Security.addProvider(new BouncyCastleProvider());
-  }
 
 
   @Test
@@ -30,15 +24,17 @@ class SymmetricCryptoTest {
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //positive test case
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/ECB/NoPadding", secretKey);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME, "AES/ECB/NoPadding",
+        secretKey);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(input0.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(input0.getBytes());
 
     //negative test case
-    IvParameterSpec iv = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG", 16);
+    IvParameterSpec iv = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 16);
     assertThatThrownBy(
-        () -> new SymmetricCrypto(CSP.BC, "AES/ECB/NoPadding", secretKey, iv))
+        () -> new SymmetricCrypto(CSP_NAME, "AES/ECB/NoPadding", secretKey, iv))
         .isInstanceOf(GeneralSecurityException.class);
 
     //encrypt
@@ -59,13 +55,13 @@ class SymmetricCryptoTest {
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
     //negative test case
-    assertThatThrownBy(() -> new SymmetricCrypto(CSP.BC, "AES/CBC/NoPadding", secretKey))
+    assertThatThrownBy(() -> new SymmetricCrypto(CSP_NAME, "AES/CBC/NoPadding", secretKey))
         .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        16);
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/CBC/NoPadding", secretKey,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 16);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME, "AES/CBC/NoPadding", secretKey,
         ivParameterSpec);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
@@ -79,13 +75,13 @@ class SymmetricCryptoTest {
 
     //negative test case
     assertThatThrownBy(
-        () -> new SymmetricCrypto(CSP.BC, "AES/CTR/NoPadding", secretKey)).isInstanceOf(
+        () -> new SymmetricCrypto(CSP_NAME, "AES/CTR/NoPadding", secretKey)).isInstanceOf(
         GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        16);
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/CTR/NoPadding", secretKey,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 16);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME, "AES/CTR/NoPadding", secretKey,
         ivParameterSpec);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
@@ -99,13 +95,14 @@ class SymmetricCryptoTest {
 
     //negative test case
     assertThatThrownBy(
-        () -> new SymmetricCrypto(CSP.BC, "AES/CBC/CTSPadding", secretKey)).isInstanceOf(
+        () -> new SymmetricCrypto(CSP_NAME, "AES/CBC/CTSPadding", secretKey)).isInstanceOf(
         GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        16);
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/CBC/CTSPadding", secretKey,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 16);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME, "AES/CBC/CTSPadding",
+        secretKey,
         ivParameterSpec);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
@@ -118,14 +115,14 @@ class SymmetricCryptoTest {
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("ChaCha7539");
 
     //negative test case
-    assertThatThrownBy(() -> new SymmetricCrypto(CSP.BC, "ChaCha7539", secretKey)).isInstanceOf(
-        GeneralSecurityException.class);
+    assertThatThrownBy(() -> new SymmetricCrypto(CSP_NAME, "ChaCha7539", secretKey))
+        .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        12);
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "ChaCha7539", secretKey,
-        ivParameterSpec);
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 12);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME, "ChaCha7539",
+        secretKey, ivParameterSpec);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(plainText.getBytes());
@@ -140,16 +137,16 @@ class SymmetricCryptoTest {
 
     //negative test case
     assertThatThrownBy(
-        () -> new SymmetricCrypto(CSP.BC, "AES/CCM/NoPadding", secretKey)).isInstanceOf(
-        GeneralSecurityException.class);
+        () -> new SymmetricCrypto(CSP_NAME, "AES/CCM/NoPadding", secretKey))
+        .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        12);
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 12);
     AEADParameterSpec spec = new AEADParameterSpec(ivParameterSpec.getIV(), 128, aad);
 
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/CCM/NoPadding", secretKey,
-        spec);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME,
+        "AES/CCM/NoPadding", secretKey, spec);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(plainText.getBytes());
@@ -163,16 +160,16 @@ class SymmetricCryptoTest {
 
     //negative test case
     assertThatThrownBy(
-        () -> new SymmetricCrypto(CSP.BC, "AES/EAX/NoPadding", secretKey)).isInstanceOf(
-        GeneralSecurityException.class);
+        () -> new SymmetricCrypto(CSP.BC, "AES/EAX/NoPadding", secretKey))
+        .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        12);
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 12);
     AEADParameterSpec spec = new AEADParameterSpec(ivParameterSpec.getIV(), 128, aad);
 
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/EAX/NoPadding", secretKey,
-        spec);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME,
+        "AES/EAX/NoPadding", secretKey, spec);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(plainText.getBytes());
@@ -187,28 +184,28 @@ class SymmetricCryptoTest {
 
     //negative test case
     assertThatThrownBy(
-        () -> new SymmetricCrypto(CSP.BC, "AES/GCM/NoPadding", secretKey)).isInstanceOf(
-        GeneralSecurityException.class);
+        () -> new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding", secretKey))
+        .isInstanceOf(GeneralSecurityException.class);
 
     //positive test case
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        12);
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 12);
     AEADParameterSpec spec = new AEADParameterSpec(ivParameterSpec.getIV(), 128, aad);
 
-    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP.BC, "AES/GCM/NoPadding", secretKey,
-        spec);
+    SymmetricCrypto symmetricCrypto0 = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding",
+        secretKey, spec);
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(plainText.getBytes());
 
 
     //positive test case
-    IvParameterSpec ivParameterSpec1 = AlgorithmParameterUtils.generateIvParameterSpec("SHA1PRNG",
-        12);
+    IvParameterSpec ivParameterSpec1 = AlgorithmParameterUtils.generateIvParameterSpec(CSP_NAME,
+        "SHA1PRNG", 12);
     AEADParameterSpec spec1 = new AEADParameterSpec(ivParameterSpec1.getIV(), 128);
 
-    SymmetricCrypto symmetricCrypto1 = new SymmetricCrypto(CSP.BC, "AES/GCM/NoPadding",
-        secretKey, spec1);
+    SymmetricCrypto symmetricCrypto1 = new SymmetricCrypto(CSP_NAME,
+        "AES/GCM/NoPadding", secretKey, spec1);
     byte[] encryptedInput1 = symmetricCrypto1.encrypt(plainText.getBytes());
     byte[] decryptedInput1 = symmetricCrypto1.decrypt(encryptedInput1);
     assertThat(decryptedInput1).containsExactly(plainText.getBytes());

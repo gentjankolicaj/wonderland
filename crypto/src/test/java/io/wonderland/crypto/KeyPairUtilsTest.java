@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class KeyPairUtilsTest {
+class KeyPairUtilsTest extends AbstractTest {
 
   @Test
   void logSetup() {
@@ -132,7 +132,7 @@ class KeyPairUtilsTest {
 
     //second key pair with algorithm parameter specs
     AlgorithmParameters dhAlgorithmParams = AlgorithmParameterUtils.generateAlgorithmParameters(
-        "DH");
+        CSP_NAME, "DH");
     KeyPair dhKeyPair1 = KeyPairUtils.generateKeyPair("DH",
         dhAlgorithmParams.getParameterSpec(DHParameterSpec.class));
     assertThat(dhKeyPair1).isNotNull();

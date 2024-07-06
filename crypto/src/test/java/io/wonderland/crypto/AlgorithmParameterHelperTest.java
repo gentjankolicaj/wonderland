@@ -13,26 +13,37 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class AlgorithmParameterUtilsTest extends AbstractTest {
+class AlgorithmParameterHelperTest extends AbstractTest {
+
+
+  @Test
+  void constructors() {
+    AlgorithmParameterHelper algorithmParameterHelper = new AlgorithmParameterHelper();
+    assertThat(algorithmParameterHelper.getProvider()).isEqualTo(
+        CSP.INSTANCE_CONTEXT.getProvider());
+
+    algorithmParameterHelper = new AlgorithmParameterHelper(CSP.SunJCE);
+    assertThat(algorithmParameterHelper.getProvider()).isEqualTo(CSP.SunJCE);
+  }
 
 
   @Test
   void generateIvParameterSpec() throws GeneralSecurityException {
-    assertThat(
-        AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN, "SHA1PRNG", 16)).isNotNull();
+    AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper(CSP.SUN);
+    assertThat(algParamHelper.generateIvParameterSpec("SHA1PRNG", 16)).isNotNull();
   }
 
   @Test
   void getAlgorithmParamGen() throws GeneralSecurityException {
-    AlgorithmParameterGenerator algorithmParamGen = AlgorithmParameterUtils.getAlgorithmParamGen(
-        CSP_NAME, "GCM");
+    AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
+    AlgorithmParameterGenerator algorithmParamGen = algParamHelper.getAlgorithmParamGen("GCM");
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding", secretKey,
-        algParamsGCM);
+    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding"
+        , secretKey, algParamsGCM);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(input.getBytes());
@@ -40,14 +51,14 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
 
   @Test
   void generateAlgorithmParameters() throws GeneralSecurityException {
-    AlgorithmParameters algorithmParameters = AlgorithmParameterUtils.generateAlgorithmParameters(
-        CSP_NAME, "CCM");
+    AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
+    AlgorithmParameters algorithmParameters = algParamHelper.generateAlgorithmParameters("CCM");
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/CCM/NoPadding", secretKey,
-        algorithmParameters);
+    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/CCM/NoPadding"
+        , secretKey, algorithmParameters);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(input.getBytes());
@@ -55,15 +66,16 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
 
   @Test
   void getAlgorithmParameterWithKeySize() throws GeneralSecurityException {
-    AlgorithmParameterGenerator algorithmParamGen = AlgorithmParameterUtils.getAlgorithmParamGen(
-        CSP_NAME, "GCM", 256);
+    AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
+    AlgorithmParameterGenerator algorithmParamGen = algParamHelper.getAlgorithmParamGen(
+        "GCM", 256);
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding", secretKey,
-        algParamsGCM);
+    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding"
+        , secretKey, algParamsGCM);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(input.getBytes());
@@ -71,25 +83,27 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
 
   @Test
   void generateAlgorithmParametersWithKeySize() throws GeneralSecurityException {
-    AlgorithmParameters algParamsGCM = AlgorithmParameterUtils.generateAlgorithmParameters(CSP_NAME,
-        "GCM",
+    AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
+    AlgorithmParameters algParamsGCM = algParamHelper.generateAlgorithmParameters("GCM",
         256);
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
 
-    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding", secretKey,
-        algParamsGCM);
+    SymmetricCrypto symmetricCrypto = new SymmetricCrypto(CSP_NAME, "AES/GCM/NoPadding"
+        , secretKey, algParamsGCM);
     byte[] encryptedInput0 = symmetricCrypto.encrypt(input.getBytes());
     byte[] decryptedInput0 = symmetricCrypto.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(input.getBytes());
+
   }
 
   @Test
   @Disabled("Disabled because of performance")
   void generateAlgorithmParameterSpec() throws GeneralSecurityException {
-    DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec(
-        CSP_NAME, "DH", DHParameterSpec.class);
+    AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
+    DHParameterSpec dhParameterSpec = algParamHelper.generateAlgorithmParameterSpec("DH",
+        DHParameterSpec.class);
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
@@ -98,8 +112,10 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
 
   @Test
   void generateAlgorithmParameterSpecWithKeySize() throws GeneralSecurityException {
-    DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec(
-        CSP_NAME, "DH", 256, DHParameterSpec.class);
+    AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
+    DHParameterSpec dhParameterSpec = algParamHelper.generateAlgorithmParameterSpec("DH",
+        256,
+        DHParameterSpec.class);
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
