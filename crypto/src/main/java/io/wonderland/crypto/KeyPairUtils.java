@@ -166,6 +166,12 @@ public class KeyPairUtils {
     return keyPairGenerator.generateKeyPair();
   }
 
+  public static KeyPair generateKeyPair(String provider, String algorithm)
+      throws GeneralSecurityException {
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, provider);
+    return keyPairGenerator.generateKeyPair();
+  }
+
   public static KeyPair generateKeyPair(String algorithm, int keySize)
       throws GeneralSecurityException {
     if (StringUtils.isEmpty(algorithm)) {

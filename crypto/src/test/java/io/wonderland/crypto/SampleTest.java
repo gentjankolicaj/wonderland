@@ -19,7 +19,7 @@ class SampleTest extends AbstractTest {
     log.info("Input : {}", input);
 
     //Symmetric key
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
     IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
         "SHA1PRNG",
         16);

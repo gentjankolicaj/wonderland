@@ -15,18 +15,16 @@ import javax.security.auth.x500.X500PrivateCredential;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class KeyStoreUtils {
+public final class KeyStoreUtils {
 
-  private final String provider;
 
-  public KeyStoreUtils(String provider) {
-    this.provider = provider;
+  private KeyStoreUtils() {
   }
 
+
   public static PrivateKey getPrivateKey(String provider, Path keystorePath,
-      KeyStoreType keyStoreType,
-      String keystorePassword,
-      String alias) throws GeneralSecurityException, IOException {
+      KeyStoreType keyStoreType, String keystorePassword, String alias)
+      throws GeneralSecurityException, IOException {
     KeyStore keystore = KeyStore.getInstance(keyStoreType.getName(), provider);
     keystore.load(new FileInputStream(keystorePath.toFile()), keystorePassword.toCharArray());
     return (PrivateKey) keystore.getKey(alias, keystorePassword.toCharArray());
@@ -34,9 +32,8 @@ public class KeyStoreUtils {
 
 
   public static PublicKey getPublicKey(String provider, Path keystorePath,
-      KeyStoreType keyStoreType,
-      String keystorePassword,
-      String alias) throws GeneralSecurityException, IOException {
+      KeyStoreType keyStoreType, String keystorePassword, String alias)
+      throws GeneralSecurityException, IOException {
     KeyStore keystore = KeyStore.getInstance(keyStoreType.getName(), provider);
     keystore.load(new FileInputStream(keystorePath.toFile()), keystorePassword.toCharArray());
     Certificate certificate = keystore.getCertificate(alias);
@@ -44,8 +41,7 @@ public class KeyStoreUtils {
   }
 
   public static KeyPair getKeyPair(String provider, Path keystorePath, KeyStoreType keyStoreType,
-      String keystorePassword,
-      String alias) throws GeneralSecurityException, IOException {
+      String keystorePassword, String alias) throws GeneralSecurityException, IOException {
     KeyStore keystore = KeyStore.getInstance(keyStoreType.getName(), provider);
     keystore.load(new FileInputStream(keystorePath.toFile()), keystorePassword.toCharArray());
     Key key = keystore.getKey(alias, keystorePassword.toCharArray());

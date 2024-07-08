@@ -302,7 +302,7 @@ class KeyPairUtilsTest extends AbstractTest {
   @Test
   void wrapKey() throws GeneralSecurityException {
     KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
-    SecretKey aesKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
 
     assertThat(
         KeyPairUtils.wrapKey("RSA/NONE/OAEPwithSHA256andMGF1Padding", rsaKeyPair.getPublic(),
@@ -313,7 +313,7 @@ class KeyPairUtilsTest extends AbstractTest {
   @Test
   void unwrapKey() throws GeneralSecurityException {
     KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
-    SecretKey aesKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
     byte[] wrappedKey = KeyPairUtils.wrapKey("RSA/NONE/OAEPwithSHA256andMGF1Padding",
         rsaKeyPair.getPublic(), aesKey);
     Key key = KeyPairUtils.unwrapKey("RSA/NONE/OAEPwithSHA256andMGF1Padding",
@@ -328,7 +328,7 @@ class KeyPairUtilsTest extends AbstractTest {
   @Test
   void unwrapKeyElGamal() throws GeneralSecurityException {
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", 2048);
-    SecretKey aesKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
 
     byte[] wrappedKey = KeyPairUtils.wrapKey("ElGamal/NONE/OAEPwithSHA256andMGF1Padding",
         dhKeyPair.getPublic(), aesKey);

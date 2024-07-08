@@ -5,7 +5,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class AbstractTest {
 
-  static final String CSP_NAME = "BC";
+  protected static final String CSP_NAME = "BC";
 
   static {
     Security.addProvider(new BouncyCastleProvider());

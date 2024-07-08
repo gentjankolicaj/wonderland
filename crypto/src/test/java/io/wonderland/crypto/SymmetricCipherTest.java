@@ -13,11 +13,12 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 class SymmetricCipherTest extends AbstractTest {
 
+  String aes = "AES";
 
   @Test
   void constructors() throws GeneralSecurityException {
-    String algorithm = "AES";
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey(algorithm);
+    String algorithm = aes;
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, algorithm);
 
     SymmetricCipher symmetricCipher = new SymmetricCipher(algorithm, secretKey);
     assertThat(symmetricCipher.getProvider()).isEqualTo(CSP.INSTANCE_CONTEXT.getProvider());
@@ -55,7 +56,7 @@ class SymmetricCipherTest extends AbstractTest {
     String input1 = "12344455";
     String input2 = "1234445523456";
 
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
 
     //positive test case
     SymmetricCipher symmetricCrypto0 = new SymmetricCipher(CSP_NAME, "AES/ECB/NoPadding",
@@ -86,7 +87,7 @@ class SymmetricCipherTest extends AbstractTest {
   @Test
   void cbcNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
 
     //negative test case
     assertThatThrownBy(() -> new SymmetricCipher(CSP_NAME, "AES/CBC/NoPadding", secretKey))
@@ -105,7 +106,7 @@ class SymmetricCipherTest extends AbstractTest {
   @Test
   void ctrNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
 
     //negative test case
     assertThatThrownBy(
@@ -125,7 +126,7 @@ class SymmetricCipherTest extends AbstractTest {
   @Test
   void cbcCTSPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
 
     //negative test case
     assertThatThrownBy(
@@ -146,7 +147,7 @@ class SymmetricCipherTest extends AbstractTest {
   @Test
   void chacha7539() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("ChaCha7539");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "ChaCha7539");
 
     //negative test case
     assertThatThrownBy(() -> new SymmetricCipher(CSP_NAME, "ChaCha7539", secretKey))
@@ -167,7 +168,7 @@ class SymmetricCipherTest extends AbstractTest {
   void ccmNoPaddingWithADD() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     byte[] aad = "Additional associated data".getBytes();
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
 
     //negative test case
     assertThatThrownBy(
@@ -190,7 +191,7 @@ class SymmetricCipherTest extends AbstractTest {
   void eaxNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     byte[] aad = "Additional associated data".getBytes();
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
 
     //negative test case
     assertThatThrownBy(
@@ -214,7 +215,7 @@ class SymmetricCipherTest extends AbstractTest {
   void gcmNoPadding() throws GeneralSecurityException {
     String plainText = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     byte[] aad = "Additional associated data".getBytes();
-    SecretKey secretKey = SecretKeyUtils.generateSecretKey("AES");
+    SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
 
     //negative test case
     assertThatThrownBy(

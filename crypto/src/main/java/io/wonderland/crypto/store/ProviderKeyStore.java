@@ -1,5 +1,6 @@
 package io.wonderland.crypto.store;
 
+import io.wonderland.crypto.CSP;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,6 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ProviderKeyStore {
 
   private final String provider;
+
+  public ProviderKeyStore() {
+    this(CSP.INSTANCE_CONTEXT.getProvider());
+  }
 
   public ProviderKeyStore(String provider) {
     this.provider = provider;

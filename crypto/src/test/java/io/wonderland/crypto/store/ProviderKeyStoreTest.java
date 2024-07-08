@@ -3,33 +3,27 @@ package io.wonderland.crypto.store;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.wonderland.crypto.AbstractTest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Security;
 import java.security.cert.Certificate;
 import java.util.Objects;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class BCKeyStoreTest {
-
-  static final String CSP = "BC";
-
-  static {
-    Security.addProvider(new BouncyCastleProvider());
-  }
+class ProviderKeyStoreTest extends AbstractTest {
 
   private ProviderKeyStore bcKeyStore;
 
   @BeforeEach
   void before() {
-    bcKeyStore = new ProviderKeyStore(CSP);
+    bcKeyStore = new ProviderKeyStore(CSP_NAME);
   }
+
 
   @Test
   void getPrivateKey() throws GeneralSecurityException, IOException {

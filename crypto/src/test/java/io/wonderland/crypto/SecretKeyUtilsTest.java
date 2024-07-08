@@ -3,19 +3,45 @@ package io.wonderland.crypto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.security.GeneralSecurityException;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.SecureRandom;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class SecretKeyUtilsTest {
+class SecretKeyUtilsTest extends AbstractTest {
 
+  @Test
+  void createGenerator() throws GeneralSecurityException {
+    assertThat(SecretKeyUtils.createGenerator(CSP_NAME, "HmacSHA256")).isNotNull();
+  }
 
   @Test
   void generateSecretKey() throws GeneralSecurityException {
-    assertThat(SecretKeyUtils.generateSecretKey("HmacSHA256")).isNotNull();
-    assertThat(SecretKeyUtils.generateSecretKey("AES")).isNotNull();
+    assertThat(SecretKeyUtils.generateSecretKey(CSP_NAME, "HmacSHA256")).isNotNull();
+    assertThat(SecretKeyUtils.generateSecretKey(CSP_NAME, "AES")).isNotNull();
+  }
+
+  @Test
+  void generateSecretKey2() throws GeneralSecurityException {
+    SecretKey hmacKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "HmacSHA256", 256);
+    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES", 256);
+    assertThat(hmacKey.getEncoded()).hasSize(256 / 8).isNotNull();
+    assertThat(aesKey.getEncoded()).hasSize(256 / 8).isNotNull();
+  }
+
+  @Test
+  void generateSecretKey3() throws GeneralSecurityException {
+    SecretKey hmacKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "HmacSHA256", 256,
+        new SecureRandom());
+    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES", 256, new SecureRandom());
+    assertThat(hmacKey.getEncoded()).hasSize(256 / 8).isNotNull();
+    assertThat(aesKey.getEncoded()).hasSize(256 / 8).isNotNull();
   }
 
   @Test
@@ -50,6 +76,18 @@ class SecretKeyUtilsTest {
         .hasSize(256);
     log.debug("generateSCRYPT() : {}",
         new String(SecretKeyUtils.generateSCRYPT(input.toCharArray(), salt, 2, 4, 2, 64)));
+  }
+
+  @Disabled("To study key wrapping")
+  @Test
+  void keyWrapping() throws GeneralSecurityException {
+    SecretKey aes = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA");
+
+    byte[] wrappedKey = SecretKeyUtils.wrapKey(CSP_NAME, "AESKW", keyPair.getPublic(), aes);
+    Key unwrappedKey = SecretKeyUtils.unwrapKey(CSP_NAME, "AESKW", keyPair.getPrivate(),
+        wrappedKey, "AES", 1);
+    assertThat(unwrappedKey.getEncoded()).containsExactly(aes.getEncoded());
   }
 
 }
