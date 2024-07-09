@@ -16,7 +16,8 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>
-    <bouncycastle.version>1.78</bouncycastle.version>
+    <bc.pkix.version>1.78</bc.pkix.version>
+    <bc.prov.version>1.78</bc.prov.version>
     <conscrypt.version>2.5.2</conscrypt.version>
     <java.version>11</java.version>
     <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
@@ -126,12 +127,12 @@
     <dependency>
       <artifactId>bcpkix-jdk18on</artifactId>
       <groupId>org.bouncycastle</groupId>
-      <version>${bouncycastle.version}</version>
+      <version>${bc.pkix.version}</version>
     </dependency>
     <dependency>
       <artifactId>bcprov-jdk18on</artifactId>
       <groupId>org.bouncycastle</groupId>
-      <version>${bouncycastle.version}</version>
+      <version>${bc.prov.version}</version>
     </dependency>
 
     <!-- multiple dependencies because of uber jar -->
