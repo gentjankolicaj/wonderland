@@ -16,7 +16,7 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>
-    <bouncycastle.version>1.77</bouncycastle.version>
+    <bouncycastle.version>1.78</bouncycastle.version>
     <conscrypt.version>2.5.2</conscrypt.version>
     <java.version>11</java.version>
     <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
