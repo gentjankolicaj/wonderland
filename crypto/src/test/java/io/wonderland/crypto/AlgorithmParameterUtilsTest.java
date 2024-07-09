@@ -95,7 +95,7 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
   void generateAlgorithmParameterSpec() throws GeneralSecurityException {
     DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec(
         CSP_NAME, "DH", DHParameterSpec.class);
-    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
+    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
     assertThat(dhKeyPair.getPublic()).isNotNull();
@@ -105,7 +105,7 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
   void generateAlgorithmParameterSpecWithKeySize() throws GeneralSecurityException {
     DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec(
         CSP_NAME, "DH", 256, DHParameterSpec.class);
-    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
+    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
     assertThat(dhKeyPair.getPublic()).isNotNull();

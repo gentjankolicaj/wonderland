@@ -31,7 +31,7 @@ class SampleTest extends AbstractTest {
     log.info("AES/CBC/CTSPadding decrypted : {}", new String(symmetricKeyDecrypted));
 
     //Asymmetric key
-    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 4096);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 4096);
     AsymmetricCipher asymmetricCipher = new AsymmetricCipher(CSP_NAME, "RSA", keyPair);
     byte[] asymmetricKeyEncrypted = asymmetricCipher.encrypt(input.getBytes());
     byte[] asymmetricKeyDecrypted = asymmetricCipher.decrypt(asymmetricKeyEncrypted);

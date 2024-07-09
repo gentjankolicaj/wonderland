@@ -104,7 +104,7 @@ class AlgorithmParameterHelperTest extends AbstractTest {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
     DHParameterSpec dhParameterSpec = algParamHelper.generateAlgorithmParameterSpec("DH",
         DHParameterSpec.class);
-    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
+    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
     assertThat(dhKeyPair.getPublic()).isNotNull();
@@ -116,7 +116,7 @@ class AlgorithmParameterHelperTest extends AbstractTest {
     DHParameterSpec dhParameterSpec = algParamHelper.generateAlgorithmParameterSpec("DH",
         256,
         DHParameterSpec.class);
-    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair("DH", dhParameterSpec);
+    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();
     assertThat(dhKeyPair.getPublic()).isNotNull();

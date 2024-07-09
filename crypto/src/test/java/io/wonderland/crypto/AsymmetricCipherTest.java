@@ -16,7 +16,7 @@ class AsymmetricCipherTest extends AbstractTest {
   @Test
   void constructors() throws GeneralSecurityException {
     String algorithm = "RSA";
-    KeyPair keyPair = KeyPairUtils.generateKeyPair(algorithm, 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, algorithm, 2048);
 
     AsymmetricCipher asymmetricCipher = new AsymmetricCipher(algorithm, keyPair);
     assertThat(asymmetricCipher.getProvider()).isEqualTo(CSP.INSTANCE_CONTEXT.getProvider());
@@ -35,7 +35,7 @@ class AsymmetricCipherTest extends AbstractTest {
 
   @Test
   void invalidArguments() throws GeneralSecurityException {
-    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
 
     //negative tests
     assertThatThrownBy(() -> new AsymmetricCipher(CSP_NAME, "RSA", null)).isInstanceOf(
@@ -48,7 +48,7 @@ class AsymmetricCipherTest extends AbstractTest {
 
   @Test
   void cipherWithKey() throws GeneralSecurityException {
-    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
 
     String input0 = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     String input1 = "12344455";
@@ -99,7 +99,7 @@ class AsymmetricCipherTest extends AbstractTest {
 
   @Test
   void cipherWithKeyPair() throws GeneralSecurityException {
-    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
 
     String input0 = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
     String input1 = "12344455";
@@ -130,7 +130,7 @@ class AsymmetricCipherTest extends AbstractTest {
 
   @Test
   void cipherFields() throws GeneralSecurityException {
-    KeyPair keyPair = KeyPairUtils.generateKeyPair("RSA", 2048);
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
 
     //positive test, encrypt with public-key & decrypt with private-key
     AsymmetricCipher asymmetricCipher = new AsymmetricCipher(CSP_NAME, "RSA", keyPair);
