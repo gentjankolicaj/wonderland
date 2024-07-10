@@ -51,7 +51,6 @@ public final class KeyPairUtils {
   }
 
 
-
   /**
    * <br>On handling pem file keys : <a href="https://www.baeldung.com/java-read-pem-file-keys">Pem
    * file keys</a>
@@ -116,7 +115,7 @@ public final class KeyPairUtils {
    *
    * @param certPath certification path
    * @return X509 certificate
-   * @throws CertificateException  when there are certificate issues
+   * @throws CertificateException when there are certificate issues
    */
   public static X509Certificate getX509Certificate(Path certPath) throws CertificateException {
     try (FileInputStream fis = new FileInputStream(certPath.toFile())) {

@@ -49,7 +49,6 @@ class SymmetricCipherTest extends AbstractTest {
   }
 
 
-
   @Test
   void ecbNoPadding() throws GeneralSecurityException {
     String input0 = "Hello world ~!#@#$@!$@#%$%^%$*^&*(*))_(*&^%$@#@!~`122234536890-=";
@@ -232,7 +231,6 @@ class SymmetricCipherTest extends AbstractTest {
     byte[] encryptedInput0 = symmetricCrypto0.encrypt(plainText.getBytes());
     byte[] decryptedInput0 = symmetricCrypto0.decrypt(encryptedInput0);
     assertThat(decryptedInput0).containsExactly(plainText.getBytes());
-
 
     //positive test case
     IvParameterSpec ivParameterSpec1 = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,

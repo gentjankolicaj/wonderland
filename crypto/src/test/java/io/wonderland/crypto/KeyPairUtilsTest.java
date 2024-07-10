@@ -148,7 +148,6 @@ class KeyPairUtilsTest extends AbstractTest {
   }
 
 
-
   @Test
   void generatePrivateKey() throws GeneralSecurityException {
     PKCS8EncodedKeySpec privateKeyEncodedSpec = new PKCS8EncodedKeySpec(

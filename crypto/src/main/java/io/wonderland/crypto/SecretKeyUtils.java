@@ -92,11 +92,10 @@ public final class SecretKeyUtils {
   }
 
 
-
   /**
    * Wraps a key using a public key as base.
    *
-   * @param provider  cryptographic service provider
+   * @param provider       cryptographic service provider
    * @param transformation cipher transformation
    * @param publicKey      public key to base for wrapping
    * @param key            key to be encrypted/wrapped
@@ -113,7 +112,7 @@ public final class SecretKeyUtils {
   /**
    * Unwraps a key using private key.
    *
-   * @param provider  cryptographic service provider
+   * @param provider            cryptographic service provider
    * @param transformation      cipher transformation
    * @param privateKey          private key for unwrapping
    * @param wrappedKey          wrapped key

@@ -32,19 +32,19 @@ public class AlgorithmParameterUtils {
   }
 
   /**
-   * @param provider cryptographic service provider
+   * @param provider  cryptographic service provider
    * @param algorithm name
    * @return Algorithm parameter generator
    * @throws GeneralSecurityException exception
    */
-  public static AlgorithmParameterGenerator getAlgorithmParamGen(String provider,String algorithm)
+  public static AlgorithmParameterGenerator getAlgorithmParamGen(String provider, String algorithm)
       throws GeneralSecurityException {
     return AlgorithmParameterGenerator.getInstance(algorithm, provider);
   }
 
 
   /**
-   * @param provider cryptographic service provider
+   * @param provider  cryptographic service provider
    * @param algorithm name
    * @return Algorithm parameter generator
    * @throws GeneralSecurityException exception
@@ -57,7 +57,7 @@ public class AlgorithmParameterUtils {
     return generator;
   }
 
-  public static AlgorithmParameters generateAlgorithmParameters(String provider,String algorithm)
+  public static AlgorithmParameters generateAlgorithmParameters(String provider, String algorithm)
       throws GeneralSecurityException {
     return getAlgorithmParamGen(provider, algorithm).generateParameters();
   }

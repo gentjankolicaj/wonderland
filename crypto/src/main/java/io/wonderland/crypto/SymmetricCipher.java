@@ -49,9 +49,9 @@ public class SymmetricCipher implements ICipher {
    * Block cipher modes of operation supported only :
    * <br>ECB
    *
-   * @param provider        cryptographic service provider CSP
-   * @param transformation  cipher transformation
-   * @param secretKey symmetric secretKey
+   * @param provider       cryptographic service provider CSP
+   * @param transformation cipher transformation
+   * @param secretKey      symmetric secretKey
    * @throws GeneralSecurityException wrapper exception
    */
   public SymmetricCipher(String provider, String transformation, SecretKey secretKey)
@@ -88,10 +88,10 @@ public class SymmetricCipher implements ICipher {
    * <br>CBC
    * <br>CTR
    *
-   * @param provider               cryptographic service provider CSP
-   * @param transformation         cipher transformation
-   * @param secretKey        symmetric secretKey
-   * @param algParamSpec algorithm parameter specs at cipher init
+   * @param provider       cryptographic service provider CSP
+   * @param transformation cipher transformation
+   * @param secretKey      symmetric secretKey
+   * @param algParamSpec   algorithm parameter specs at cipher init
    * @throws GeneralSecurityException wrapper exception
    */
   public SymmetricCipher(String provider, String transformation, SecretKey secretKey,
@@ -129,10 +129,10 @@ public class SymmetricCipher implements ICipher {
    * <br>CBC
    * <br>CTR
    *
-   * @param provider            cryptographic service provider CSP
-   * @param transformation      cipher transformation
-   * @param secretKey     symmetric secretKey
-   * @param algParams algorithm parameters at cipher init
+   * @param provider       cryptographic service provider CSP
+   * @param transformation cipher transformation
+   * @param secretKey      symmetric secretKey
+   * @param algParams      algorithm parameters at cipher init
    * @throws GeneralSecurityException wrapper exception
    */
   public SymmetricCipher(String provider, String transformation, SecretKey secretKey,
