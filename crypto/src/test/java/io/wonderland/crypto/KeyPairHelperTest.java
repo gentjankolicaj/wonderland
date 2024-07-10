@@ -2,23 +2,13 @@ package io.wonderland.crypto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.file.Path;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
-import java.security.Key;
 import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Objects;
-import java.util.Optional;
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Base64;
@@ -26,62 +16,31 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class KeyPairUtilsTest extends AbstractTest {
+class KeyPairHelperTest extends AbstractTest {
 
 
   @Test
-  void getPrivateKeyPem() {
-    Path privateKeyPem = Path.of(
-        Objects.requireNonNull(
-                Thread.currentThread().getContextClassLoader().getResource("private-key.pem"))
-            .getPath());
-    Optional<PrivateKey> optional = KeyPairUtils.getPrivateKeyFromPem(privateKeyPem);
-    assertThat(optional).isPresent();
+  void constructors() throws GeneralSecurityException {
+    KeyPairHelper keyPairHelper = new KeyPairHelper("RSA");
+    KeyPair keyPair = keyPairHelper.generateKeyPair(1024);
+    assertThat(keyPair).isNotNull();
 
-  }
-
-  @Test
-  void getPublicKeyFromPem() {
-    Path publicKeyPem = Path.of(
-        Objects.requireNonNull(
-                Thread.currentThread().getContextClassLoader().getResource("public-key.pem"))
-            .getPath());
-    Optional<PublicKey> optional = KeyPairUtils.getPublicKeyFromPem(publicKeyPem);
-    assertThat(optional).isPresent();
-  }
-
-  @Test
-  void getKeyPairFromPem() {
-    //NOTE: this pem file also contains public key
-    Path privateKeyPem = Path.of(
-        Objects.requireNonNull(
-                Thread.currentThread().getContextClassLoader().getResource("private-key.pem"))
-            .getPath());
-    Optional<KeyPair> optional = KeyPairUtils.getKeyPairFromPem(privateKeyPem);
-    assertThat(optional).isPresent();
-    assertThat(optional.get().getPublic()).isNotNull();
-    assertThat(optional.get().getPrivate()).isNotNull();
-  }
-
-
-  @Test
-  void getX509Certificate() throws CertificateException {
-    Path certPath = Path.of(
-        Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.cer"))
-            .getPath());
-    X509Certificate x509Certificate = KeyPairUtils.getX509Certificate(certPath);
-    assertThat(x509Certificate).isNotNull();
+    //test case
+    KeyPairHelper keyPairHelper1 = new KeyPairHelper(CSP_NAME, "RSA");
+    KeyPair keyPair1 = keyPairHelper1.generateKeyPair(1024);
+    assertThat(keyPair1).isNotNull();
   }
 
 
   @Test
   void RSAGenerateKeyPair() throws GeneralSecurityException {
-    KeyPair keyPair0 = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "RSA");
+    KeyPair keyPair0 = keyPairHelper.generateKeyPair(2048);
     assertThat(keyPair0).isNotNull();
     assertThat(keyPair0.getPrivate()).isNotNull();
     assertThat(keyPair0.getPublic()).isNotNull();
 
-    KeyPair keyPair1 = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 1028, new SecureRandom());
+    KeyPair keyPair1 = keyPairHelper.generateKeyPair(1028, new SecureRandom());
     assertThat(keyPair1).isNotNull();
     assertThat(keyPair1.getPrivate()).isNotNull();
     assertThat(keyPair1.getPublic()).isNotNull();
@@ -90,7 +49,8 @@ class KeyPairUtilsTest extends AbstractTest {
 
   @Test
   void DSAGenerateKeyPair() throws GeneralSecurityException {
-    KeyPair dsaKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DSA", 2048);
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "DSA");
+    KeyPair dsaKeyPair = keyPairHelper.generateKeyPair(2048);
     assertThat(dsaKeyPair).isNotNull();
     assertThat(dsaKeyPair.getPrivate()).isNotNull();
     assertThat(dsaKeyPair.getPublic()).isNotNull();
@@ -98,8 +58,8 @@ class KeyPairUtilsTest extends AbstractTest {
 
   @Test
   void ECSM2GenerateKeyPair() throws GeneralSecurityException {
-    KeyPair ecKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC",
-        new ECGenParameterSpec("sm2p256v1"));
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "EC");
+    KeyPair ecKeyPair = keyPairHelper.generateKeyPair(new ECGenParameterSpec("sm2p256v1"));
     assertThat(ecKeyPair).isNotNull();
     assertThat(ecKeyPair.getPrivate()).isNotNull();
     assertThat(ecKeyPair.getPublic()).isNotNull();
@@ -107,7 +67,8 @@ class KeyPairUtilsTest extends AbstractTest {
 
   @Test
   void ED448GenerateKeyPair() throws GeneralSecurityException {
-    KeyPair dsaKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "ED448");
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "ED448");
+    KeyPair dsaKeyPair = keyPairHelper.generateKeyPair();
     assertThat(dsaKeyPair).isNotNull();
     assertThat(dsaKeyPair.getPrivate()).isNotNull();
     assertThat(dsaKeyPair.getPublic()).isNotNull();
@@ -115,7 +76,8 @@ class KeyPairUtilsTest extends AbstractTest {
 
   @Test
   void DSTU4145GenerateKeyPair() throws GeneralSecurityException {
-    KeyPair dstu4145KeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DSTU4145",
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "DSTU4145");
+    KeyPair dstu4145KeyPair = keyPairHelper.generateKeyPair(
         new ECGenParameterSpec("1.2.804.2.1.1.1.1.3.1.1.2.3"));
     assertThat(dstu4145KeyPair).isNotNull();
     assertThat(dstu4145KeyPair.getPrivate()).isNotNull();
@@ -125,7 +87,8 @@ class KeyPairUtilsTest extends AbstractTest {
   @Test
   @Disabled("disable because of performance")
   void DHGenerateKeyPair() throws GeneralSecurityException {
-    KeyPair dhKeyPair0 = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 256);
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "DH");
+    KeyPair dhKeyPair0 = keyPairHelper.generateKeyPair(256);
     assertThat(dhKeyPair0).isNotNull();
     assertThat(dhKeyPair0.getPrivate()).isNotNull();
     assertThat(dhKeyPair0.getPublic()).isNotNull();
@@ -133,7 +96,7 @@ class KeyPairUtilsTest extends AbstractTest {
     //second key pair with algorithm parameter specs
     AlgorithmParameters dhAlgorithmParams = AlgorithmParameterUtils.generateAlgorithmParameters(
         CSP_NAME, "DH");
-    KeyPair dhKeyPair1 = KeyPairUtils.generateKeyPair(CSP_NAME, "DH",
+    KeyPair dhKeyPair1 = keyPairHelper.generateKeyPair(
         dhAlgorithmParams.getParameterSpec(DHParameterSpec.class));
     assertThat(dhKeyPair1).isNotNull();
     assertThat(dhKeyPair1.getPrivate()).isNotNull();
@@ -141,16 +104,15 @@ class KeyPairUtilsTest extends AbstractTest {
 
     // with spec & secure random
     DHParameterSpec spec = dhAlgorithmParams.getParameterSpec(DHParameterSpec.class);
-    KeyPair dhKeyPair2 = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", spec, new SecureRandom());
+    KeyPair dhKeyPair2 = keyPairHelper.generateKeyPair(spec, new SecureRandom());
     assertThat(dhKeyPair2).isNotNull();
     assertThat(dhKeyPair2.getPrivate()).isNotNull();
     assertThat(dhKeyPair2.getPublic()).isNotNull();
   }
 
 
-
   @Test
-  void generatePrivateKey() throws GeneralSecurityException {
+  void createPrivateKey() throws GeneralSecurityException {
     PKCS8EncodedKeySpec privateKeyEncodedSpec = new PKCS8EncodedKeySpec(
         Base64.decode("MIIEpAIBAAKCAQEAw9w9gsya8eQyIDoG8JZhFBPPdD92pkhKsKZX4lXOPJJ3eCpA\n"
             + "0jCRzJ4ooS0F/oizp/7ND82Aq/rZf9AK/Pem2cCL0hr5PmPO0Z3tsb6cVl7tg5u+\n"
@@ -177,12 +139,12 @@ class KeyPairUtilsTest extends AbstractTest {
             + "7ZuwRQKBgQDUeQaatVcT/HRcfFcQv0Khk5Wq5R4CHlkIALeIlyMG11k4G9+AU+J8\n"
             + "8NQfFMs0ch+HgIAym6KDXTTWwSlwpp92FdhW0DVOCMAR0AbT0/o1/o/v9YT9re86\n"
             + "ixbJo5dE0MkKkswVFLw4QCfKIGzFUQh4OsVbi6BoSqxd9raPAsEEbg=="));
-
-    assertThat(KeyPairUtils.generatePrivateKey(CSP_NAME, "RSA", privateKeyEncodedSpec)).isNotNull();
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "RSA");
+    assertThat(keyPairHelper.generatePrivateKey(privateKeyEncodedSpec)).isNotNull();
   }
 
   @Test
-  void generatePublicKey() throws GeneralSecurityException {
+  void createPublicKey() throws GeneralSecurityException {
     X509EncodedKeySpec publicKeyEncodedSpec = new X509EncodedKeySpec(
         Base64.decode("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw9w9gsya8eQyIDoG8JZh\n"
             + "FBPPdD92pkhKsKZX4lXOPJJ3eCpA0jCRzJ4ooS0F/oizp/7ND82Aq/rZf9AK/Pem\n"
@@ -192,51 +154,9 @@ class KeyPairUtilsTest extends AbstractTest {
             + "QeoI9/+2ufn3CWhgnxS2burFMwEiO0On+lVOGLj+0gcgyRh2z7qjxcrcH/B2wjlj\n"
             + "TwIDAQAB")
     );
-    assertThat(KeyPairUtils.generatePublicKey(CSP_NAME, "RSA", publicKeyEncodedSpec)).isNotNull();
+    KeyPairHelper keyPairHelper = new KeyPairHelper(CSP_NAME, "RSA");
+    assertThat(keyPairHelper.generatePublicKey(publicKeyEncodedSpec)).isNotNull();
   }
 
 
-  @Test
-  void wrapKey() throws GeneralSecurityException {
-    KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
-    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
-
-    assertThat(
-        KeyPairUtils.wrapKey(CSP_NAME, "RSA/NONE/OAEPwithSHA256andMGF1Padding",
-            rsaKeyPair.getPublic(),
-            aesKey))
-        .isNotNull().hasSizeGreaterThan(0);
-  }
-
-  @Test
-  void unwrapKey() throws GeneralSecurityException {
-    KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
-    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
-    byte[] wrappedKey = KeyPairUtils.wrapKey(CSP_NAME, "RSA/NONE/OAEPwithSHA256andMGF1Padding",
-        rsaKeyPair.getPublic(), aesKey);
-
-    Key key = KeyPairUtils.unwrapKey(CSP_NAME, "RSA/NONE/OAEPwithSHA256andMGF1Padding",
-        rsaKeyPair.getPrivate(),
-        wrappedKey, "AES",
-        Cipher.SECRET_KEY);
-
-    assertThat(key.getAlgorithm()).isEqualTo(aesKey.getAlgorithm());
-    assertThat(key.getEncoded()).containsExactly(aesKey.getEncoded());
-  }
-
-  @Test
-  void unwrapKeyElGamal() throws GeneralSecurityException {
-    KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 2048);
-    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
-
-    byte[] wrappedKey = KeyPairUtils.wrapKey(CSP_NAME, "ElGamal/NONE/OAEPwithSHA256andMGF1Padding",
-        dhKeyPair.getPublic(), aesKey);
-
-    Key key = KeyPairUtils.unwrapKey(CSP_NAME, "ElGamal/NONE/OAEPwithSHA256andMGF1Padding",
-        dhKeyPair.getPrivate(), wrappedKey, "AES",
-        Cipher.SECRET_KEY);
-
-    assertThat(key.getAlgorithm()).isEqualTo(aesKey.getAlgorithm());
-    assertThat(key.getEncoded()).containsExactly(aesKey.getEncoded());
-  }
 }

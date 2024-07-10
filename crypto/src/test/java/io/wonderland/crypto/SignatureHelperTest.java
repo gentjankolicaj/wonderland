@@ -85,13 +85,13 @@ class SignatureHelperTest extends AbstractTest {
         Objects.requireNonNull(
                 Thread.currentThread().getContextClassLoader().getResource("private-key.pem"))
             .getPath());
-    Optional<PrivateKey> optional = KeyPairUtils.loadPrivateKeyPem(privateKeyPem);
+    Optional<PrivateKey> optional = KeyPairUtils.getPrivateKeyFromPem(privateKeyPem);
 
     //load x509cert from resources
     Path certPath = Path.of(
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.cer"))
             .getPath());
-    X509Certificate x509Certificate = KeyPairUtils.loadX509Certificate(certPath);
+    X509Certificate x509Certificate = KeyPairUtils.getX509Certificate(certPath);
 
     SignatureHelper signatureHelper = new SignatureHelper(CSP_NAME, "SHA256WithRSA");
 

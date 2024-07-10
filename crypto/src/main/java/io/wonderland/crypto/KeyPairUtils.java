@@ -1,7 +1,6 @@
 package io.wonderland.crypto;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
@@ -29,6 +28,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 @Slf4j
 public final class KeyPairUtils {
 
+  public static final String CERT_TYPE = "X.509";
   private static JcaPEMKeyConverter jcaPEMKeyConverter;
   private static CertificateFactory x509CertificateFactory;
 
@@ -41,7 +41,7 @@ public final class KeyPairUtils {
 
   private static void init() {
     try {
-      x509CertificateFactory = CertificateFactory.getInstance("X.509",
+      x509CertificateFactory = CertificateFactory.getInstance(CERT_TYPE,
           CSP.INSTANCE_CONTEXT.getProvider());
       jcaPEMKeyConverter = new JcaPEMKeyConverter();
     } catch (Exception e) {
@@ -58,11 +58,11 @@ public final class KeyPairUtils {
    * <br>PKCS8EncodedKeySpec is class for handling private keys material.More at <a
    * href="https://en.wikipedia.org/wiki/PKCS_8">PKCS8 format standard</a>
    *
-   * @param pemPath Path of PEM file containing private key.
+   * @param path Path of PEM file containing private key.
    * @return Optional private key, (it can be RSAPrivateKey)
    */
-  public static Optional<PrivateKey> loadPrivateKeyPem(Path pemPath) {
-    try (FileReader fileReader = new FileReader(pemPath.toFile())) {
+  public static Optional<PrivateKey> getPrivateKeyFromPem(Path path) {
+    try (FileReader fileReader = new FileReader(path.toFile())) {
       PEMParser pemParser = new PEMParser(fileReader);
       PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
       PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(pemKeyPair.getPrivateKeyInfo());
@@ -79,11 +79,11 @@ public final class KeyPairUtils {
    * <br>X509EncodedKeySpec is class for handling public keys material.More at <a
    * href="https://en.wikipedia.org/wiki/X.509">X509 format standard</a>
    *
-   * @param pemPath Path of pem file containing public key
+   * @param path Path of pem file containing public key
    * @return Optional public key, (it can be RSAPublicKey)
    */
-  public static Optional<PublicKey> loadPublicKeyPem(Path pemPath) {
-    try (FileReader fileReader = new FileReader(pemPath.toFile())) {
+  public static Optional<PublicKey> getPublicKeyFromPem(Path path) {
+    try (FileReader fileReader = new FileReader(path.toFile())) {
       PEMParser pemParser = new PEMParser(fileReader);
       SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(
           pemParser.readObject());
@@ -97,11 +97,11 @@ public final class KeyPairUtils {
   /**
    * Load KeyPair (public-private) contained in pem file.
    *
-   * @param pemPath Path of pem file containing a key pair
+   * @param path Path of pem file containing a key pair
    * @return Optional key pair
    */
-  public static Optional<KeyPair> loadKeyPairPem(Path pemPath) {
-    try (FileReader fileReader = new FileReader(pemPath.toFile())) {
+  public static Optional<KeyPair> getKeyPairFromPem(Path path) {
+    try (FileReader fileReader = new FileReader(path.toFile())) {
       PEMParser pemParser = new PEMParser(fileReader);
       PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
       return Optional.of(jcaPEMKeyConverter.getKeyPair(pemKeyPair));
@@ -116,15 +116,15 @@ public final class KeyPairUtils {
    *
    * @param certPath certification path
    * @return X509 certificate
-   * @throws FileNotFoundException when file not found on a path
    * @throws CertificateException  when there are certificate issues
    */
-  public static X509Certificate loadX509Certificate(Path certPath)
-      throws FileNotFoundException, CertificateException {
-    return (X509Certificate) x509CertificateFactory.generateCertificate(
-        new FileInputStream(certPath.toFile()));
+  public static X509Certificate getX509Certificate(Path certPath) throws CertificateException {
+    try (FileInputStream fis = new FileInputStream(certPath.toFile())) {
+      return (X509Certificate) x509CertificateFactory.generateCertificate(fis);
+    } catch (Exception e) {
+      throw new CertificateException(e);
+    }
   }
-
 
   public static KeyPair generateKeyPair(String provider, String algorithm)
       throws GeneralSecurityException {
@@ -135,10 +135,20 @@ public final class KeyPairUtils {
   public static KeyPair generateKeyPair(String provider, String algorithm, int keySize)
       throws GeneralSecurityException {
     if (keySize <= 0) {
-      throw new IllegalArgumentException("Key size can't be smaller than 0");
+      throw new IllegalArgumentException("Key size can't be smaller than 0,");
     }
     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, provider);
     keyPairGenerator.initialize(keySize);
+    return keyPairGenerator.generateKeyPair();
+  }
+
+  public static KeyPair generateKeyPair(String provider, String algorithm, int keySize,
+      SecureRandom secureRandom) throws GeneralSecurityException {
+    if (keySize <= 0) {
+      throw new IllegalArgumentException("Key size can't be smaller than 0,");
+    }
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm, provider);
+    keyPairGenerator.initialize(keySize, secureRandom);
     return keyPairGenerator.generateKeyPair();
   }
 
@@ -165,7 +175,7 @@ public final class KeyPairUtils {
    * @param keySpec   a key specification holding details of the private key.
    * @return a PrivateKey for algorithm
    */
-  public static PrivateKey createPrivateKey(String provider, String algorithm, KeySpec keySpec)
+  public static PrivateKey generatePrivateKey(String provider, String algorithm, KeySpec keySpec)
       throws GeneralSecurityException {
     KeyFactory keyFactory = KeyFactory.getInstance(algorithm, provider);
     return keyFactory.generatePrivate(keySpec);
@@ -178,7 +188,7 @@ public final class KeyPairUtils {
    * @param keySpec   a key specification holding details of the public key.
    * @return a PublicKey for algorithm
    */
-  public static PublicKey createPublicKey(String provider, String algorithm, KeySpec keySpec)
+  public static PublicKey generatePublicKey(String provider, String algorithm, KeySpec keySpec)
       throws GeneralSecurityException {
     KeyFactory keyFactory = KeyFactory.getInstance(algorithm, provider);
     return keyFactory.generatePublic(keySpec);
