@@ -13,13 +13,13 @@ import org.bouncycastle.operator.OperatorException;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class MessageDigestUtilsTest extends AbstractTest {
+class HashUtilsTest extends AbstractTest {
 
 
   @Test
   void createDigest() throws GeneralSecurityException {
     byte[] input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_".getBytes();
-    MessageDigest messageDigest = MessageDigestUtils.createDigest(CSP_NAME, "SHA-256");
+    MessageDigest messageDigest = HashUtils.createDigest(CSP_NAME, "SHA-256");
     assertThat(messageDigest).isNotNull();
     assertThat(messageDigest.digest(input)).isNotNull().hasSize(256 / 8);
   }
@@ -27,20 +27,20 @@ class MessageDigestUtilsTest extends AbstractTest {
   @Test
   void digest() throws GeneralSecurityException {
     byte[] input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_".getBytes();
-    assertThat(MessageDigestUtils.digest(CSP_NAME, "SHA-256", input))
+    assertThat(HashUtils.digest(CSP_NAME, "SHA-256", input))
         .isNotNull().hasSize(256 / 8);
 
-    assertThatThrownBy(() -> MessageDigestUtils.digest(CSP_NAME, "SHA-256", null))
+    assertThatThrownBy(() -> HashUtils.digest(CSP_NAME, "SHA-256", null))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   void createDigestCalculator() throws IOException, GeneralSecurityException, OperatorException {
     byte[] input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_".getBytes();
-    byte[] digestedInput = MessageDigestUtils.digest(CSP_NAME, "SHA-256", input);
-    assertThat(MessageDigestUtils.createDigestCalculator(CSP_NAME, "SHA-256")).isNotNull();
+    byte[] digestedInput = HashUtils.digest(CSP_NAME, "SHA-256", input);
+    assertThat(HashUtils.createDigestCalculator(CSP_NAME, "SHA-256")).isNotNull();
 
-    DigestCalculator digestCalculator = MessageDigestUtils.createDigestCalculator(CSP_NAME,
+    DigestCalculator digestCalculator = HashUtils.createDigestCalculator(CSP_NAME,
         "SHA-256");
     OutputStream os = digestCalculator.getOutputStream();
 

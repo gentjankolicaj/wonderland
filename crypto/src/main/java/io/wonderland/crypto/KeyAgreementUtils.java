@@ -15,7 +15,6 @@ public final class KeyAgreementUtils {
   private KeyAgreementUtils() {
   }
 
-
   /**
    * Generate an agreed secret byte value .
    *

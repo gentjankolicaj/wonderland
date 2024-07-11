@@ -15,10 +15,10 @@ import org.bouncycastle.operator.OperatorException;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
 @Slf4j
-public final class MessageDigestUtils {
+public final class HashUtils {
 
 
-  private MessageDigestUtils() {
+  private HashUtils() {
   }
 
 
