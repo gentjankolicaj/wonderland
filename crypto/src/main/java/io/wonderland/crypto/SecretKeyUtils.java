@@ -2,8 +2,6 @@ package io.wonderland.crypto;
 
 import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -97,16 +95,16 @@ public final class SecretKeyUtils {
    *
    * @param provider       cryptographic service provider
    * @param transformation cipher transformation
-   * @param publicKey      public key to base for wrapping
-   * @param key            key to be encrypted/wrapped
+   * @param cipherKey      cipher key base for wrapping
+   * @param keyToWrap      key to be encrypted/wrapped
    * @return wrapped key
    * @throws GeneralSecurityException generic exception
    */
-  public static byte[] wrapKey(String provider, String transformation, PublicKey publicKey, Key key)
+  public static byte[] wrapKey(String provider, String transformation, Key cipherKey, Key keyToWrap)
       throws GeneralSecurityException {
     Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(Cipher.WRAP_MODE, publicKey);
-    return cipher.wrap(key);
+    cipher.init(Cipher.WRAP_MODE, cipherKey);
+    return cipher.wrap(keyToWrap);
   }
 
   /**
@@ -114,18 +112,18 @@ public final class SecretKeyUtils {
    *
    * @param provider            cryptographic service provider
    * @param transformation      cipher transformation
-   * @param privateKey          private key for unwrapping
+   * @param cipherKey           cipher key for unwrapping
    * @param wrappedKey          wrapped key
    * @param wrappedKeyAlgorithm algorithm of key wrapped
    * @param wrappedKeyType      wrapped key type
    * @return key unwrapped
    * @throws GeneralSecurityException generic exception
    */
-  public static Key unwrapKey(String provider, String transformation, PrivateKey privateKey,
-      byte[] wrappedKey,
-      String wrappedKeyAlgorithm, int wrappedKeyType) throws GeneralSecurityException {
+  public static Key unwrapKey(String provider, String transformation, Key cipherKey,
+      byte[] wrappedKey, String wrappedKeyAlgorithm, int wrappedKeyType)
+      throws GeneralSecurityException {
     Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(Cipher.UNWRAP_MODE, privateKey);
+    cipher.init(Cipher.UNWRAP_MODE, cipherKey);
     return cipher.unwrap(wrappedKey, wrappedKeyAlgorithm, wrappedKeyType);
   }
 

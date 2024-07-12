@@ -5,12 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.util.encoders.Hex;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
@@ -78,16 +80,44 @@ class SecretKeyUtilsTest extends AbstractTest {
         new String(SecretKeyUtils.generateSCRYPT(input.toCharArray(), salt, 2, 4, 2, 64)));
   }
 
-  @Disabled("To study key wrapping")
-  @Test
-  void keyWrapping() throws GeneralSecurityException {
-    SecretKey aes = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
-    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA");
 
-    byte[] wrappedKey = SecretKeyUtils.wrapKey(CSP_NAME, "AESKW", keyPair.getPublic(), aes);
-    Key unwrappedKey = SecretKeyUtils.unwrapKey(CSP_NAME, "AESKW", keyPair.getPrivate(),
-        wrappedKey, "AES", 1);
-    assertThat(unwrappedKey.getEncoded()).containsExactly(aes.getEncoded());
+  @Test
+  void keyWrapAESwithAES() throws GeneralSecurityException {
+    //Wrapping aes key using aes cipher + key
+
+    //Generate keys to be used
+    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
+    SecretKey key = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
+
+    // create key to be wrapped
+    String algorithm = "Blowfish";
+    SecretKeySpec keyToWrap = new SecretKeySpec(key.getEncoded(), algorithm);
+
+    byte[] wrappedKey = SecretKeyUtils.wrapKey(CSP_NAME, "AESKW", aesKey, keyToWrap);
+    Key unwrappedKey = SecretKeyUtils.unwrapKey(CSP_NAME, "AESKW", aesKey,
+        wrappedKey, algorithm, Cipher.SECRET_KEY);
+
+    //assert unwrapped key vs original key
+    assertThat(unwrappedKey.getEncoded()).containsExactly(keyToWrap.getEncoded());
+
+  }
+
+
+  @Test
+  void keyWrapRSAwithAES() throws GeneralSecurityException {
+    //Wrapping RSA private key with aes cipher + key
+
+    //Generate keys
+    SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA");
+    PrivateKey keyToWrap = keyPair.getPrivate();
+
+    byte[] wrappedKey = SecretKeyUtils.wrapKey(CSP_NAME, "AESKWP", aesKey, keyToWrap);
+    Key unwrappedKey = SecretKeyUtils.unwrapKey(CSP_NAME, "AESKWP", aesKey,
+        wrappedKey, "RSA", Cipher.PRIVATE_KEY);
+
+    //assert unwrapped key vs original key
+    assertThat(unwrappedKey.getEncoded()).containsExactly(keyToWrap.getEncoded());
   }
 
 }

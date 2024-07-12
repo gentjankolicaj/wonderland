@@ -14,6 +14,12 @@ class SampleTest extends AbstractTest {
 
 
   @Test
+  void rand() {
+
+  }
+
+
+  @Test
   void sample() throws GeneralSecurityException {
     String input = "Hello world !!!`1234567890-=+_)(*&^%$#@!~{}|?><S:";
     log.info("Input : {}", input);
