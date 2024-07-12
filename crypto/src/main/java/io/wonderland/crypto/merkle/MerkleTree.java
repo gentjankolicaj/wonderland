@@ -2,14 +2,11 @@ package io.wonderland.crypto.merkle;
 
 import lombok.Getter;
 
+//todo:
 @Getter
-public class MerkleTree<T> extends MerkleNode<T> {
+public abstract class MerkleTree<T> extends BranchNode<T> {
 
-  private MerkleNode<T> left;
-  private MerkleNode<T> right;
+  private BranchNode<T> left;
+  private BranchNode<T> right;
 
-  @Override
-  public byte[] getHash() {
-    return new byte[0];
-  }
 }
