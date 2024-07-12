@@ -131,7 +131,7 @@ class KeyPairUtilsTest extends AbstractTest {
     assertThat(dhKeyPair0.getPublic()).isNotNull();
 
     //second key pair with algorithm parameter specs
-    AlgorithmParameters dhAlgorithmParams = AlgorithmParameterUtils.generateAlgorithmParameters(
+    AlgorithmParameters dhAlgorithmParams = AlgorithmParameterUtils.generateAlgParams(
         CSP_NAME, "DH");
     KeyPair dhKeyPair1 = KeyPairUtils.generateKeyPair(CSP_NAME, "DH",
         dhAlgorithmParams.getParameterSpec(DHParameterSpec.class));
@@ -196,42 +196,44 @@ class KeyPairUtilsTest extends AbstractTest {
 
 
   @Test
-  void wrapKey() throws GeneralSecurityException {
+  void wrapAESKeyWithRSA() throws GeneralSecurityException {
+    //wrapping aes key with rsa cipher + public key
     KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
     SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
+    String transformation = "RSA/NONE/OAEPwithSHA256andMGF1Padding";
 
     assertThat(
-        KeyPairUtils.wrapKey(CSP_NAME, "RSA/NONE/OAEPwithSHA256andMGF1Padding",
-            rsaKeyPair.getPublic(),
-            aesKey))
+        KeyPairUtils.wrapKey(CSP_NAME, transformation, rsaKeyPair.getPublic(), aesKey))
         .isNotNull().hasSizeGreaterThan(0);
   }
 
   @Test
-  void unwrapKey() throws GeneralSecurityException {
+  void unwrapAESKeyWithRSA() throws GeneralSecurityException {
+    //wrapping aes key with rsa cipher + public key
     KeyPair rsaKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA", 2048);
     SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
-    byte[] wrappedKey = KeyPairUtils.wrapKey(CSP_NAME, "RSA/NONE/OAEPwithSHA256andMGF1Padding",
+    String transformation = "RSA/NONE/OAEPwithSHA256andMGF1Padding";
+
+    byte[] wrappedKey = KeyPairUtils.wrapKey(CSP_NAME, transformation,
         rsaKeyPair.getPublic(), aesKey);
 
-    Key key = KeyPairUtils.unwrapKey(CSP_NAME, "RSA/NONE/OAEPwithSHA256andMGF1Padding",
-        rsaKeyPair.getPrivate(),
-        wrappedKey, "AES",
-        Cipher.SECRET_KEY);
+    Key key = KeyPairUtils.unwrapKey(CSP_NAME, transformation, rsaKeyPair.getPrivate(), wrappedKey,
+        "AES", Cipher.SECRET_KEY);
 
     assertThat(key.getAlgorithm()).isEqualTo(aesKey.getAlgorithm());
     assertThat(key.getEncoded()).containsExactly(aesKey.getEncoded());
   }
 
   @Test
-  void unwrapKeyElGamal() throws GeneralSecurityException {
+  void unwrapAESKeyElGamal() throws GeneralSecurityException {
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 2048);
     SecretKey aesKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
+    String transformation = "ElGamal/NONE/OAEPwithSHA256andMGF1Padding";
 
-    byte[] wrappedKey = KeyPairUtils.wrapKey(CSP_NAME, "ElGamal/NONE/OAEPwithSHA256andMGF1Padding",
+    byte[] wrappedKey = KeyPairUtils.wrapKey(CSP_NAME, transformation,
         dhKeyPair.getPublic(), aesKey);
 
-    Key key = KeyPairUtils.unwrapKey(CSP_NAME, "ElGamal/NONE/OAEPwithSHA256andMGF1Padding",
+    Key key = KeyPairUtils.unwrapKey(CSP_NAME, transformation,
         dhKeyPair.getPrivate(), wrappedKey, "AES",
         Cipher.SECRET_KEY);
 

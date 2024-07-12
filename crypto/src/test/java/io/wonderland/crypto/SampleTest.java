@@ -26,7 +26,7 @@ class SampleTest extends AbstractTest {
 
     //Symmetric key
     SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
-    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN,
+    IvParameterSpec ivParameterSpec = AlgorithmParameterUtils.generateIvParamSpec(CSP.SUN,
         "SHA1PRNG",
         16);
     SymmetricCipher symmetricCrypto = new SymmetricCipher(CSP_NAME, "AES/CBC/CTSPadding", secretKey,

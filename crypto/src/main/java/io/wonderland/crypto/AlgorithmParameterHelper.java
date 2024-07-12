@@ -29,7 +29,7 @@ public class AlgorithmParameterHelper {
   }
 
 
-  public IvParameterSpec generateIvParameterSpec(String secureRandomAlgorithm,
+  public IvParameterSpec generateIvParamSpec(String secureRandomAlgorithm,
       int vectorSize) throws GeneralSecurityException {
     SecureRandom secureRandom = SecureRandom.getInstance(secureRandomAlgorithm, provider);
     byte[] vector = new byte[vectorSize];
@@ -42,7 +42,7 @@ public class AlgorithmParameterHelper {
    * @return Algorithm parameter generator
    * @throws GeneralSecurityException exception
    */
-  public AlgorithmParameterGenerator getAlgorithmParamGen(String algorithm)
+  public AlgorithmParameterGenerator getAlgParamGen(String algorithm)
       throws GeneralSecurityException {
     return AlgorithmParameterGenerator.getInstance(algorithm, provider);
   }
@@ -52,7 +52,7 @@ public class AlgorithmParameterHelper {
    * @return Algorithm parameter generator
    * @throws GeneralSecurityException exception
    */
-  public AlgorithmParameterGenerator getAlgorithmParamGen(String algorithm, int keySize)
+  public AlgorithmParameterGenerator getAlgParamGen(String algorithm, int keySize)
       throws GeneralSecurityException {
     AlgorithmParameterGenerator generator = AlgorithmParameterGenerator.getInstance(algorithm,
         provider);
@@ -60,27 +60,26 @@ public class AlgorithmParameterHelper {
     return generator;
   }
 
-  public AlgorithmParameters generateAlgorithmParameters(String algorithm)
+  public AlgorithmParameters generateAlgParams(String algorithm)
       throws GeneralSecurityException {
-    return getAlgorithmParamGen(algorithm).generateParameters();
+    return getAlgParamGen(algorithm).generateParameters();
   }
 
-  public AlgorithmParameters generateAlgorithmParameters(String algorithm, int keySize)
+  public AlgorithmParameters generateAlgParams(String algorithm, int keySize)
       throws GeneralSecurityException {
-    return getAlgorithmParamGen(algorithm, keySize).generateParameters();
+    return getAlgParamGen(algorithm, keySize).generateParameters();
   }
 
-  public <T extends AlgorithmParameterSpec> T generateAlgorithmParameterSpec(
+  public <T extends AlgorithmParameterSpec> T generateAlgParamSpec(
       String algorithm,
       Class<T> paramSpec) throws GeneralSecurityException {
-    return generateAlgorithmParameters(algorithm).getParameterSpec(paramSpec);
+    return generateAlgParams(algorithm).getParameterSpec(paramSpec);
   }
 
-  public <T extends AlgorithmParameterSpec> T generateAlgorithmParameterSpec(
+  public <T extends AlgorithmParameterSpec> T generateAlgParamSpec(
       String algorithm, int keySize,
       Class<T> paramSpec) throws GeneralSecurityException {
-    return generateAlgorithmParameters(algorithm, keySize).getParameterSpec(paramSpec);
+    return generateAlgParams(algorithm, keySize).getParameterSpec(paramSpec);
   }
-
 
 }

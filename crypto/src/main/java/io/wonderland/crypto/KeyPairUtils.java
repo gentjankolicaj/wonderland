@@ -195,39 +195,81 @@ public final class KeyPairUtils {
 
 
   /**
-   * Wraps a key using a public key as base.
+   * Wraps a key using  public/private key as base.
    *
+   * @param provider       cryptographic service provider
    * @param transformation cipher transformation
-   * @param publicKey      public key to base for wrapping
-   * @param key            key to be encrypted/wrapped
+   * @param cipherKey      cipher key base for wrapping
+   * @param keyToWrap      key to be encrypted/wrapped
    * @return wrapped key
    * @throws GeneralSecurityException generic exception
    */
-  public static byte[] wrapKey(String provider, String transformation, PublicKey publicKey, Key key)
+  public static byte[] wrapKey(String provider, String transformation, Key cipherKey, Key keyToWrap)
       throws GeneralSecurityException {
     Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(Cipher.WRAP_MODE, publicKey);
-    return cipher.wrap(key);
+    cipher.init(Cipher.WRAP_MODE, cipherKey);
+    return cipher.wrap(keyToWrap);
+  }
+
+
+  /**
+   * Wraps a key using  public/private key as base.
+   *
+   * @param provider       cryptographic service provider
+   * @param transformation cipher transformation
+   * @param cipherKey      cipher key base for wrapping
+   * @param spec           algorithm param spec for cipher
+   * @param keyToWrap      key to be encrypted/wrapped
+   * @return wrapped key
+   * @throws GeneralSecurityException generic exception
+   */
+  public static byte[] wrapKey(String provider, String transformation, Key cipherKey,
+      AlgorithmParameterSpec spec, Key keyToWrap)
+      throws GeneralSecurityException {
+    Cipher cipher = Cipher.getInstance(transformation, provider);
+    cipher.init(Cipher.WRAP_MODE, cipherKey, spec);
+    return cipher.wrap(keyToWrap);
   }
 
   /**
-   * Unwraps a key using private key.
+   * Unwraps a key using  public/private key as base.
    *
+   * @param provider            cryptographic service provider
    * @param transformation      cipher transformation
-   * @param privateKey          private key for unwrapping
+   * @param cipherKey           cipher key for unwrapping
    * @param wrappedKey          wrapped key
    * @param wrappedKeyAlgorithm algorithm of key wrapped
    * @param wrappedKeyType      wrapped key type
    * @return key unwrapped
    * @throws GeneralSecurityException generic exception
    */
-  public static Key unwrapKey(String provider, String transformation, PrivateKey privateKey,
-      byte[] wrappedKey,
-      String wrappedKeyAlgorithm, int wrappedKeyType) throws GeneralSecurityException {
+  public static Key unwrapKey(String provider, String transformation, Key cipherKey,
+      byte[] wrappedKey, String wrappedKeyAlgorithm, int wrappedKeyType)
+      throws GeneralSecurityException {
     Cipher cipher = Cipher.getInstance(transformation, provider);
-    cipher.init(Cipher.UNWRAP_MODE, privateKey);
+    cipher.init(Cipher.UNWRAP_MODE, cipherKey);
     return cipher.unwrap(wrappedKey, wrappedKeyAlgorithm, wrappedKeyType);
   }
 
-
+  /**
+   * Unwraps a key using  public/private key as base.
+   *
+   * @param provider            cryptographic service provider
+   * @param transformation      cipher transformation
+   * @param cipherKey           cipher key for unwrapping
+   * @param spec                algorithm param spec for cipher
+   * @param wrappedKey          wrapped key
+   * @param wrappedKeyAlgorithm algorithm of key wrapped
+   * @param wrappedKeyType      wrapped key type
+   * @return key unwrapped
+   * @throws GeneralSecurityException generic exception
+   */
+  public static Key unwrapKey(String provider, String transformation, Key cipherKey,
+      AlgorithmParameterSpec spec, byte[] wrappedKey, String wrappedKeyAlgorithm,
+      int wrappedKeyType)
+      throws GeneralSecurityException {
+    Cipher cipher = Cipher.getInstance(transformation, provider);
+    cipher.init(Cipher.UNWRAP_MODE, cipherKey, spec);
+    return cipher.unwrap(wrappedKey, wrappedKeyAlgorithm, wrappedKeyType);
+  }
 }

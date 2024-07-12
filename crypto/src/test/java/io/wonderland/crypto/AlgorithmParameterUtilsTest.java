@@ -6,6 +6,7 @@ import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.spec.DSAParameterSpec;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,14 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
   String aes = "AES";
 
   @Test
-  void generateIvParameterSpec() throws GeneralSecurityException {
+  void generateIvParamSpec() throws GeneralSecurityException {
     assertThat(
-        AlgorithmParameterUtils.generateIvParameterSpec(CSP.SUN, "SHA1PRNG", 16)).isNotNull();
+        AlgorithmParameterUtils.generateIvParamSpec(CSP.SUN, "SHA1PRNG", 16)).isNotNull();
   }
 
   @Test
-  void getAlgorithmParamGen() throws GeneralSecurityException {
-    AlgorithmParameterGenerator algorithmParamGen = AlgorithmParameterUtils.getAlgorithmParamGen(
+  void getAlgParamGen() throws GeneralSecurityException {
+    AlgorithmParameterGenerator algorithmParamGen = AlgorithmParameterUtils.getAlgParamGen(
         CSP_NAME, "GCM");
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
@@ -41,9 +42,9 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
   }
 
   @Test
-  void generateAlgorithmParameters() throws GeneralSecurityException {
+  void generateAlgParams() throws GeneralSecurityException {
     AlgorithmParameters algorithmParameters =
-        AlgorithmParameterUtils.generateAlgorithmParameters(CSP_NAME, "CCM");
+        AlgorithmParameterUtils.generateAlgParams(CSP_NAME, "CCM");
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, aes);
@@ -57,8 +58,32 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
   }
 
   @Test
-  void getAlgorithmParameterWithKeySize() throws GeneralSecurityException {
-    AlgorithmParameterGenerator algorithmParamGen = AlgorithmParameterUtils.getAlgorithmParamGen(
+  void generateAlgParamsDSA() throws GeneralSecurityException {
+    AlgorithmParameters params =
+        AlgorithmParameterUtils.generateAlgParams(CSP_NAME, "DSA", 1024);
+
+    DSAParameterSpec spec = params.getParameterSpec(DSAParameterSpec.class);
+    assertThat(spec).isNotNull();
+    assertThat(spec.getG()).isNotNull();
+    assertThat(spec.getP()).isNotNull();
+    assertThat(spec.getQ()).isNotNull();
+  }
+
+  @Test
+  void generateAlgParamSpecDSA() throws GeneralSecurityException {
+    DSAParameterSpec spec =
+        AlgorithmParameterUtils.generateAlgParamSpec(CSP_NAME, "DSA", 1024,
+            DSAParameterSpec.class);
+
+    assertThat(spec).isNotNull();
+    assertThat(spec.getG()).isNotNull();
+    assertThat(spec.getP()).isNotNull();
+    assertThat(spec.getQ()).isNotNull();
+  }
+
+  @Test
+  void getAlgParamsWithKeySize() throws GeneralSecurityException {
+    AlgorithmParameterGenerator algorithmParamGen = AlgorithmParameterUtils.getAlgParamGen(
         CSP_NAME, "GCM", 256);
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
@@ -74,8 +99,8 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
   }
 
   @Test
-  void generateAlgorithmParametersWithKeySize() throws GeneralSecurityException {
-    AlgorithmParameters algParamsGCM = AlgorithmParameterUtils.generateAlgorithmParameters(CSP_NAME,
+  void generateAlgParamsWithKeySize() throws GeneralSecurityException {
+    AlgorithmParameters algParamsGCM = AlgorithmParameterUtils.generateAlgParams(CSP_NAME,
         "GCM",
         256);
 
@@ -92,8 +117,8 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
 
   @Test
   @Disabled("Disabled because of performance")
-  void generateAlgorithmParameterSpec() throws GeneralSecurityException {
-    DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec(
+  void generateAlgParamSpec() throws GeneralSecurityException {
+    DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgParamSpec(
         CSP_NAME, "DH", DHParameterSpec.class);
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
@@ -102,8 +127,8 @@ class AlgorithmParameterUtilsTest extends AbstractTest {
   }
 
   @Test
-  void generateAlgorithmParameterSpecWithKeySize() throws GeneralSecurityException {
-    DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgorithmParameterSpec(
+  void generateAlgParamSpecWithKeySize() throws GeneralSecurityException {
+    DHParameterSpec dhParameterSpec = AlgorithmParameterUtils.generateAlgParamSpec(
         CSP_NAME, "DH", 256, DHParameterSpec.class);
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();

@@ -28,15 +28,15 @@ class AlgorithmParameterHelperTest extends AbstractTest {
 
 
   @Test
-  void generateIvParameterSpec() throws GeneralSecurityException {
+  void generateIvParamSpec() throws GeneralSecurityException {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper(CSP.SUN);
-    assertThat(algParamHelper.generateIvParameterSpec("SHA1PRNG", 16)).isNotNull();
+    assertThat(algParamHelper.generateIvParamSpec("SHA1PRNG", 16)).isNotNull();
   }
 
   @Test
-  void getAlgorithmParamGen() throws GeneralSecurityException {
+  void getAlgParamGen() throws GeneralSecurityException {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
-    AlgorithmParameterGenerator algorithmParamGen = algParamHelper.getAlgorithmParamGen("GCM");
+    AlgorithmParameterGenerator algorithmParamGen = algParamHelper.getAlgParamGen("GCM");
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
@@ -50,9 +50,9 @@ class AlgorithmParameterHelperTest extends AbstractTest {
   }
 
   @Test
-  void generateAlgorithmParameters() throws GeneralSecurityException {
+  void generateAlgParams() throws GeneralSecurityException {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
-    AlgorithmParameters algorithmParameters = algParamHelper.generateAlgorithmParameters("CCM");
+    AlgorithmParameters algorithmParameters = algParamHelper.generateAlgParams("CCM");
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     SecretKey secretKey = SecretKeyUtils.generateSecretKey(CSP_NAME, "AES");
@@ -65,9 +65,9 @@ class AlgorithmParameterHelperTest extends AbstractTest {
   }
 
   @Test
-  void getAlgorithmParameterWithKeySize() throws GeneralSecurityException {
+  void getAlgParamsWithKeySize() throws GeneralSecurityException {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
-    AlgorithmParameterGenerator algorithmParamGen = algParamHelper.getAlgorithmParamGen(
+    AlgorithmParameterGenerator algorithmParamGen = algParamHelper.getAlgParamGen(
         "GCM", 256);
     AlgorithmParameters algParamsGCM = algorithmParamGen.generateParameters();
 
@@ -82,9 +82,9 @@ class AlgorithmParameterHelperTest extends AbstractTest {
   }
 
   @Test
-  void generateAlgorithmParametersWithKeySize() throws GeneralSecurityException {
+  void generateAlgParamsWithKeySize() throws GeneralSecurityException {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
-    AlgorithmParameters algParamsGCM = algParamHelper.generateAlgorithmParameters("GCM",
+    AlgorithmParameters algParamsGCM = algParamHelper.generateAlgParams("GCM",
         256);
 
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
@@ -100,9 +100,9 @@ class AlgorithmParameterHelperTest extends AbstractTest {
 
   @Test
   @Disabled("Disabled because of performance")
-  void generateAlgorithmParameterSpec() throws GeneralSecurityException {
+  void generateAlgParamSpec() throws GeneralSecurityException {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
-    DHParameterSpec dhParameterSpec = algParamHelper.generateAlgorithmParameterSpec("DH",
+    DHParameterSpec dhParameterSpec = algParamHelper.generateAlgParamSpec("DH",
         DHParameterSpec.class);
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
@@ -111,11 +111,10 @@ class AlgorithmParameterHelperTest extends AbstractTest {
   }
 
   @Test
-  void generateAlgorithmParameterSpecWithKeySize() throws GeneralSecurityException {
+  void generateAlgParamSpecWithKeySize() throws GeneralSecurityException {
     AlgorithmParameterHelper algParamHelper = new AlgorithmParameterHelper();
-    DHParameterSpec dhParameterSpec = algParamHelper.generateAlgorithmParameterSpec("DH",
-        256,
-        DHParameterSpec.class);
+    DHParameterSpec dhParameterSpec = algParamHelper.generateAlgParamSpec("DH",
+        256, DHParameterSpec.class);
     KeyPair dhKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", dhParameterSpec);
     assertThat(dhKeyPair).isNotNull();
     assertThat(dhKeyPair.getPrivate()).isNotNull();

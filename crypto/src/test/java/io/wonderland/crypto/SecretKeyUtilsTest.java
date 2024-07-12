@@ -55,29 +55,32 @@ class SecretKeyUtilsTest extends AbstractTest {
 
 
   @Test
-  void generatePKCS5Scheme2() {
+  void generateWithPKCS5S2() {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     byte[] salt = Hex.decode("bbaa99887766554433221100");
-    assertThat(SecretKeyUtils.generatePKCS5Scheme2(input.toCharArray(), salt, 2, new SHA256Digest(),
+    assertThat(SecretKeyUtils.generateWithPKCS5S2(input.toCharArray(), salt, 2, new SHA256Digest(),
         256)).isNotNull();
 
     //hasSize(32) because returns byte[] and 256/8=32 bytes length
-    assertThat(SecretKeyUtils.generatePKCS5Scheme2(input.toCharArray(), salt, 2, new SHA256Digest(),
+    assertThat(SecretKeyUtils.generateWithPKCS5S2(input.toCharArray(), salt, 2, new SHA256Digest(),
         256)).hasSize(32);
   }
 
   @Test
-  void generateSCRYPT() {
+  void generateWithSCRYPT() {
     String input = "Hello world223Test023john2043{}{qre|'/.,~wq~!@#$(*)-=-+_";
     byte[] salt = Hex.decode("bbaa99887766554433221100");
-    assertThat(SecretKeyUtils.generateSCRYPT(input.toCharArray(), salt, 2, 4, 2, 16)).isNotNull()
+    assertThat(
+        SecretKeyUtils.generateWithSCRYPT(input.toCharArray(), salt, 2, 4, 2, 16)).isNotNull()
         .hasSize(16);
-    assertThat(SecretKeyUtils.generateSCRYPT(input.toCharArray(), salt, 2, 4, 2, 32)).isNotNull()
+    assertThat(
+        SecretKeyUtils.generateWithSCRYPT(input.toCharArray(), salt, 2, 4, 2, 32)).isNotNull()
         .hasSize(32);
-    assertThat(SecretKeyUtils.generateSCRYPT(input.toCharArray(), salt, 2, 4, 2, 256)).isNotNull()
+    assertThat(
+        SecretKeyUtils.generateWithSCRYPT(input.toCharArray(), salt, 2, 4, 2, 256)).isNotNull()
         .hasSize(256);
     log.debug("generateSCRYPT() : {}",
-        new String(SecretKeyUtils.generateSCRYPT(input.toCharArray(), salt, 2, 4, 2, 64)));
+        new String(SecretKeyUtils.generateWithSCRYPT(input.toCharArray(), salt, 2, 4, 2, 64)));
   }
 
 

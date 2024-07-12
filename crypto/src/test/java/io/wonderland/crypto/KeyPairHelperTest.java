@@ -94,7 +94,7 @@ class KeyPairHelperTest extends AbstractTest {
     assertThat(dhKeyPair0.getPublic()).isNotNull();
 
     //second key pair with algorithm parameter specs
-    AlgorithmParameters dhAlgorithmParams = AlgorithmParameterUtils.generateAlgorithmParameters(
+    AlgorithmParameters dhAlgorithmParams = AlgorithmParameterUtils.generateAlgParams(
         CSP_NAME, "DH");
     KeyPair dhKeyPair1 = keyPairHelper.generateKeyPair(
         dhAlgorithmParams.getParameterSpec(DHParameterSpec.class));

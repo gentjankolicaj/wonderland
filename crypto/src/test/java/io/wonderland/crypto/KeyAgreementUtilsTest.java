@@ -20,10 +20,11 @@ public class KeyAgreementUtilsTest extends AbstractTest {
     KeyPair bDHKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 256);
 
     assertThat(
-        KeyAgreementUtils.generateSecret("DH", aDHKeyPair.getPrivate(), bDHKeyPair.getPublic()))
+        KeyAgreementUtils.generateSecret(CSP_NAME, "DH", aDHKeyPair.getPrivate(),
+            bDHKeyPair.getPublic()))
         .isNotNull().hasSize(32);
 
-    byte[] secret = KeyAgreementUtils.generateSecret("DH", aDHKeyPair.getPrivate(),
+    byte[] secret = KeyAgreementUtils.generateSecret(CSP_NAME, "DH", aDHKeyPair.getPrivate(),
         bDHKeyPair.getPublic());
     log.debug("generateSecret() , key agreement secret {}", new String(secret));
   }
@@ -32,10 +33,10 @@ public class KeyAgreementUtilsTest extends AbstractTest {
   void keyAgreementGenerateSecretKey() throws GeneralSecurityException {
     KeyPair aDHKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 256);
     KeyPair bDHKeyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 256);
-    byte[] agreedSecret = KeyAgreementUtils.generateSecret("DH", aDHKeyPair.getPrivate(),
-        bDHKeyPair.getPublic());
-    SecretKey secretKey = KeyAgreementUtils.generateSecretKey("DH", "AES", aDHKeyPair.getPrivate(),
-        bDHKeyPair.getPublic());
+    byte[] agreedSecret = KeyAgreementUtils.generateSecret(CSP_NAME, "DH",
+        aDHKeyPair.getPrivate(), bDHKeyPair.getPublic());
+    SecretKey secretKey = KeyAgreementUtils.generateSecretKey(CSP_NAME, "DH",
+        "AES", aDHKeyPair.getPrivate(), bDHKeyPair.getPublic());
     assertThat(secretKey.getEncoded()).containsExactly(agreedSecret);
   }
 
@@ -48,14 +49,12 @@ public class KeyAgreementUtilsTest extends AbstractTest {
         new ECGenParameterSpec("P-256"));
 
     //generate first secret key with key material
-    SecretKey aKey = KeyAgreementUtils.generateSecretKey("ECCDHwithSHA256KDF", "AES",
-        aECKeyPair.getPrivate(),
-        bECKeyPair.getPublic(), keyMaterial);
+    SecretKey aKey = KeyAgreementUtils.generateSecretKey(CSP_NAME, "ECCDHwithSHA256KDF",
+        "AES", aECKeyPair.getPrivate(), bECKeyPair.getPublic(), keyMaterial);
 
     //generate second secret key with key material
-    SecretKey bKey = KeyAgreementUtils.generateSecretKey("ECCDHwithSHA256KDF", "AES",
-        bECKeyPair.getPrivate(),
-        aECKeyPair.getPublic(), keyMaterial);
+    SecretKey bKey = KeyAgreementUtils.generateSecretKey(CSP_NAME, "ECCDHwithSHA256KDF",
+        "AES", bECKeyPair.getPrivate(), aECKeyPair.getPublic(), keyMaterial);
     assertThat(aKey.getEncoded()).containsExactly(bKey.getEncoded());
     assertThat(aKey.getAlgorithm()).isEqualTo(bKey.getAlgorithm());
   }
@@ -74,22 +73,19 @@ public class KeyAgreementUtilsTest extends AbstractTest {
     KeyPair aDHKeyPairEph = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 256);
     KeyPair bDHKeyPairEph = KeyPairUtils.generateKeyPair(CSP_NAME, "DH", 256);
 
-    //generate first secret key with key material
+    //generate a secret key with key material
     DHUParameterSpec aDHUParameterSpec = new DHUParameterSpec(aDHKeyPairEph.getPublic(),
-        aDHKeyPairEph.getPrivate(),
-        bDHKeyPairEph.getPublic(), keyMaterial);
-    SecretKey aKey = KeyAgreementUtils.generateSecretKey("DHUwithSHA256KDF", "AES",
-        aDHKeyPair.getPrivate(),
-        bDHKeyPair.getPublic(), aDHUParameterSpec);
+        aDHKeyPairEph.getPrivate(), bDHKeyPairEph.getPublic(), keyMaterial);
 
-    //generate second secret key with key material
+    SecretKey aKey = KeyAgreementUtils.generateSecretKey(CSP_NAME, "DHUwithSHA256KDF",
+        "AES", aDHKeyPair.getPrivate(), bDHKeyPair.getPublic(), aDHUParameterSpec);
+
+    //generate b secret key with key material
     DHUParameterSpec bDHUParameterSpec = new DHUParameterSpec(bDHKeyPairEph.getPublic(),
-        bDHKeyPairEph.getPrivate(),
-        aDHKeyPairEph.getPublic(), keyMaterial);
+        bDHKeyPairEph.getPrivate(), aDHKeyPairEph.getPublic(), keyMaterial);
 
-    SecretKey bKey = KeyAgreementUtils.generateSecretKey("DHUwithSHA256KDF", "AES",
-        bDHKeyPair.getPrivate(),
-        aDHKeyPair.getPublic(), bDHUParameterSpec);
+    SecretKey bKey = KeyAgreementUtils.generateSecretKey(CSP_NAME, "DHUwithSHA256KDF",
+        "AES", bDHKeyPair.getPrivate(), aDHKeyPair.getPublic(), bDHUParameterSpec);
 
     assertThat(aKey.getEncoded()).containsExactly(bKey.getEncoded());
     assertThat(aKey.getAlgorithm()).isEqualTo(bKey.getAlgorithm());
@@ -114,17 +110,15 @@ public class KeyAgreementUtilsTest extends AbstractTest {
         aDHKeyPairEph.getPrivate(),
         bDHKeyPairEph.getPublic(), keyMaterial);
 
-    SecretKey aKey = KeyAgreementUtils.generateSecretKey("MQVwithSHA256KDF", "AES",
-        aDHKeyPair.getPrivate(),
-        bDHKeyPair.getPublic(), aDHUParameterSpec);
+    SecretKey aKey = KeyAgreementUtils.generateSecretKey(CSP_NAME, "MQVwithSHA256KDF",
+        "AES", aDHKeyPair.getPrivate(), bDHKeyPair.getPublic(), aDHUParameterSpec);
 
     //generate second secret key with key material
     MQVParameterSpec bDHUParameterSpec = new MQVParameterSpec(bDHKeyPairEph.getPublic(),
         bDHKeyPairEph.getPrivate(),
         aDHKeyPairEph.getPublic(), keyMaterial);
-    SecretKey bKey = KeyAgreementUtils.generateSecretKey("MQVwithSHA256KDF", "AES",
-        bDHKeyPair.getPrivate(),
-        aDHKeyPair.getPublic(), bDHUParameterSpec);
+    SecretKey bKey = KeyAgreementUtils.generateSecretKey(CSP_NAME, "MQVwithSHA256KDF",
+        "AES", bDHKeyPair.getPrivate(), aDHKeyPair.getPublic(), bDHUParameterSpec);
 
     assertThat(aKey.getEncoded()).containsExactly(bKey.getEncoded());
     assertThat(aKey.getAlgorithm()).isEqualTo(bKey.getAlgorithm());
