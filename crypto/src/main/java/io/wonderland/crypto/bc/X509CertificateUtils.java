@@ -6,12 +6,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.Security;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.security.auth.x500.X500Principal;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -36,23 +34,21 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v1CertificateBuilder;
 import org.bouncycastle.cert.X509v2AttributeCertificateBuilder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 @Slf4j
-public class X509CertUtils {
+public class X509CertificateUtils {
 
-  private static final Map<String, X509CertificateHolder> certMap = new ConcurrentHashMap<>();
   private static CertificateFactory certificateFactory;
   private static long serialNumberBase = System.currentTimeMillis();
 
   static {
-    Security.addProvider(new BouncyCastleProvider());
     init();
   }
 
@@ -61,7 +57,7 @@ public class X509CertUtils {
     try {
       certificateFactory = CertificateFactory.getInstance("X.509", CSP.BC);
     } catch (Exception e) {
-      log.error("Error on BC init().", e);
+      log.error("Error ", e);
       System.exit(1);
     }
   }
@@ -418,5 +414,18 @@ public class X509CertUtils {
 
     return attributeBuilder.build(signer);
   }
+
+
+  public static JcaX509CertificateConverter createCertConverter(String provider) {
+    return new JcaX509CertificateConverter().setProvider(provider);
+  }
+
+  public static X509Certificate convertToX509Certificate(String provider,
+      X509CertificateHolder x509CertificateHolder)
+      throws CertificateException {
+    return new JcaX509CertificateConverter().setProvider(provider)
+        .getCertificate(x509CertificateHolder);
+  }
+
 
 }
