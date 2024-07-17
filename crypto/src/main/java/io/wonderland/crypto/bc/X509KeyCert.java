@@ -7,7 +7,7 @@ import org.bouncycastle.cert.X509CertificateHolder;
 
 @RequiredArgsConstructor
 @Getter
-public class X509KeyCertPair {
+public class X509KeyCert {
 
   private final KeyPair keyPair;
   private final X509CertificateHolder cert;

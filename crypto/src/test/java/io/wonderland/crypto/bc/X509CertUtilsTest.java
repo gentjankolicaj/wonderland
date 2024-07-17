@@ -12,6 +12,8 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.jupiter.api.Test;
@@ -25,9 +27,9 @@ class X509CertUtilsTest extends AbstractTest {
   }
 
   @Test
-  void counterSerialNumber() {
-    BigInteger counterSerialNumberA = X509CertUtils.counterSerialNumber();
-    BigInteger counterSerialNumberB = X509CertUtils.counterSerialNumber();
+  void getCounterSerialNumber() {
+    BigInteger counterSerialNumberA = X509CertUtils.getCounterSerialNumber();
+    BigInteger counterSerialNumberB = X509CertUtils.getCounterSerialNumber();
     assertThat(counterSerialNumberB).isEqualTo(counterSerialNumberA.add(BigInteger.valueOf(1)));
   }
 
@@ -59,7 +61,7 @@ class X509CertUtilsTest extends AbstractTest {
   void toX509Certificate() throws GeneralSecurityException, OperatorCreationException, IOException {
     KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
 
-    BigInteger serialNumber = X509CertUtils.counterSerialNumber();
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
 
     X500Name issuer = X509CertUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto-bc", "crypto-bc");
@@ -90,7 +92,7 @@ class X509CertUtilsTest extends AbstractTest {
   void createX509v1CertHolder() throws GeneralSecurityException, OperatorCreationException {
     KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
 
-    BigInteger serialNumber = X509CertUtils.counterSerialNumber();
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
 
     X500Name issuer = X509CertUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto-bc", "crypto-bc");
@@ -131,7 +133,7 @@ class X509CertUtilsTest extends AbstractTest {
   void createX509v3CertHolder() throws GeneralSecurityException, OperatorCreationException {
     KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
 
-    BigInteger serialNumber = X509CertUtils.counterSerialNumber();
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
 
     X500Name issuer = X509CertUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto-bc", "crypto-bc");
@@ -162,6 +164,239 @@ class X509CertUtilsTest extends AbstractTest {
     assertThat(x509v3CertHolder1.getSubject()).isEqualTo(subject);
     assertThat(x509v3CertHolder1.getNotBefore()).isEqualTo(notBefore);
     assertThat(x509v3CertHolder1.getNotAfter()).isEqualTo(notAfter);
+
+  }
+
+  @Test
+  void createRootCert()
+      throws GeneralSecurityException, OperatorCreationException, CertIOException {
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
+
+    X500Name subject = X509CertUtils.createX500Name("AL", "Albania",
+        "TestSign", "Root CA", "TestSign Root");
+
+    Date notBefore = X509CertUtils.calcDate(0);
+    Date notAfter = X509CertUtils.calcDate(34);
+
+    SignFields signFields = new SignFields(CSP_NAME, signAlgorithm);
+    X509RootCertFields x509RootCertFields = new X509RootCertFields(keyPair.getPrivate(),
+        keyPair.getPublic(),
+        serialNumber, notBefore, notAfter, subject);
+
+    X509CertificateHolder rootCert = X509CertUtils.createRootCert(signFields, x509RootCertFields);
+    assertThat(rootCert).isNotNull();
+    assertThat(rootCert.getSerialNumber()).isEqualTo(serialNumber);
+    assertThat(rootCert.getIssuer()).isEqualTo(subject);
+    assertThat(rootCert.getSubject()).isEqualTo(subject);
+    assertThat(rootCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(rootCert.getNotAfter()).isEqualTo(notAfter);
+  }
+
+  @Test
+  void createRootKeyCert()
+      throws GeneralSecurityException, OperatorCreationException, CertIOException {
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
+
+    X500Name subject = X509CertUtils.createX500Name("AL", "Albania",
+        "TestSign", "Root CA", "TestSign Root");
+
+    Date notBefore = X509CertUtils.calcDate(0);
+    Date notAfter = X509CertUtils.calcDate(34);
+
+    X509KeyCert keyCert = X509CertUtils.createRootKeyCert(keyPair, CSP_NAME, signAlgorithm,
+        serialNumber, notBefore, notAfter, subject);
+
+    assertThat(keyCert).isNotNull();
+    assertThat(keyCert.getCert().getSerialNumber()).isEqualTo(serialNumber);
+    assertThat(keyCert.getCert().getIssuer()).isEqualTo(subject);
+    assertThat(keyCert.getCert().getSubject()).isEqualTo(subject);
+    assertThat(keyCert.getCert().getNotBefore()).isEqualTo(notBefore);
+    assertThat(keyCert.getCert().getNotAfter()).isEqualTo(notAfter);
+  }
+
+  @Test
+  void createIntermediateCert()
+      throws GeneralSecurityException, OperatorCreationException, CertIOException {
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
+
+    X500Name issuer = X509CertUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto-bc", "crypto-bc");
+    X500Name subject = X509CertUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto", "crypto");
+
+    Date notBefore = X509CertUtils.calcDate(0);
+    Date notAfter = X509CertUtils.calcDate(34);
+
+    //Trust certificate test
+    X509CertificateHolder trustCert = X509CertUtils.createX509v3CertHolder(CSP_NAME
+        , signAlgorithm, keyPair, issuer, serialNumber, notBefore, notAfter, subject);
+
+    assertThat(trustCert).isNotNull();
+    assertThat(trustCert.getSerialNumber()).isEqualTo(serialNumber);
+    assertThat(trustCert.getIssuer()).isEqualTo(issuer);
+    assertThat(trustCert.getSubject()).isEqualTo(subject);
+    assertThat(trustCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(trustCert.getNotAfter()).isEqualTo(notAfter);
+
+    //Certificate authority test (or CA)
+    X500Name caName = X509CertUtils.createX500Name("AL", "Albania", "ca-org", "ca-org-unit",
+        "ca-org-name");
+    KeyPair caKP = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    BigInteger caSerialNumber = X509CertUtils.getCounterSerialNumber();
+    SignFields signFields = new SignFields(CSP_NAME, signAlgorithm);
+    X509InterCertFields x509InterCertFields = new X509InterCertFields(trustCert,
+        keyPair.getPrivate(), caSerialNumber,
+        notBefore, notAfter, caName, caKP.getPublic(), 0);
+
+    X509CertificateHolder caCert = X509CertUtils.createIntermediateCert(signFields,
+        x509InterCertFields);
+    assertThat(caCert).isNotNull();
+    assertThat(caCert.getSerialNumber()).isEqualTo(caSerialNumber);
+    assertThat(caCert.getIssuer()).isEqualTo(trustCert.getSubject());
+    assertThat(caCert.getSubject()).isEqualTo(caName);
+    assertThat(caCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(caCert.getNotAfter()).isEqualTo(notAfter);
+  }
+
+
+  @Test
+  void createEndEntityCert()
+      throws GeneralSecurityException, OperatorCreationException, CertIOException {
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
+
+    X500Name issuer = X509CertUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto-bc", "crypto-bc");
+    X500Name subject = X509CertUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto", "crypto");
+
+    Date notBefore = X509CertUtils.calcDate(0);
+    Date notAfter = X509CertUtils.calcDate(34);
+
+    //Trust certificate test
+    X509CertificateHolder trustCert = X509CertUtils.createX509v3CertHolder(CSP_NAME
+        , signAlgorithm, keyPair, issuer, serialNumber, notBefore, notAfter, subject);
+
+    assertThat(trustCert).isNotNull();
+    assertThat(trustCert.getSerialNumber()).isEqualTo(serialNumber);
+    assertThat(trustCert.getIssuer()).isEqualTo(issuer);
+    assertThat(trustCert.getSubject()).isEqualTo(subject);
+    assertThat(trustCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(trustCert.getNotAfter()).isEqualTo(notAfter);
+
+    //Certificate authority test (or CA)
+    X500Name caName = X509CertUtils.createX500Name("AL", "Albania", "ca-org", "ca-org-unit",
+        "ca-org-name");
+    KeyPair caKP = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    BigInteger caSerialNumber = X509CertUtils.getCounterSerialNumber();
+    SignFields signFields = new SignFields(CSP_NAME, signAlgorithm);
+    X509InterCertFields x509InterCertFields = new X509InterCertFields(trustCert,
+        keyPair.getPrivate(), caSerialNumber,
+        notBefore, notAfter, caName, caKP.getPublic(), 0);
+
+    X509CertificateHolder caCert = X509CertUtils.createIntermediateCert(signFields,
+        x509InterCertFields);
+    assertThat(caCert).isNotNull();
+    assertThat(caCert.getSerialNumber()).isEqualTo(caSerialNumber);
+    assertThat(caCert.getIssuer()).isEqualTo(trustCert.getSubject());
+    assertThat(caCert.getSubject()).isEqualTo(caName);
+    assertThat(caCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(caCert.getNotAfter()).isEqualTo(notAfter);
+
+    //End-entity certificate test
+    X500Name eeName = X509CertUtils.createX500Name("AL", "Albania", "ee-org", "ee-org-unit",
+        "ee-org-name");
+    KeyPair eeKP = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    BigInteger eeSerialNumber = X509CertUtils.getCounterSerialNumber();
+    X509EndCertFields x509EndCertFields = new X509EndCertFields(caCert, caKP.getPrivate(),
+        eeSerialNumber,
+        notBefore, notAfter, eeName, eeKP.getPublic());
+
+    X509CertificateHolder eeCert = X509CertUtils.createEndEntityCert(signFields, x509EndCertFields);
+    assertThat(eeCert).isNotNull();
+    assertThat(eeCert.getSerialNumber()).isEqualTo(eeSerialNumber);
+    assertThat(eeCert.getIssuer()).isEqualTo(caCert.getSubject());
+    assertThat(eeCert.getSubject()).isEqualTo(eeName);
+    assertThat(eeCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(eeCert.getNotAfter()).isEqualTo(notAfter);
+
+  }
+
+  @Test
+  void createSpecialEndEntityCert()
+      throws GeneralSecurityException, OperatorCreationException, CertIOException {
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+
+    BigInteger serialNumber = X509CertUtils.getCounterSerialNumber();
+
+    X500Name issuer = X509CertUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto-bc", "crypto-bc");
+    X500Name subject = X509CertUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto", "crypto");
+
+    Date notBefore = X509CertUtils.calcDate(0);
+    Date notAfter = X509CertUtils.calcDate(34);
+
+    //Trust certificate test
+    X509CertificateHolder trustCert = X509CertUtils.createX509v3CertHolder(CSP_NAME
+        , signAlgorithm, keyPair, issuer, serialNumber, notBefore, notAfter, subject);
+
+    assertThat(trustCert).isNotNull();
+    assertThat(trustCert.getSerialNumber()).isEqualTo(serialNumber);
+    assertThat(trustCert.getIssuer()).isEqualTo(issuer);
+    assertThat(trustCert.getSubject()).isEqualTo(subject);
+    assertThat(trustCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(trustCert.getNotAfter()).isEqualTo(notAfter);
+
+    //Certificate authority test (or CA)
+    X500Name caName = X509CertUtils.createX500Name("AL", "Albania", "ca-org", "ca-org-unit",
+        "ca-org-name");
+    KeyPair caKP = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    BigInteger caSerialNumber = X509CertUtils.getCounterSerialNumber();
+    SignFields signFields = new SignFields(CSP_NAME, signAlgorithm);
+    X509InterCertFields x509InterCertFields = new X509InterCertFields(trustCert,
+        keyPair.getPrivate(), caSerialNumber,
+        notBefore, notAfter, caName, caKP.getPublic(), 0);
+
+    X509CertificateHolder caCert = X509CertUtils.createIntermediateCert(signFields,
+        x509InterCertFields);
+    assertThat(caCert).isNotNull();
+    assertThat(caCert.getSerialNumber()).isEqualTo(caSerialNumber);
+    assertThat(caCert.getIssuer()).isEqualTo(trustCert.getSubject());
+    assertThat(caCert.getSubject()).isEqualTo(caName);
+    assertThat(caCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(caCert.getNotAfter()).isEqualTo(notAfter);
+
+    //End-entity certificate test
+    X500Name eeName = X509CertUtils.createX500Name("AL", "Albania", "ee-org", "ee-org-unit",
+        "ee-org-name");
+    KeyPair eeKP = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    BigInteger eeSerialNumber = X509CertUtils.getCounterSerialNumber();
+    X509EndCertFields x509EndCertFields = new X509EndCertFields(caCert, caKP.getPrivate(),
+        eeSerialNumber,
+        notBefore, notAfter, eeName, eeKP.getPublic());
+
+    X509CertificateHolder eeCert = X509CertUtils.createSpecialEndEntityCert(signFields,
+        x509EndCertFields,
+        KeyPurposeId.id_kp_clientAuth);
+    assertThat(eeCert).isNotNull();
+    assertThat(eeCert.getSerialNumber()).isEqualTo(eeSerialNumber);
+    assertThat(eeCert.getIssuer()).isEqualTo(caCert.getSubject());
+    assertThat(eeCert.getSubject()).isEqualTo(eeName);
+    assertThat(eeCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(eeCert.getNotAfter()).isEqualTo(notAfter);
 
   }
 
