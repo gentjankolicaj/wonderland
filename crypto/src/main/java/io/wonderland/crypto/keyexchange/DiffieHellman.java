@@ -1,5 +1,5 @@
 package io.wonderland.crypto.keyexchange;
 
-public abstract class DiffieHellman implements KeyExchangeProtocol {
+public abstract class DiffieHellman implements KeyExchange {
 
 }

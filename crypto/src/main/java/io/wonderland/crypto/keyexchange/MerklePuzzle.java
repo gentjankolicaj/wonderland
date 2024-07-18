@@ -1,5 +1,5 @@
 package io.wonderland.crypto.keyexchange;
 
-public abstract class MerklePuzzle implements KeyExchangeProtocol {
+public abstract class MerklePuzzle implements KeyExchange {
 
 }

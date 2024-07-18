@@ -29,7 +29,7 @@ public class X509CRLUtils {
       X509EmptyCRLFields x509EmptyCRLFields)
       throws NoSuchAlgorithmException, CertIOException, OperatorCreationException {
     X509v2CRLBuilder crlBuilder = new X509v2CRLBuilder(x509EmptyCRLFields.getCaCert().getSubject(),
-        x509EmptyCRLFields.getUpdate());
+        x509EmptyCRLFields.getThisUpdate());
 
     crlBuilder.setNextUpdate(x509EmptyCRLFields.getNextUpdate());
 
@@ -39,10 +39,10 @@ public class X509CRLUtils {
     crlBuilder.addExtension(Extension.authorityKeyIdentifier, false,
         extUtils.createAuthorityKeyIdentifier(x509EmptyCRLFields.getCaCert()));
 
-    ContentSigner signer = new JcaContentSignerBuilder(signFields.getAlgorithm())
+    ContentSigner contentSigner = new JcaContentSignerBuilder(signFields.getAlgorithm())
         .setProvider(signFields.getProvider()).build(x509EmptyCRLFields.getCaKey());
 
-    return crlBuilder.build(signer);
+    return crlBuilder.build(contentSigner);
   }
 
   public static JcaX509CRLConverter createCRLConverter(String provider) {
@@ -66,7 +66,7 @@ public class X509CRLUtils {
       throws IOException, GeneralSecurityException, OperatorCreationException {
 
     X509v2CRLBuilder crlBuilder = new X509v2CRLBuilder(x509CreateCRLFields.getCaCert().getSubject(),
-        x509CreateCRLFields.getUpdate());
+        x509CreateCRLFields.getThisUpdate());
 
     crlBuilder.setNextUpdate(x509CreateCRLFields.getNextUpdate());
 
@@ -84,10 +84,10 @@ public class X509CRLUtils {
     crlBuilder.addExtension(Extension.authorityKeyIdentifier, false,
         extUtils.createAuthorityKeyIdentifier(x509CreateCRLFields.getCaCert()));
 
-    ContentSigner signer = new JcaContentSignerBuilder(signFields.getAlgorithm())
+    ContentSigner contentSigner = new JcaContentSignerBuilder(signFields.getAlgorithm())
         .setProvider(signFields.getProvider()).build(x509CreateCRLFields.getCaKey());
 
-    return crlBuilder.build(signer);
+    return crlBuilder.build(contentSigner);
   }
 
   /**
@@ -100,7 +100,7 @@ public class X509CRLUtils {
   public X509CRLHolder updateCRL(SignFields signFields, X509UpdateCRLFields x509UpdateCRLFields)
       throws IOException, GeneralSecurityException, OperatorCreationException {
     X509v2CRLBuilder crlBuilder = new X509v2CRLBuilder(x509UpdateCRLFields.getCaCert().getIssuer(),
-        x509UpdateCRLFields.getUpdate());
+        x509UpdateCRLFields.getThisUpdate());
 
     crlBuilder.setNextUpdate(x509UpdateCRLFields.getNextUpdate());
 
@@ -121,10 +121,10 @@ public class X509CRLUtils {
     crlBuilder.addExtension(Extension.authorityKeyIdentifier, false,
         extUtils.createAuthorityKeyIdentifier(x509UpdateCRLFields.getCaCert()));
 
-    ContentSigner signer = new JcaContentSignerBuilder(signFields.getAlgorithm())
+    ContentSigner contentSigner = new JcaContentSignerBuilder(signFields.getAlgorithm())
         .setProvider(signFields.getProvider()).build(x509UpdateCRLFields.getCaKey());
 
-    return crlBuilder.build(signer);
+    return crlBuilder.build(contentSigner);
   }
 
 

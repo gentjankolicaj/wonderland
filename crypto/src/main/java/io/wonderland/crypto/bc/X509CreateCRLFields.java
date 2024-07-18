@@ -12,7 +12,7 @@ public class X509CreateCRLFields {
 
   private final X509CertificateHolder caCert;
   private final PrivateKey caKey;
-  private final Date update;
+  private final Date thisUpdate;
   private final Date nextUpdate;
   private final X509CertificateHolder certToRevoke;
   private final Date revocationDate;

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.bouncycastle.cert.X509CertificateHolder;
 
 /**
- * Wrapper class for X509 attribut certificate fields
+ * Wrapper class for X509 attribute certificate fields
  */
 @RequiredArgsConstructor
 @Getter

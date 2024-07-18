@@ -3,6 +3,7 @@ package io.wonderland.crypto.bc;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.wonderland.crypto.AbstractTest;
+import io.wonderland.crypto.DateUtils;
 import io.wonderland.crypto.KeyPairUtils;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -20,11 +21,6 @@ import org.junit.jupiter.api.Test;
 
 class X509CertificateUtilsTest extends AbstractTest {
 
-  @Test
-  void calcDate() {
-    Date tenHours = X509CertificateUtils.calcDate(10);
-    assertThat(tenHours).isAfter(new Date());
-  }
 
   @Test
   void getCounterSerialNumber() {
@@ -68,8 +64,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto", "crypto");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     X509CertificateHolder x509v1CertHolder = X509CertificateUtils.createX509v1CertHolder(CSP_NAME
         , "SHA256withECDSA", keyPair, issuer, serialNumber, notBefore, notAfter, subject);
@@ -99,8 +95,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto", "crypto");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     X509CertificateHolder x509v1CertHolder = X509CertificateUtils.createX509v1CertHolder(CSP_NAME
         , "SHA256withECDSA", keyPair, issuer, serialNumber, notBefore, notAfter, subject);
@@ -140,8 +136,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto", "crypto");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     X509CertificateHolder x509v3CertHolder = X509CertificateUtils.createX509v3CertHolder(CSP_NAME
         , "SHA256withECDSA", keyPair, issuer, serialNumber, notBefore, notAfter, subject);
@@ -178,8 +174,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "TestSign", "Root CA", "TestSign Root");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     SignFields signFields = new SignFields(CSP_NAME, signAlgorithm);
     X509RootCertFields x509RootCertFields = new X509RootCertFields(keyPair.getPrivate(),
@@ -207,8 +203,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "TestSign", "Root CA", "TestSign Root");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     X509KeyCert keyCert = X509CertificateUtils.createRootKeyCert(keyPair, CSP_NAME, signAlgorithm,
         serialNumber, notBefore, notAfter, subject);
@@ -234,8 +230,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto", "crypto");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     //Trust certificate test
     X509CertificateHolder trustCert = X509CertificateUtils.createX509v3CertHolder(CSP_NAME
@@ -282,8 +278,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto", "crypto");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     //Trust certificate test
     X509CertificateHolder trustCert = X509CertificateUtils.createX509v3CertHolder(CSP_NAME
@@ -348,8 +344,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto", "crypto");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     //Trust certificate test
     X509CertificateHolder trustCert = X509CertificateUtils.createX509v3CertHolder(CSP_NAME
@@ -420,8 +416,8 @@ class X509CertificateUtilsTest extends AbstractTest {
     X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
         "wonderland", "wonderland-crypto", "crypto");
 
-    Date notBefore = X509CertificateUtils.calcDate(0);
-    Date notAfter = X509CertificateUtils.calcDate(34);
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
 
     //Trust certificate test
     X509CertificateHolder trustCert = X509CertificateUtils.createX509v3CertHolder(CSP_NAME
@@ -439,7 +435,7 @@ class X509CertificateUtilsTest extends AbstractTest {
         trustCert);
     assertThat(x509Certificate).isNotNull();
     assertThat(x509Certificate.getSerialNumber()).isEqualTo(serialNumber);
-    assertThat(x509Certificate.getSigAlgName()).isEqualTo(signAlgorithm);
+    assertThat(x509Certificate.getSigAlgName()).isEqualToIgnoringCase(signAlgorithm);
     assertThat(x509Certificate.getNotBefore()).isEqualTo(notBefore);
     assertThat(x509Certificate.getNotAfter()).isEqualTo(notAfter);
 

@@ -12,7 +12,7 @@ public class X509EmptyCRLFields {
 
   private final X509CertificateHolder caCert;
   private final PrivateKey caKey;
-  private final Date update;
+  private final Date thisUpdate;
   private final Date nextUpdate;
 
 }

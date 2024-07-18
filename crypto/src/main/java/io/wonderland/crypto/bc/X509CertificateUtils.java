@@ -64,17 +64,6 @@ public class X509CertificateUtils {
 
 
   /**
-   * Calculate a date in seconds (suitable for the PKIX profile - RFC 5280)
-   *
-   * @param hoursInFuture hours ahead of now, may be negative.
-   * @return a Date set to now + (hoursInFuture * 60 * 60) seconds
-   */
-  public static Date calcDate(int hoursInFuture) {
-    long secs = System.currentTimeMillis() / 1000;
-    return new Date((secs + ((long) hoursInFuture * 60 * 60)) * 1000);
-  }
-
-  /**
    * Calculate a serial number using a monotonically increasing value.
    *
    * @return a BigInteger representing the next serial number in the sequence.
