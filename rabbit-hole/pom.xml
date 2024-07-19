@@ -134,6 +134,11 @@
       <groupId>org.bouncycastle</groupId>
       <version>${bc.prov.version}</version>
     </dependency>
+    <dependency>
+      <artifactId>bctls-jdk18on</artifactId>
+      <groupId>org.bouncycastle</groupId>
+      <version>${bc.prov.version}</version>
+    </dependency>
 
     <!-- multiple dependencies because of uber jar -->
     <dependency>
