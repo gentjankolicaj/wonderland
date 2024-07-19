@@ -4,24 +4,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.wonderland.crypto.AbstractTest;
+import io.wonderland.crypto.PBKDFUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Objects;
+import org.bouncycastle.crypto.util.PBKDFConfig;
+import org.bouncycastle.jcajce.BCFKSLoadStoreParameter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ProviderKeyStoreTest extends AbstractTest {
+class KeyStoreHelperTest extends AbstractTest {
 
-  private ProviderKeyStore bcKeyStore;
+  private KeyStoreHelper ksHelper;
 
   @BeforeEach
   void before() {
-    bcKeyStore = new ProviderKeyStore(CSP_NAME);
+    ksHelper = new KeyStoreHelper(CSP_NAME);
   }
 
 
@@ -30,7 +38,7 @@ class ProviderKeyStoreTest extends AbstractTest {
     Path pkcs12KeystorePath = Path.of(
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.p12"))
             .getPath());
-    PrivateKey privateKey = bcKeyStore.getPrivateKey(pkcs12KeystorePath, KeyStoreType.PKCS12,
+    PrivateKey privateKey = ksHelper.getPrivateKey(pkcs12KeystorePath, KeyStoreType.PKCS12,
         "p4ssword", "bc");
     assertThat(privateKey).isNotNull();
     assertThat(privateKey.getEncoded()).isNotNull();
@@ -43,7 +51,7 @@ class ProviderKeyStoreTest extends AbstractTest {
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.p12"))
             .getPath());
 
-    PublicKey publicKey = bcKeyStore.getPublicKey(pkcs12KeystorePath, KeyStoreType.PKCS12,
+    PublicKey publicKey = ksHelper.getPublicKey(pkcs12KeystorePath, KeyStoreType.PKCS12,
         "p4ssword", "bc");
     assertThat(publicKey).isNotNull();
     assertThat(publicKey.getEncoded()).isNotNull();
@@ -56,7 +64,7 @@ class ProviderKeyStoreTest extends AbstractTest {
         Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("bc.p12"))
             .getPath());
 
-    KeyPair keyPair = bcKeyStore.getKeyPair(pkcs12KeystorePath, KeyStoreType.PKCS12, "p4ssword",
+    KeyPair keyPair = ksHelper.getKeyPair(pkcs12KeystorePath, KeyStoreType.PKCS12, "p4ssword",
         "bc");
     assertThat(keyPair).isNotNull();
     assertThat(keyPair.getPrivate()).isNotNull();
@@ -74,12 +82,12 @@ class ProviderKeyStoreTest extends AbstractTest {
             .getPath());
 
     //positive test
-    Certificate cert = bcKeyStore.getCertificate(pkcs12KeystorePath, KeyStoreType.PKCS12,
+    Certificate cert = ksHelper.getCertificate(pkcs12KeystorePath, KeyStoreType.PKCS12,
         "p4ssword", "bc");
     assertThat(cert).isNotNull();
 
     //negative test
-    Certificate noneCert = bcKeyStore.getCertificate(pkcs12KeystorePath, KeyStoreType.PKCS12,
+    Certificate noneCert = ksHelper.getCertificate(pkcs12KeystorePath, KeyStoreType.PKCS12,
         "p4ssword", "");
     assertThat(noneCert).isNull();
   }
@@ -91,11 +99,30 @@ class ProviderKeyStoreTest extends AbstractTest {
             .getPath());
 
     //test pkcs12 keystore
-    assertThatThrownBy(() -> bcKeyStore.loadKeyStore(pkcs12KeystorePath, KeyStoreType.PKCS12, "1"))
+    assertThatThrownBy(() -> ksHelper.loadKeyStore(pkcs12KeystorePath, KeyStoreType.PKCS12, "1"))
         .isInstanceOf(IOException.class);
     assertThat(
-        bcKeyStore.loadKeyStore(pkcs12KeystorePath, KeyStoreType.PKCS12, "p4ssword")).isNotNull();
+        ksHelper.loadKeyStore(pkcs12KeystorePath, KeyStoreType.PKCS12, "p4ssword")).isNotNull();
 
+  }
+
+  @Test
+  void loadKeystoreWithBCFKS()
+      throws KeyStoreException, NoSuchProviderException, CertificateException, IOException, NoSuchAlgorithmException {
+    PBKDFConfig config = PBKDFUtils.createPbkdfConfigWithScrypt(1024, 8, 1, 20);
+
+    KeyStore store = ksHelper.getInstance(KeyStoreType.BOUNCY_CASTLE_FKS);
+
+    //initialize empty keystore to use scrypt
+    store.load(new BCFKSLoadStoreParameter.Builder().withStorePBKDFConfig(config).build());
+
+    //do something on store
+    //store.setEntry()....
+    //FileOutputStream fOut = new FileOutputStream("scrypt.fks");
+    //store.store(fOut,"storePassword");
+    //fOut.close();
+    assertThat(config).isNotNull();
+    assertThat(store).isNotNull();
   }
 
 

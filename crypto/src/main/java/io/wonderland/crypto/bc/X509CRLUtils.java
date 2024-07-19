@@ -62,7 +62,8 @@ public class X509CRLUtils {
    * @param x509CreateCRLFields certificate revocation list fields.
    * @return an X509CRLHolder representing the revocation list for the CA.
    */
-  public X509CRLHolder createCRL(SignFields signFields, X509CreateCRLFields x509CreateCRLFields)
+  public static X509CRLHolder createCRL(SignFields signFields,
+      X509CreateCRLFields x509CreateCRLFields)
       throws IOException, GeneralSecurityException, OperatorCreationException {
 
     X509v2CRLBuilder crlBuilder = new X509v2CRLBuilder(x509CreateCRLFields.getCaCert().getSubject(),

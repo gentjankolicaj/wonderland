@@ -5,11 +5,23 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertPath;
+import java.security.cert.CertPathBuilder;
+import java.security.cert.CertPathBuilderException;
+import java.security.cert.CertPathBuilderResult;
+import java.security.cert.CertPathParameters;
+import java.security.cert.CertPathValidator;
+import java.security.cert.CertPathValidatorException;
+import java.security.cert.CertPathValidatorResult;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.List;
 import javax.security.auth.x500.X500Principal;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -409,12 +421,63 @@ public class X509CertificateUtils {
     return new JcaX509CertificateConverter().setProvider(provider);
   }
 
-  public static X509Certificate convertToX509Certificate(String provider,
+  public static X509Certificate toX509Certificate(String provider,
       X509CertificateHolder x509CertificateHolder)
       throws CertificateException {
     return new JcaX509CertificateConverter().setProvider(provider)
         .getCertificate(x509CertificateHolder);
   }
 
+
+  /**
+   * Create a certificate path
+   *
+   * @param provider  cryptographic service providers
+   * @param algorithm cert path algorithm
+   * @param params    cert path parameters
+   * @return certificate path
+   * @throws NoSuchAlgorithmException
+   * @throws NoSuchProviderException
+   * @throws InvalidAlgorithmParameterException
+   * @throws CertPathBuilderException
+   */
+  public static CertPath createCertPath(String provider, String algorithm,
+      CertPathParameters params) throws NoSuchAlgorithmException, NoSuchProviderException,
+      InvalidAlgorithmParameterException, CertPathBuilderException {
+    CertPathBuilder builder = CertPathBuilder.getInstance(algorithm, provider);
+    CertPathBuilderResult certPathBuilderResult = builder.build(params);
+    return certPathBuilderResult.getCertPath();
+  }
+
+  /**
+   * Create a certificate path
+   *
+   * @param chain certificate chain
+   * @return certificate path
+   * @throws InvalidAlgorithmParameterException
+   * @throws CertPathBuilderException
+   */
+  public static CertPath generateCertPath(List<X509Certificate> chain) throws CertificateException {
+    return certificateFactory.generateCertPath(chain);
+  }
+
+
+  /**
+   * @param provider  csp
+   * @param algorithm certificate path algorithm
+   * @param certPath  cert path
+   * @param params    certificate path parameters
+   * @return
+   * @throws NoSuchAlgorithmException
+   * @throws NoSuchProviderException
+   * @throws CertPathValidatorException
+   * @throws InvalidAlgorithmParameterException
+   */
+  public static CertPathValidatorResult validateCertPath(String provider, String algorithm,
+      CertPath certPath, CertPathParameters params) throws NoSuchAlgorithmException,
+      NoSuchProviderException, CertPathValidatorException, InvalidAlgorithmParameterException {
+    CertPathValidator validator = CertPathValidator.getInstance(algorithm, provider);
+    return validator.validate(certPath, params);
+  }
 
 }

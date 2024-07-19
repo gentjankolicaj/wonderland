@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.wonderland.crypto.AbstractTest;
 import io.wonderland.crypto.DateUtils;
 import io.wonderland.crypto.KeyPairUtils;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -112,4 +113,53 @@ class X509CRLUtilsTest extends AbstractTest {
     assertThat(x509CRL.getThisUpdate()).isBeforeOrEqualTo(thisUpdate);
     assertThat(x509CRL.getNextUpdate()).isBeforeOrEqualTo(nextUpdate);
   }
+
+
+  @Test
+  void createCRL()
+      throws GeneralSecurityException, OperatorCreationException, IOException {
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair keyPair = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+
+    BigInteger serialNumber = X509CertificateUtils.getCounterSerialNumber();
+
+    X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
+        "TestSign", "Root CA", "TestSign Root");
+
+    Date notBefore = DateUtils.calcDate(0);
+    Date notAfter = DateUtils.calcDate(34);
+
+    SignFields signFields = new SignFields(CSP_NAME, signAlgorithm);
+    X509RootCertFields x509RootCertFields = new X509RootCertFields(keyPair.getPrivate(),
+        keyPair.getPublic(), serialNumber, notBefore, notAfter, subject);
+    PrivateKey caKey = keyPair.getPrivate();
+    Date thisUpdate = new Date();
+    Date nextUpdate = DateUtils.calcDate(34);
+
+    X509CertificateHolder rootCert = X509CertificateUtils.createRootCert(signFields,
+        x509RootCertFields);
+    assertThat(rootCert).isNotNull();
+    assertThat(rootCert.getSerialNumber()).isEqualTo(serialNumber);
+    assertThat(rootCert.getIssuer()).isEqualTo(subject);
+    assertThat(rootCert.getSubject()).isEqualTo(subject);
+    assertThat(rootCert.getNotBefore()).isEqualTo(notBefore);
+    assertThat(rootCert.getNotAfter()).isEqualTo(notAfter);
+
+    X509CreateCRLFields crlFields = new X509CreateCRLFields(rootCert, caKey, thisUpdate,
+        nextUpdate, rootCert, thisUpdate);
+    X509CRLHolder x509CRLHolder = X509CRLUtils.createCRL(signFields, crlFields);
+
+    assertThat(x509CRLHolder).isNotNull();
+    assertThat(x509CRLHolder.getIssuer()).isEqualTo(subject);
+    assertThat(x509CRLHolder.getThisUpdate()).isBeforeOrEqualTo(thisUpdate);
+    assertThat(x509CRLHolder.getNextUpdate()).isBeforeOrEqualTo(nextUpdate);
+
+    X509CRL x509CRL = X509CRLUtils.convertToX509CRL(CSP_NAME, x509CRLHolder);
+    assertThat(x509CRL).isNotNull();
+    assertThat(x509CRL.getSigAlgName()).isEqualToIgnoringCase(signAlgorithm);
+    assertThat(x509CRL.getThisUpdate()).isBeforeOrEqualTo(thisUpdate);
+    assertThat(x509CRL.getNextUpdate()).isBeforeOrEqualTo(nextUpdate);
+  }
+
+
 }

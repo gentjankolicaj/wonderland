@@ -8,6 +8,8 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
@@ -86,4 +88,8 @@ public final class KeyStoreUtils {
   }
 
 
+  public static KeyStore getInstance(String provider, KeyStoreType type)
+      throws KeyStoreException, NoSuchProviderException {
+    return KeyStore.getInstance(type.getName(), provider);
+  }
 }

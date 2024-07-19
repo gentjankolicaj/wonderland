@@ -9,6 +9,8 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
@@ -16,15 +18,15 @@ import javax.security.auth.x500.X500PrivateCredential;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ProviderKeyStore {
+public class KeyStoreHelper {
 
   private final String provider;
 
-  public ProviderKeyStore() {
+  public KeyStoreHelper() {
     this(CSP.INSTANCE_CONTEXT.getProvider());
   }
 
-  public ProviderKeyStore(String provider) {
+  public KeyStoreHelper(String provider) {
     this.provider = provider;
   }
 
@@ -87,6 +89,11 @@ public class ProviderKeyStore {
     try (FileOutputStream fos = new FileOutputStream(newKeystorePath.toFile())) {
       keyStore.store(fos, keystorePassword.toCharArray());
     }
+  }
+
+  public KeyStore getInstance(KeyStoreType type)
+      throws KeyStoreException, NoSuchProviderException {
+    return KeyStore.getInstance(type.getName(), provider);
   }
 
 
