@@ -3,6 +3,8 @@ module crypto {
   requires org.bouncycastle.pkix;
   requires org.bouncycastle.provider;
   requires org.bouncycastle.util;
+  requires org.bouncycastle.mail;
+  requires mail;
 
   exports io.wonderland.crypto;
   exports io.wonderland.crypto.store;
