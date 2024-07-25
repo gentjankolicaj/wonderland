@@ -1,5 +1,6 @@
 package io.wonderland.crypto.bc;
 
+import static io.wonderland.crypto.bc.X509CertificateUtils.estEnroll;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.wonderland.crypto.AbstractTest;
@@ -22,18 +23,28 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.security.auth.x500.X500Principal;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.Extensions;
+import org.bouncycastle.asn1.x509.ExtensionsGenerator;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.PKCSException;
+import org.bouncycastle.util.Store;
 import org.junit.jupiter.api.Test;
 
 class X509CertificateUtilsTest extends AbstractTest {
@@ -768,4 +779,69 @@ class X509CertificateUtilsTest extends AbstractTest {
     assertThat(result).isInstanceOf(PKIXCertPathValidatorResult.class);
   }
 
+
+  @Test
+  void testEST() throws Exception {
+    Set<TrustAnchor> trustAnchors = X509CertificateUtils.fetchTrustAnchors(
+        "http://testrfc7030.com/dstcax3.pem");
+    Collection<X509CertificateHolder> caCerts = X509CertificateUtils.fetchCACerts(trustAnchors,
+        "testrfc7030.com", 8443);
+    Collection<ASN1ObjectIdentifier> csrAttributes = X509CertificateUtils.fetchCSRAttributes(
+        trustAnchors, "testrfc7030.com", 8443);
+
+    //est enrollment
+    KeyPair kp = KeyPairUtils.generateKeyPair(CSP_NAME, "ECDSA");
+    String signAlgorithm = "SHA384WITHECDSA";
+    X500Name subject = new X500Name("CN=EST Test Client");
+    Store<X509CertificateHolder> certs = estEnroll(trustAnchors, "testrfc7030.com",
+        8443, "estuser", "estpwd".toCharArray(), CSP_NAME, signAlgorithm, kp, subject);
+
+  }
+
+  @Test
+  void createPKCS10() throws GeneralSecurityException, OperatorCreationException {
+    X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto", "crypto");
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair kp = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    PKCS10CertificationRequest certificationRequest = X509CertificateUtils.createPKCS10(CSP_NAME,
+        signAlgorithm, kp, subject);
+    assertThat(certificationRequest).isNotNull();
+
+  }
+
+  @Test
+  void createPKCS10WithExtensions()
+      throws GeneralSecurityException, OperatorCreationException, IOException {
+    X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto", "crypto");
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair kp = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    ExtensionsGenerator extGen = new ExtensionsGenerator();
+
+    extGen.addExtension(Extension.subjectAlternativeName, false,
+        new GeneralNames(new GeneralName(GeneralName.rfc822Name, "wonderland.io")));
+
+    Extensions extensions = extGen.generate();
+
+    PKCS10CertificationRequest certificationRequest = X509CertificateUtils.createPKCS10WithExt(
+        CSP_NAME, signAlgorithm, kp, subject, extensions);
+    assertThat(certificationRequest).isNotNull();
+  }
+
+
+  @Test
+  void isValidPKCS10Request()
+      throws GeneralSecurityException, OperatorCreationException, IOException, PKCSException {
+    X500Name subject = X509CertificateUtils.createX500Name("AL", "Albania",
+        "wonderland", "wonderland-crypto", "crypto");
+    String signAlgorithm = "SHA256withECDSA";
+    KeyPair kp = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
+    PKCS10CertificationRequest certificationRequest = X509CertificateUtils.createPKCS10(CSP_NAME,
+        signAlgorithm, kp, subject);
+    assertThat(certificationRequest).isNotNull();
+    boolean valid = X509CertificateUtils.isValidPKCS10Request(CSP_NAME,
+        certificationRequest.getEncoded());
+    assertThat(valid).isTrue();
+  }
 }

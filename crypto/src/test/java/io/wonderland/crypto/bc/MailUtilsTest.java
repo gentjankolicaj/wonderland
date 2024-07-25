@@ -35,12 +35,11 @@ class MailUtilsTest extends AbstractTest {
 
   static AlgorithmIdentifier getAlgId() throws InvalidAlgorithmParameterException {
     JcaAlgorithmParametersConverter paramsConverter = new JcaAlgorithmParametersConverter();
-    AlgorithmIdentifier oaepParams = paramsConverter.getAlgorithmIdentifier(
+    return paramsConverter.getAlgorithmIdentifier(
         PKCSObjectIdentifiers.id_RSAES_OAEP,
         new OAEPParameterSpec("SHA-256",
             "MGF1", new MGF1ParameterSpec("SHA-256"),
             PSource.PSpecified.DEFAULT));
-    return oaepParams;
   }
 
   static X509CertificateHolder getSelfSignedCert(KeyPair keyPair, String signAlgorithm)
@@ -70,7 +69,7 @@ class MailUtilsTest extends AbstractTest {
     byte[] message = ("Content-Type: text/plain; name=null; charset=us-ascii\r\n" +
         "Content-Transfer-Encoding: 7bit\r\n" +
         "Content-Disposition: inline; filename=test.txt\r\n" +
-        "\r\nHello, world!\r\n".getBytes()).getBytes();
+        "\r\nHello, world!\r\n").getBytes();
 
     KeyPair rsaKP = KeyPairUtils.generateKeyPair(CSP_NAME, "RSA");
     X509CertificateHolder selfSignedCertHolder = getSelfSignedCert(rsaKP, "SHA256withRSA");
@@ -93,7 +92,7 @@ class MailUtilsTest extends AbstractTest {
     byte[] message = ("Content-Type: text/plain; name=null; charset=us-ascii\r\n" +
         "Content-Transfer-Encoding: 7bit\r\n" +
         "Content-Disposition: inline; filename=test.txt\r\n" +
-        "\r\nHello, world!\r\n".getBytes()).getBytes();
+        "\r\nHello, world!\r\n").getBytes();
     String signAlgorithm = "SHA256withECDSA";
     KeyPair kp = KeyPairUtils.generateKeyPair(CSP_NAME, "EC");
     X509CertificateHolder selfSignedCertHolder = getSelfSignedCert(kp, signAlgorithm);

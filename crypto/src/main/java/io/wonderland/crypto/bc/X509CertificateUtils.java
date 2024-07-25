@@ -3,12 +3,16 @@ package io.wonderland.crypto.bc;
 import io.wonderland.crypto.CSP;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
@@ -17,15 +21,23 @@ import java.security.cert.CertPathParameters;
 import java.security.cert.CertPathValidator;
 import java.security.cert.CertPathValidatorException;
 import java.security.cert.CertPathValidatorResult;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.net.ssl.X509TrustManager;
 import javax.security.auth.x500.X500Principal;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -33,6 +45,7 @@ import org.bouncycastle.asn1.x500.style.RFC4519Style;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
@@ -50,9 +63,27 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.est.CACertsResponse;
+import org.bouncycastle.est.CSRRequestResponse;
+import org.bouncycastle.est.ESTAuth;
+import org.bouncycastle.est.ESTException;
+import org.bouncycastle.est.ESTService;
+import org.bouncycastle.est.EnrollmentResponse;
+import org.bouncycastle.est.jcajce.JcaHttpAuthBuilder;
+import org.bouncycastle.est.jcajce.JcaJceUtils;
+import org.bouncycastle.est.jcajce.JsseDefaultHostnameAuthorizer;
+import org.bouncycastle.est.jcajce.JsseESTServiceBuilder;
 import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.ContentVerifierProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
+import org.bouncycastle.pkcs.PKCSException;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
+import org.bouncycastle.util.Store;
 
 @Slf4j
 public class X509CertificateUtils {
@@ -479,5 +510,213 @@ public class X509CertificateUtils {
     CertPathValidator validator = CertPathValidator.getInstance(algorithm, provider);
     return validator.validate(certPath, params);
   }
+
+
+  /**
+   * Grab a set of trust anchors from a URL and return them. Note, we've skipped doing any sort of
+   * verification here for the sake of the example. More caution is recommended in real life.
+   *
+   * @param url the URL pointing at the trust anchor set.
+   * @return a set of TrustAnchors based on what was retrieved from the URL.
+   */
+  public static Set<TrustAnchor> fetchTrustAnchors(String url)
+      throws IOException, CertificateException {
+    CertificateFactory fac = CertificateFactory.getInstance("X509");
+    Set<TrustAnchor> set = new HashSet<>();
+
+    InputStream taStream = new URL(url).openStream();
+    for (Certificate cert : fac.generateCertificates(taStream)) {
+      set.add(new TrustAnchor((java.security.cert.X509Certificate) cert, null));
+    }
+    taStream.close();
+
+    return set;
+  }
+
+  /**
+   * Connect to an EST server and fetch CA details.
+   *
+   * @param trustAnchors trustAnchors to validate (or not) the connection
+   * @param hostName     hostName of the EST server
+   * @param portNo       port number to connect on
+   */
+  public static Collection<X509CertificateHolder> fetchCACerts(Set<TrustAnchor> trustAnchors,
+      String hostName, int portNo) throws ESTException {
+    String serverRootUrl = hostName + ":" + portNo;
+
+    X509TrustManager[] trustManagers = JcaJceUtils.getCertPathTrustManager(trustAnchors, null);
+
+    // Create the service builder
+    JsseESTServiceBuilder serviceBuilder = new JsseESTServiceBuilder(
+        serverRootUrl, trustManagers);
+
+    // Refuse to match on a "*.com". In the most general case you
+    // could use the known suffix list.
+    serviceBuilder.withHostNameAuthorizer(
+        new JsseDefaultHostnameAuthorizer(Collections.singleton("com")));
+
+    // Build our service object
+    ESTService estService = serviceBuilder.build();
+
+    // Fetch and list the CA details
+    CACertsResponse csrCerts = estService.getCACerts();
+
+    return csrCerts.getCertificateStore().getMatches(null);
+  }
+
+  /**
+   * Connect to an EST server and fetch CSR Attributes.
+   *
+   * @param trustAnchors trustAnchors to validate (or not) the connection
+   * @param hostName     hostName of the EST server
+   * @param portNo       port number to connect on
+   * @return
+   */
+  public static Collection<ASN1ObjectIdentifier> fetchCSRAttributes(Set<TrustAnchor> trustAnchors,
+      String hostName, int portNo) throws ESTException {
+    String serverRootUrl = hostName + ":" + portNo;
+
+    X509TrustManager[] trustManagers = JcaJceUtils.getCertPathTrustManager(trustAnchors, null);
+
+    // Create the service builder
+    JsseESTServiceBuilder serviceBuilder = new JsseESTServiceBuilder(
+        serverRootUrl, trustManagers);
+
+    // Refuse to match on a "*.com". In the most general case you
+    // could use the known suffix list.
+    serviceBuilder.withHostNameAuthorizer(
+        new JsseDefaultHostnameAuthorizer(Collections.singleton("com")));
+
+    // Build our service object
+    ESTService estService = serviceBuilder.build();
+
+    // Fetch and list the CSR attributes
+    CSRRequestResponse csrAttributes = estService.getCSRAttributes();
+
+    return csrAttributes.getAttributesResponse().getRequirements();
+  }
+
+
+  /**
+   * Enroll with an EST CA by sending a PKCS#10 certification request with a server that expects
+   * HTTPAuth.
+   *
+   * @param trustAnchors trustAnchors to validate (or not) the connection
+   * @param hostName     hostName of the EST server
+   * @param portNo       port number to connect on
+   * @param userName     user ID to use for connecting
+   * @param password     password associated with user ID
+   * @param keyPair      the key pair to generate the CSR for
+   * @return a Store of the response certificates as X509CertificateHolders
+   */
+  public static Store<X509CertificateHolder> estEnroll(Set<TrustAnchor> trustAnchors,
+      String hostName, int portNo, String userName, char[] password, String provider,
+      String signAlgorithm, KeyPair keyPair, X500Name subject)
+      throws Exception {
+    // Build our service object
+    JsseESTServiceBuilder serviceBuilder = new JsseESTServiceBuilder(
+        hostName, portNo, JcaJceUtils.getCertPathTrustManager(
+        trustAnchors, null));
+
+    serviceBuilder.withHostNameAuthorizer(
+        new JsseDefaultHostnameAuthorizer(Collections.singleton("com")));
+
+    ESTService estService = serviceBuilder.build();
+
+    // Create PKCS#10 certification request
+    PKCS10CertificationRequestBuilder pkcs10Builder =
+        new JcaPKCS10CertificationRequestBuilder(subject, keyPair.getPublic());
+
+    ContentSigner contentSigner = new JcaContentSignerBuilder(signAlgorithm)
+        .setProvider(provider).build(keyPair.getPrivate());
+
+    PKCS10CertificationRequest certReq = pkcs10Builder.build(contentSigner);
+
+    // Specify how we will authenticate ourselves
+    ESTAuth auth = new JcaHttpAuthBuilder(null, userName, password)
+        .setNonceGenerator(new SecureRandom()).setProvider(provider).build();
+
+    // Request the certificate
+    boolean isReenroll = false;   // show this is a new enrollment
+    EnrollmentResponse enrollmentResponse = estService.simpleEnroll(isReenroll, certReq, auth);
+
+    // The enrollment action can be deferred by the server.
+    while (!enrollmentResponse.isCompleted()) {
+      Thread.sleep(Math.max(1000, enrollmentResponse.getNotBefore() - System.currentTimeMillis()));
+      enrollmentResponse = estService.simpleEnroll(isReenroll, certReq, auth);
+    }
+
+    return enrollmentResponse.getStore();
+  }
+
+
+  /**
+   * Create a PKCS#10 request including an extension request detailing the email address the CA
+   * should include in the subjectAltName extension.
+   *
+   * @param signAlgorithm the signature algorithm to sign the PKCS request with.
+   * @param keyPair       the key pair the certification request is for.
+   * @return an object carrying the PKCS#10 request.
+   * @throws OperatorCreationException in case the private key is inappropriate for signature
+   *                                   algorithm selected.
+   * @throws IOException               on an ASN.1 encoding error.
+   */
+  public static PKCS10CertificationRequest createPKCS10WithExt(
+      String provider, String signAlgorithm, KeyPair keyPair, X500Name subject,
+      Extensions extensions) throws OperatorCreationException {
+
+    PKCS10CertificationRequestBuilder requestBuilder
+        = new JcaPKCS10CertificationRequestBuilder(subject, keyPair.getPublic());
+
+    requestBuilder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensions);
+
+    ContentSigner signer = new JcaContentSignerBuilder(signAlgorithm)
+        .setProvider(provider).build(keyPair.getPrivate());
+
+    return requestBuilder.build(signer);
+  }
+
+  /**
+   * Create a basic PKCS#10 request.
+   *
+   * @param keyPair       the key pair the certification request is for.
+   * @param signAlgorithm the signature algorithm to sign the PKCS#10 request with.
+   * @return an object carrying the PKCS#10 request.
+   * @throws OperatorCreationException in case the private key is inappropriate for signature
+   *                                   algorithm selected.
+   */
+  public static PKCS10CertificationRequest createPKCS10(String provider, String signAlgorithm,
+      KeyPair keyPair, X500Name subject) throws OperatorCreationException {
+
+    PKCS10CertificationRequestBuilder requestBuilder
+        = new JcaPKCS10CertificationRequestBuilder(subject, keyPair.getPublic());
+
+    ContentSigner signer = new JcaContentSignerBuilder(signAlgorithm)
+        .setProvider(provider).build(keyPair.getPrivate());
+
+    return requestBuilder.build(signer);
+  }
+
+  /**
+   * Simple method to check the signature on a PKCS#10 certification test with a public key.
+   *
+   * @param request the encoding of the PKCS#10 request of interest.
+   * @return true if the public key verifies the signature, false otherwise.
+   * @throws OperatorCreationException in case the public key is unsuitable
+   * @throws PKCSException             if the PKCS#10 request cannot be processed.
+   */
+  public static boolean isValidPKCS10Request(String provider, byte[] request)
+      throws OperatorCreationException, PKCSException, GeneralSecurityException, IOException {
+    JcaPKCS10CertificationRequest jcaRequest = new JcaPKCS10CertificationRequest(request)
+        .setProvider(provider);
+    PublicKey key = jcaRequest.getPublicKey();
+
+    ContentVerifierProvider verifierProvider = new JcaContentVerifierProviderBuilder()
+        .setProvider(provider).build(key);
+
+    return jcaRequest.isSignatureValid(verifierProvider);
+  }
+
+
 
 }
