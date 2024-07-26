@@ -16,37 +16,39 @@ import java.io.Serializable;
 
 public class AffineASN1 implements BerType, Serializable {
 
-	public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
 	private static final long serialVersionUID = 1L;
+
+  public static final BerTag tag = new BerTag(BerTag.UNIVERSAL_CLASS, BerTag.CONSTRUCTED, 16);
+
 	private byte[] code = null;
 	private Algorithm algorithm = null;
 	private AffineKeyASN1 key = null;
 
-	public AffineASN1() {
+  public AffineASN1() {
 	}
 
 	public AffineASN1(byte[] code) {
 		this.code = code;
 	}
 
-	public Algorithm getAlgorithm() {
-		return algorithm;
-	}
-
 	public void setAlgorithm(Algorithm algorithm) {
 		this.algorithm = algorithm;
 	}
 
-	public AffineKeyASN1 getKey() {
-		return key;
+  public Algorithm getAlgorithm() {
+    return algorithm;
 	}
 
 	public void setKey(AffineKeyASN1 key) {
 		this.key = key;
 	}
 
-	@Override
-	public int encode(OutputStream reverseOS) throws IOException {
+  public AffineKeyASN1 getKey() {
+    return key;
+  }
+
+  @Override
+  public int encode(OutputStream reverseOS) throws IOException {
 		return encode(reverseOS, true);
 	}
 
@@ -63,9 +65,9 @@ public class AffineASN1 implements BerType, Serializable {
 		int codeLength = 0;
 		codeLength += key.encode(reverseOS, true);
 
-		codeLength += algorithm.encode(reverseOS, true);
+    codeLength += algorithm.encode(reverseOS, true);
 
-		codeLength += BerLength.encodeLength(reverseOS, codeLength);
+    codeLength += BerLength.encodeLength(reverseOS, codeLength);
 
 		if (withTag) {
 			codeLength += tag.encode(reverseOS);
@@ -75,8 +77,8 @@ public class AffineASN1 implements BerType, Serializable {
 
 	}
 
-	@Override
-	public int decode(InputStream is) throws IOException {
+  @Override
+  public int decode(InputStream is) throws IOException {
 		return decode(is, true);
 	}
 
@@ -98,22 +100,22 @@ public class AffineASN1 implements BerType, Serializable {
 			algorithm = new Algorithm();
 			vByteCount += algorithm.decode(is, false);
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (berTag.equals(AffineKeyASN1.tag)) {
+    if (berTag.equals(AffineKeyASN1.tag)) {
 			key = new AffineKeyASN1();
 			vByteCount += key.decode(is, false);
 			if (lengthVal >= 0 && vByteCount == lengthVal) {
 				return tlByteCount + vByteCount;
 			}
 			vByteCount += berTag.decode(is);
-		} else {
+    } else {
 			throw new IOException("Tag does not match mandatory sequence component.");
 		}
 
-		if (lengthVal < 0) {
+    if (lengthVal < 0) {
 			if (!berTag.equals(0, 0, 0)) {
 				throw new IOException("Decoded sequence has wrong end of contents octets");
 			}
@@ -121,8 +123,8 @@ public class AffineASN1 implements BerType, Serializable {
 			return tlByteCount + vByteCount;
 		}
 
-		throw new IOException(
-				"Unexpected end of sequence, length tag: " + lengthVal + ", bytes decoded: " + vByteCount);
+    throw new IOException(
+        "Unexpected end of sequence, length tag: " + lengthVal + ", bytes decoded: " + vByteCount);
 
 	}
 
@@ -132,8 +134,8 @@ public class AffineASN1 implements BerType, Serializable {
 		code = reverseOS.getArray();
 	}
 
-	@Override
-	public String toString() {
+  @Override
+  public String toString() {
 		StringBuilder sb = new StringBuilder();
 		appendAsString(sb, 0);
 		return sb.toString();
@@ -149,22 +151,22 @@ public class AffineASN1 implements BerType, Serializable {
 		if (algorithm != null) {
 			sb.append("algorithm: ");
 			algorithm.appendAsString(sb, indentLevel + 1);
-		} else {
+    } else {
 			sb.append("algorithm: <empty-required-field>");
 		}
 
-		sb.append(",\n");
+    sb.append(",\n");
 		for (int i = 0; i < indentLevel + 1; i++) {
 			sb.append("\t");
 		}
 		if (key != null) {
 			sb.append("key: ");
 			key.appendAsString(sb, indentLevel + 1);
-		} else {
+    } else {
 			sb.append("key: <empty-required-field>");
 		}
 
-		sb.append("\n");
+    sb.append("\n");
 		for (int i = 0; i < indentLevel; i++) {
 			sb.append("\t");
 		}
