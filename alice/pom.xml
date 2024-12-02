@@ -90,8 +90,9 @@
             </configuration>
           </plugin>
           <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
+              <source>${maven.compiler.source}</source>
+              <target>${maven.compiler.target}</target>
               <annotationProcessorPaths>
                 <path>
                   <artifactId>mapstruct-processor</artifactId>
@@ -114,9 +115,8 @@
                   <version>${jmh.version}</version>
                 </path>
               </annotationProcessorPaths>
-              <source>${maven.compiler.source}</source>
-              <target>${maven.compiler.target}</target>
             </configuration>
+            <artifactId>maven-compiler-plugin</artifactId>
             <groupId>org.apache.maven.plugins</groupId>
           </plugin>
           <plugin>
