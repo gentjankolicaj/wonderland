@@ -23,8 +23,7 @@
 hs_err_pid*
 *.idea
 *.iml
-*.mvn
-*/target
+**/target
 
 # Applications
 *.app
