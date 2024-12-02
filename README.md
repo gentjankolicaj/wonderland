@@ -8,24 +8,24 @@
 
 ## Modules:
 
-- alice
-- base
-- crypto
-- garden
-- garden-files
-- grpc
-- hatter
-- protos
-- rabbit-hole
-- red-queen
+- wonderland-alice
+- wonderland-base
+- wonderland-crypto
+- wonderland-garden
+- wonderland-garden-files
+- wonderland-grpc
+- wonderland-hatter
+- wonderland-protos
+- wonderland-rabbit-hole
+- wonderland-red-queen
 
-### What is alice for ?
+### What is wonderland-alice for ?
 
 * Cryptographic Service Provider module
 * Conforming to JAVA JCA , contains implementations about: ciphers,keys, encoders.
 * Work in progress, not production ready !!!.
 
-### What is crypto for ?
+### What is wonderland-crypto for ?
 
 - Cryptographic module
 
@@ -33,39 +33,40 @@
 
 - Work in progress
 
-### What is base for ?
+### What is wonderland-base for ?
 
 - base module
 - Contains implementations of utils & helper methods & classes.
 
-### What is grpc for ?
+### What is wonderland-grpc for ?
 
 - grpc module
 - Contains grpc implementations to be used on integration.
 
-### What is protos for ?
+### What is wonderland-protos for ?
 
 - protos module
 - Contains service definitions in proto files.
 
-### What is hatter for ?
+### What is wonderland-hatter for ?
 
 - hatter module
 - TODO: A key-escrow application/server using spring.
 
-### What is garden for ?
+### What is wonderland-garden for ?
 
 - Externalized resource module
 - Externalized resource module for resources letter frequency etc...
 - Resource origin is supposed to be different like local file_system, redis, mysql
 
-### What is red-queen for ?
+### What is wonderland-red-queen for ?
 
 - Cryptanalysis module
 - Contains implementations around cryptanalysis.
 - Work in progress
 
-### What is rabbit-hole for ?
+### What is wonderland-rabbit-hole for ?
+
 - Javafx gui application using wonderland modules.
 - [Application manual](/docs/rh_manual.md)
 

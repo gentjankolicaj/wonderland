@@ -1,7 +1,7 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
-name: wonderland release
+name: rabbit-hole release
 
 on:
   workflow_dispatch:
@@ -32,13 +32,9 @@ jobs:
       - name: Step 3 - Maven package
         run: |
           mvn -B package -DskipTests=true --file pom.xml
-          mkdir artifacts
-          cp wonderland-alice/target/*jar artifacts
-          cp wonderland-crypto/target/*jar artifacts
-          cp wonderland-garden/target/*jar artifacts
-          cp wonderland-rabbit-hole/target/*jar artifacts
-          cp wonderland-red-queen/target/*jar artifacts
-          zip -r artifacts.zip artifacts
+          mkdir rabbit-hole-artifacts
+          cp wonderland-rabbit-hole/target/*jar rabbit-hole-artifacts
+          zip -r rabbit-hole-artifacts.zip rabbit-hole-artifacts
 
       - name: Step 4 - Setup maven cache
         uses: actions/cache@v4.0.2
@@ -53,8 +49,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: wonderland-v${{ github.sha }}
-          release_name: wonderland-${{ github.sha }}
+          tag_name: rabbit-hole-v${{ github.ref_name }}
+          release_name: rabbit-hole-${{ github.ref_name }}
           draft: false
           prerelease: false
 
@@ -65,6 +61,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./artifacts.zip
-          asset_name: artifacts.zip
+          asset_path: ./rabbit-hole-artifacts.zip
+          asset_name: rabbit-hole-artifacts.zip
           asset_content_type: application/zip
